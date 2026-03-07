@@ -2,7 +2,6 @@ const ALCHEMY_API_KEY = "GI1mqa4OtQHFVj00nNs9o";
 const REWARD_CONTRACT = "0xb522609cF7f2e8aF1d55Af1B685Cc9f6A159BC4D";
 const NFT_CONTRACT = "0x367ac60FB4B2bb8851a46ab7A7FD13654eF70419";
 const OPENSEA_URL = "https://opensea.io/collection/bullrunkey";
-const ETHERSCAN_URL = "https://etherscan.io/address/" + REWARD_CONTRACT;
 
 const rewardAbi = [
   "function claim(uint256[] calldata tokenIds)",
@@ -49,37 +48,9 @@ function setClaimButtonState(enabled, text = "Claim Rewards") {
   btn.textContent = text;
 }
 
-async function connectWallet() {
-  try {
-    if (!window.ethereum) {
-      setMessage("MetaMask or Rabby is not installed.", "error");
-      return;
-    }
-
-    setWalletStatus("Connecting...");
-    setClaimButtonState(false, "Claim Rewards");
-
-    const chainId = await window.ethereum.request({ method: "eth_chainId" });
-    if (parseInt(chainId, 16) !== 1) {
-      setWalletStatus("Wrong network");
-      setMessage("Please switch wallet to Ethereum Mainnet.", "error");
-      return;
-    }
-
-    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-    currentAccount = accounts[0] || "";
-
-    const connectBtn = document.getElementById("connectBtn");
-    if (connectBtn && currentAccount) {
-      connectBtn.textContent = shortAddress(currentAccount);
-    }
-
-    setWalletStatus("Connected");
-    await loadAllData();
-  } catch (err) {
-    setWalletStatus("Connection failed");
-    setMessage(err.message || "Wallet connection failed.", "error");
-  }
+function formatDateFromTimestamp(timestamp) {
+  const ms = Number(timestamp) * 1000;
+  return new Date(ms).toLocaleDateString();
 }
 
 async function fetchTokenIdsFromAlchemy(ownerAddress) {
@@ -101,11 +72,9 @@ async function fetchTokenIdsFromAlchemy(ownerAddress) {
     .map((nft) => {
       const raw = nft.tokenId || nft.id?.tokenId || nft.token_id;
       if (!raw) return null;
-
       if (typeof raw === "string" && raw.startsWith("0x")) {
         return parseInt(raw, 16);
       }
-
       const num = Number(raw);
       return Number.isInteger(num) ? num : null;
     })
@@ -113,8 +82,8 @@ async function fetchTokenIdsFromAlchemy(ownerAddress) {
     .sort((a, b) => a - b);
 
   return [...new Set(tokenIds)];
-  
 }
+
 async function fetchHolderCount() {
   const url =
     `https://eth-mainnet.g.alchemy.com/nft/v3/${ALCHEMY_API_KEY}/getOwnersForContract` +
@@ -128,10 +97,6 @@ async function fetchHolderCount() {
   const data = await response.json();
   const owners = Array.isArray(data.owners) ? data.owners : [];
   return owners.length;
-}
-function formatDateFromTimestamp(timestamp) {
-  const ms = Number(timestamp) * 1000;
-  return new Date(ms).toLocaleDateString();
 }
 
 async function loadRewardHistory(rewardContract, totalRoundsValue) {
@@ -176,6 +141,39 @@ async function loadRewardHistory(rewardContract, totalRoundsValue) {
   }
 }
 
+async function connectWallet() {
+  try {
+    if (!window.ethereum) {
+      setMessage("MetaMask or Rabby is not installed.", "error");
+      return;
+    }
+
+    setWalletStatus("Connecting...");
+    setClaimButtonState(false, "Claim Rewards");
+
+    const chainId = await window.ethereum.request({ method: "eth_chainId" });
+    if (parseInt(chainId, 16) !== 1) {
+      setWalletStatus("Wrong network");
+      setMessage("Please switch wallet to Ethereum Mainnet.", "error");
+      return;
+    }
+
+    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    currentAccount = accounts[0] || "";
+
+    const connectBtn = document.getElementById("connectBtn");
+    if (connectBtn && currentAccount) {
+      connectBtn.textContent = shortAddress(currentAccount);
+    }
+
+    setWalletStatus("Connected");
+    await loadAllData();
+  } catch (err) {
+    setWalletStatus("Connection failed");
+    setMessage(err.message || "Wallet connection failed.", "error");
+  }
+}
+
 async function loadAllData() {
   try {
     if (!currentAccount) return;
@@ -186,14 +184,12 @@ async function loadAllData() {
 
     const provider = new ethers.BrowserProvider(window.ethereum);
     const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, provider);
-  
 
-const [deposited, claimed, rounds, holders] = await Promise.all([
-  rewardContract.totalDeposited(),
-  rewardContract.totalClaimed(),
-  rewardContract.totalRounds(),
-  fetchHolderCount()
-]);
+    const [deposited, claimed, rounds, holders] = await Promise.all([
+      rewardContract.totalDeposited(),
+      rewardContract.totalClaimed(),
+      rewardContract.totalRounds(),
+      fetchHolderCount()
     ]);
 
     const totalDepositedEl = document.getElementById("totalDeposited");
@@ -203,17 +199,17 @@ const [deposited, claimed, rounds, holders] = await Promise.all([
     if (totalDepositedEl) totalDepositedEl.textContent = formatEth(deposited) + " ETH";
     if (totalClaimedEl) totalClaimedEl.textContent = formatEth(claimed) + " ETH";
     if (totalRoundsEl) totalRoundsEl.textContent = rounds.toString();
-    
-const heroDeposited = document.getElementById("heroDeposited");
-const heroClaimed = document.getElementById("heroClaimed");
-const heroRounds = document.getElementById("heroRounds");
-const heroHolders = document.getElementById("heroHolders");
 
-if (heroDeposited) heroDeposited.textContent = formatEth(deposited) + " ETH";
-if (heroClaimed) heroClaimed.textContent = formatEth(claimed) + " ETH";
-if (heroRounds) heroRounds.textContent = rounds.toString();
-if (heroHolders) heroHolders.textContent = String(holders);
-    
+    const heroDeposited = document.getElementById("heroDeposited");
+    const heroClaimed = document.getElementById("heroClaimed");
+    const heroRounds = document.getElementById("heroRounds");
+    const heroHolders = document.getElementById("heroHolders");
+
+    if (heroDeposited) heroDeposited.textContent = formatEth(deposited) + " ETH";
+    if (heroClaimed) heroClaimed.textContent = formatEth(claimed) + " ETH";
+    if (heroRounds) heroRounds.textContent = rounds.toString();
+    if (heroHolders) heroHolders.textContent = String(holders);
+
     await loadRewardHistory(rewardContract, rounds);
 
     setMessage("Scanning your BullRun Keys...");
@@ -310,23 +306,11 @@ async function claimRewards() {
 }
 
 window.addEventListener("load", async function () {
-  const openSeaLink = document.getElementById("openSeaLink");
-  const openSeaLink2 = document.getElementById("openSeaLink2");
-  const contractLink = document.getElementById("contractLink");
   const connectBtn = document.getElementById("connectBtn");
   const claimBtn = document.getElementById("claimBtn");
 
-  if (openSeaLink) openSeaLink.href = OPENSEA_URL;
-  if (openSeaLink2) openSeaLink2.href = OPENSEA_URL;
-  if (contractLink) contractLink.href = ETHERSCAN_URL;
-
-  if (connectBtn) {
-    connectBtn.addEventListener("click", connectWallet);
-  }
-
-  if (claimBtn) {
-    claimBtn.addEventListener("click", claimRewards);
-  }
+  if (connectBtn) connectBtn.addEventListener("click", connectWallet);
+  if (claimBtn) claimBtn.addEventListener("click", claimRewards);
 
   setWalletStatus("Not connected");
   setNftCount(0);
