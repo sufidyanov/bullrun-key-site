@@ -9,7 +9,8 @@ const rewardAbi = [
   "function claimable(uint256[] calldata tokenIds) view returns (uint256)",
   "function totalDeposited() view returns (uint256)",
   "function totalClaimed() view returns (uint256)",
-  "function totalRounds() view returns (uint256)"
+  "function totalRounds() view returns (uint256)",
+  "function roundInfo(uint256 roundId) view returns (uint256 amountDeposited, uint256 rewardPerToken, uint256 startTime, uint256 expiryTime, uint256 claimedAmount, uint256 remainingAmount, bool reclaimed, bool expired)"
 ];
 
 let currentAccount = "";
@@ -113,6 +114,52 @@ async function fetchTokenIdsFromAlchemy(ownerAddress) {
 
   return [...new Set(tokenIds)];
 }
+function formatDateFromTimestamp(timestamp) {
+  const ms = Number(timestamp) * 1000;
+  return new Date(ms).toLocaleDateString();
+}
+
+async function loadRewardHistory(rewardContract, totalRoundsValue) {
+  const list = document.getElementById("rewardHistoryList");
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  const roundsCount = Number(totalRoundsValue);
+  if (!roundsCount || roundsCount <= 0) {
+    list.innerHTML = '<div class="small">No reward rounds yet.</div>';
+    return;
+  }
+
+  const maxToShow = 5;
+  const start = Math.max(0, roundsCount - maxToShow);
+
+  for (let i = roundsCount - 1; i >= start; i--) {
+    try {
+      const round = await rewardContract.roundInfo(i);
+
+      const amountDeposited = formatEth(round.amountDeposited) + " ETH";
+      const startDate = formatDateFromTimestamp(round.startTime);
+      const status = round.expired ? "Expired" : "Active";
+
+      const item = document.createElement("div");
+      item.className = "stat";
+      item.style.marginBottom = "12px";
+
+      item.innerHTML = `
+        <div class="stat-label">Round #${i + 1}</div>
+        <div class="stat-value">${amountDeposited}</div>
+        <div class="small" style="margin-top: 8px;">Started: ${startDate}</div>
+        <div class="small">Status: ${status}</div>
+        <div class="small">Claim window: 365 days</div>
+      `;
+
+      list.appendChild(item);
+    } catch (e) {
+      // ignore broken round reads
+    }
+  }
+}
 
 async function loadAllData() {
   try {
@@ -138,6 +185,8 @@ async function loadAllData() {
     if (totalDepositedEl) totalDepositedEl.textContent = formatEth(deposited) + " ETH";
     if (totalClaimedEl) totalClaimedEl.textContent = formatEth(claimed) + " ETH";
     if (totalRoundsEl) totalRoundsEl.textContent = rounds.toString();
+    
+    await loadRewardHistory(rewardContract, rounds);
 
     setMessage("Scanning your BullRun Keys...");
     setWalletStatus("Scanning NFTs");
