@@ -31,6 +31,23 @@ function setMessage(text, type = "") {
   el.textContent = text || "";
 }
 
+function setWalletStatus(text) {
+  const el = document.getElementById("walletStatus");
+  if (el) el.textContent = text;
+}
+
+function setNftCount(count) {
+  const el = document.getElementById("nftCount");
+  if (el) el.textContent = String(count);
+}
+
+function setClaimButtonState(enabled, text = "Claim Rewards") {
+  const btn = document.getElementById("claimBtn");
+  if (!btn) return;
+  btn.disabled = !enabled;
+  btn.textContent = text;
+}
+
 async function connectWallet() {
   try {
     if (!window.ethereum) {
@@ -38,8 +55,12 @@ async function connectWallet() {
       return;
     }
 
+    setWalletStatus("Connecting...");
+    setClaimButtonState(false, "Claim Rewards");
+
     const chainId = await window.ethereum.request({ method: "eth_chainId" });
     if (parseInt(chainId, 16) !== 1) {
+      setWalletStatus("Wrong network");
       setMessage("Please switch wallet to Ethereum Mainnet.", "error");
       return;
     }
@@ -52,8 +73,10 @@ async function connectWallet() {
       connectBtn.textContent = shortAddress(currentAccount);
     }
 
+    setWalletStatus("Connected");
     await loadAllData();
   } catch (err) {
+    setWalletStatus("Connection failed");
     setMessage(err.message || "Wallet connection failed.", "error");
   }
 }
@@ -96,6 +119,8 @@ async function loadAllData() {
     if (!currentAccount) return;
 
     setMessage("Loading rewards data...");
+    setWalletStatus("Loading");
+    setClaimButtonState(false, "Loading...");
 
     const provider = new ethers.BrowserProvider(window.ethereum);
     const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, provider);
@@ -115,8 +140,11 @@ async function loadAllData() {
     if (totalRoundsEl) totalRoundsEl.textContent = rounds.toString();
 
     setMessage("Scanning your BullRun Keys...");
+    setWalletStatus("Scanning NFTs");
+
     const found = await fetchTokenIdsFromAlchemy(currentAccount);
     currentTokenIds = found;
+    setNftCount(found.length);
 
     const badges = document.getElementById("tokenBadges");
     const claimableValue = document.getElementById("claimableValue");
@@ -130,6 +158,8 @@ async function loadAllData() {
       if (claimableValue) {
         claimableValue.textContent = "0 ETH";
       }
+      setWalletStatus("Connected");
+      setClaimButtonState(false, "Claim Rewards");
       setMessage("Wallet connected, but no BullRun Key NFTs were found.");
       return;
     }
@@ -144,14 +174,21 @@ async function loadAllData() {
     }
 
     setMessage("Calculating rewards...");
+    setWalletStatus("Calculating");
+
     const amount = await rewardContract.claimable(found);
 
     if (claimableValue) {
       claimableValue.textContent = formatEth(amount) + " ETH";
     }
 
+    const canClaim = amount > 0n;
+    setClaimButtonState(canClaim, "Claim Rewards");
+    setWalletStatus("Connected");
     setMessage("Wallet connected successfully.", "success");
   } catch (err) {
+    setWalletStatus("Error");
+    setClaimButtonState(false, "Claim Rewards");
     setMessage(err.message || "Failed to load data.", "error");
   }
 }
@@ -173,6 +210,8 @@ async function claimRewards() {
       return;
     }
 
+    setClaimButtonState(false, "Claiming...");
+    setWalletStatus("Claiming");
     setMessage("Sending claim transaction... Confirm it in your wallet.");
 
     const provider = new ethers.BrowserProvider(window.ethereum);
@@ -187,6 +226,8 @@ async function claimRewards() {
     setMessage("Rewards claimed successfully.", "success");
     await loadAllData();
   } catch (err) {
+    setWalletStatus("Connected");
+    setClaimButtonState(true, "Claim Rewards");
     setMessage(err.reason || err.shortMessage || err.message || "Claim failed.", "error");
   }
 }
@@ -210,6 +251,10 @@ window.addEventListener("load", async function () {
     claimBtn.addEventListener("click", claimRewards);
   }
 
+  setWalletStatus("Not connected");
+  setNftCount(0);
+  setClaimButtonState(false, "Claim Rewards");
+
   if (window.ethereum) {
     try {
       const accounts = await window.ethereum.request({ method: "eth_accounts" });
@@ -221,6 +266,7 @@ window.addEventListener("load", async function () {
           connectBtn.textContent = shortAddress(currentAccount);
         }
 
+        setWalletStatus("Connected");
         await loadAllData();
       }
 
@@ -238,8 +284,14 @@ window.addEventListener("load", async function () {
         if (tokenBadges) tokenBadges.innerHTML = "";
         if (claimableValue) claimableValue.textContent = "0 ETH";
 
+        setNftCount(0);
+
         if (currentAccount) {
+          setWalletStatus("Connected");
           await loadAllData();
+        } else {
+          setWalletStatus("Not connected");
+          setClaimButtonState(false, "Claim Rewards");
         }
       });
 
@@ -247,6 +299,7 @@ window.addEventListener("load", async function () {
         window.location.reload();
       });
     } catch (err) {
+      setWalletStatus("Error");
       setMessage(err.message || "Failed to initialize wallet.", "error");
     }
   }
