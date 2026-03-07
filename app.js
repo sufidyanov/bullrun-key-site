@@ -209,10 +209,10 @@ const heroClaimed = document.getElementById("heroClaimed");
 const heroRounds = document.getElementById("heroRounds");
 const heroHolders = document.getElementById("heroHolders");
 
-if (heroHolders) heroHolders.textContent = String(holders);
 if (heroDeposited) heroDeposited.textContent = formatEth(deposited) + " ETH";
 if (heroClaimed) heroClaimed.textContent = formatEth(claimed) + " ETH";
 if (heroRounds) heroRounds.textContent = rounds.toString();
+if (heroHolders) heroHolders.textContent = String(holders);
     
     await loadRewardHistory(rewardContract, rounds);
 
