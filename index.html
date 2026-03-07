@@ -65,28 +65,36 @@
 
     <div class="grid">
       <div class="card">
-        <h2>Claim Rewards</h2>
-        <p>
-          Connect your wallet to view your BullRun Key NFTs and check whether rewards
-          are currently available to claim.
-        </p>
+  <h2>Claim Rewards</h2>
+  <p>
+    Connect your wallet to view your BullRun Key NFTs and check whether rewards
+    are currently available to claim.
+  </p>
 
-        <div class="small">Your NFTs</div>
-        <div class="badges" id="tokenBadges"></div>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-label">Wallet Status</div>
+      <div class="stat-value" id="walletStatus">Not connected</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">NFTs Found</div>
+      <div class="stat-value" id="nftCount">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Available Rewards</div>
+      <div class="stat-value" id="claimableValue">0 ETH</div>
+    </div>
+  </div>
 
-        <div class="stats">
-          <div class="stat">
-            <div class="stat-label">Available Rewards</div>
-            <div class="stat-value" id="claimableValue">0 ETH</div>
-          </div>
-        </div>
+  <div class="small" style="margin-top: 18px;">Your NFTs</div>
+  <div class="badges" id="tokenBadges"></div>
 
-        <div class="buttons">
-          <button id="claimBtn">Claim Rewards</button>
-        </div>
+  <div class="buttons">
+    <button id="claimBtn" disabled>Claim Rewards</button>
+  </div>
 
-        <div id="message"></div>
-      </div>
+  <div id="message"></div>
+</div>
 
       <div class="card">
         <h2>Rewards</h2>
