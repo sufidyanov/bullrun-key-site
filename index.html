@@ -1,116 +1,163 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>BullRun Key</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-
-body{
-background:#0b0b0b;
-color:white;
-font-family:Arial;
-margin:0;
-padding:40px;
-}
-
-.container{
-max-width:900px;
-margin:auto;
-}
-
-button{
-background:#f7931a;
-border:none;
-padding:14px 24px;
-font-size:16px;
-border-radius:10px;
-cursor:pointer;
-margin-right:10px;
-}
-
-.card{
-background:#111;
-padding:30px;
-border-radius:20px;
-margin-top:30px;
-}
-
-.small{
-color:#aaa;
-}
-
-a{
-color:#f7931a;
-text-decoration:none;
-}
-
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BullRun Key</title>
+  <link rel="stylesheet" href="./style.css" />
 </head>
-
 <body>
+  <div class="container">
+    <section class="hero">
+      <h1>BullRun Key</h1>
+      <div class="subtitle">Membership key for the BullRun Kids community.</div>
+      <p class="lead">
+        333 NFTs representing the generation that entered the market at the top,
+        survived the bear market, learned the game, and came back stronger.
+        Community initiatives, perks, and on-chain reward distributions may be
+        introduced over time through the ecosystem.
+      </p>
 
-<div class="container">
+      <div class="buttons">
+        <button id="connectBtn">Connect Wallet</button>
+        <a class="button-link button-secondary" id="openSeaLink" target="_blank">Buy on OpenSea</a>
+      </div>
+    </section>
 
-<h1>BullRun Key</h1>
+    <div class="grid">
+      <div class="card">
+        <h2>Who are the BullRun Kids?</h2>
+        <ul>
+          <li>entered the market too late</li>
+          <li>bought the top</li>
+          <li>survived the bear market</li>
+          <li>learned the game</li>
+          <li>came back smarter</li>
+        </ul>
+        <p>They were early enough to fail, but persistent enough to stay.</p>
+        <p><strong>Now they are building the next cycle.</strong></p>
+      </div>
 
-<p class="small">
-Membership key for the BullRun Kids community
-</p>
+      <div class="card">
+        <h2>BullRun Key</h2>
+        <p>BullRun Key is a membership NFT for the BullRun Kids community.</p>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-label">Supply</div>
+            <div class="stat-value">333</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Network</div>
+            <div class="stat-value">Ethereum</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Standard</div>
+            <div class="stat-value">ERC-721</div>
+          </div>
+        </div>
+        <p>
+          Holders may receive access to community perks, periodic on-chain reward
+          distributions, future ecosystem utilities, and early access to future
+          community initiatives.
+        </p>
+      </div>
+    </div>
 
-<div class="card">
+    <div class="grid">
+      <div class="card">
+        <h2>Claim Rewards</h2>
+        <p>
+          Connect your wallet to view your BullRun Key NFTs and check whether rewards
+          are currently available to claim.
+        </p>
 
-<h2>Who are the BullRun Kids?</h2>
+        <div class="small">Your NFTs</div>
+        <div class="badges" id="tokenBadges"></div>
 
-<ul>
-<li>entered the market too late</li>
-<li>bought the top</li>
-<li>survived the bear market</li>
-<li>learned the game</li>
-<li>came back smarter</li>
-</ul>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-label">Available Rewards</div>
+            <div class="stat-value" id="claimableValue">0 ETH</div>
+          </div>
+        </div>
 
-<p>Now they are building the next cycle.</p>
+        <div class="buttons">
+          <button id="claimBtn">Claim Rewards</button>
+        </div>
 
-</div>
+        <div id="message"></div>
+      </div>
 
-<div class="card">
+      <div class="card">
+        <h2>Rewards</h2>
+        <p>
+          From time to time, the project may allocate ETH to the community rewards contract.
+        </p>
+        <p>
+          Each reward round distributes ETH equally across all 333 BullRun Key NFTs.
+          Holders can claim available rewards directly from the smart contract.
+        </p>
+        <ul>
+          <li>rewards are distributed in ETH</li>
+          <li>each NFT receives an equal share</li>
+          <li>claim period lasts 365 days</li>
+          <li>unclaimed rewards may later be recycled into future community reward rounds</li>
+        </ul>
+      </div>
+    </div>
 
-<h2>BullRun Key NFT</h2>
+    <div class="grid">
+      <div class="card">
+        <h2>Get BullRun Key</h2>
+        <p>
+          If you do not yet own a BullRun Key, you can acquire one on the secondary market.
+        </p>
+        <p>Supply is permanently limited to 333 NFTs.</p>
+        <div class="buttons">
+          <a class="button-link" id="openSeaLink2" href="https://opensea.io/collection/bullrunkey" target="_blank">View on OpenSea</a>
+        </div>
+      </div>
 
-<p>Total Supply: 333</p>
-<p>Network: Ethereum</p>
+      <div class="card">
+        <h2>Transparency</h2>
+        <p>
+          Community reward activity is recorded on-chain and can be independently verified through the smart contract.
+        </p>
 
-<p>
-BullRun Key NFTs represent membership within the community ecosystem.
-</p>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-label">Deposited</div>
+            <div class="stat-value" id="totalDeposited">0 ETH</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Claimed</div>
+            <div class="stat-value" id="totalClaimed">0 ETH</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Rounds</div>
+            <div class="stat-value" id="totalRounds">0</div>
+          </div>
+        </div>
 
-</div>
+        <div class="buttons">
+          <a class="button-link button-secondary" id="contractLink" target="_blank">View Smart Contract</a>
+        </div>
+      </div>
+    </div>
 
-<div class="card">
+    <div class="card footer">
+      <h2>Disclaimer</h2>
+      <p>
+        BullRun Key NFTs are digital collectibles representing membership within the
+        BullRun Kids community. They are not intended to be investment products,
+        securities, or financial instruments. Rewards, perks, and ecosystem features
+        are discretionary, may vary over time, and are not guaranteed. Holding a
+        BullRun Key should not be understood as an expectation of profit or financial return.
+      </p>
+    </div>
+  </div>
 
-<h2>Buy BullRun Key</h2>
-
-<a href="https://opensea.io/collection/bullrunkey" target="_blank">
-<button>View on OpenSea</button>
-</a>
-
-</div>
-
-<div class="card">
-
-<h2>Rewards</h2>
-
-<p>
-From time to time the project may allocate ETH to the community rewards contract.
-</p>
-
-<p>
-Rewards are distributed equally between all 333 NFTs.
-</p>
-
-</div>
-
-</div>
-
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
