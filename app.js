@@ -113,6 +113,21 @@ async function fetchTokenIdsFromAlchemy(ownerAddress) {
     .sort((a, b) => a - b);
 
   return [...new Set(tokenIds)];
+  
+}
+async function fetchHolderCount() {
+  const url =
+    `https://eth-mainnet.g.alchemy.com/nft/v3/${ALCHEMY_API_KEY}/getOwnersForContract` +
+    `?contractAddress=${NFT_CONTRACT}`;
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error("Alchemy holder request failed.");
+  }
+
+  const data = await response.json();
+  const owners = Array.isArray(data.owners) ? data.owners : [];
+  return owners.length;
 }
 function formatDateFromTimestamp(timestamp) {
   const ms = Number(timestamp) * 1000;
@@ -171,11 +186,14 @@ async function loadAllData() {
 
     const provider = new ethers.BrowserProvider(window.ethereum);
     const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, provider);
+  
 
-    const [deposited, claimed, rounds] = await Promise.all([
-      rewardContract.totalDeposited(),
-      rewardContract.totalClaimed(),
-      rewardContract.totalRounds()
+const [deposited, claimed, rounds, holders] = await Promise.all([
+  rewardContract.totalDeposited(),
+  rewardContract.totalClaimed(),
+  rewardContract.totalRounds(),
+  fetchHolderCount()
+]);
     ]);
 
     const totalDepositedEl = document.getElementById("totalDeposited");
@@ -189,7 +207,9 @@ async function loadAllData() {
 const heroDeposited = document.getElementById("heroDeposited");
 const heroClaimed = document.getElementById("heroClaimed");
 const heroRounds = document.getElementById("heroRounds");
+const heroHolders = document.getElementById("heroHolders");
 
+if (heroHolders) heroHolders.textContent = String(holders);
 if (heroDeposited) heroDeposited.textContent = formatEth(deposited) + " ETH";
 if (heroClaimed) heroClaimed.textContent = formatEth(claimed) + " ETH";
 if (heroRounds) heroRounds.textContent = rounds.toString();
