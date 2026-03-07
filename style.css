@@ -159,10 +159,9 @@ a {
 }
 
 @media (max-width: 800px) {
-  .stats {
-    grid-template-columns: 1fr;
+  h1 {
+    font-size: 40px;
   }
-}
 
   .grid {
     grid-template-columns: 1fr;
