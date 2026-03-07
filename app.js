@@ -186,6 +186,14 @@ async function loadAllData() {
     if (totalClaimedEl) totalClaimedEl.textContent = formatEth(claimed) + " ETH";
     if (totalRoundsEl) totalRoundsEl.textContent = rounds.toString();
     
+const heroDeposited = document.getElementById("heroDeposited");
+const heroClaimed = document.getElementById("heroClaimed");
+const heroRounds = document.getElementById("heroRounds");
+
+if (heroDeposited) heroDeposited.textContent = formatEth(deposited) + " ETH";
+if (heroClaimed) heroClaimed.textContent = formatEth(claimed) + " ETH";
+if (heroRounds) heroRounds.textContent = rounds.toString();
+    
     await loadRewardHistory(rewardContract, rounds);
 
     setMessage("Scanning your BullRun Keys...");
