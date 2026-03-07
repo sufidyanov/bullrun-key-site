@@ -29,6 +29,7 @@ function shortAddress(address) {
 
 function setMessage(text, type = "") {
   const el = document.getElementById("message");
+  if (!el) return;
   el.className = type ? `notice ${type}` : "";
   el.textContent = text || "";
 }
@@ -47,8 +48,12 @@ async function connectWallet() {
     }
 
     const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-    currentAccount = accounts[0];
-    document.getElementById("connectBtn").textContent = shortAddress(currentAccount);
+    currentAccount = accounts[0] || "";
+
+    const connectBtn = document.getElementById("connectBtn");
+    if (connectBtn && currentAccount) {
+      connectBtn.textContent = shortAddress(currentAccount);
+    }
 
     await loadAllData();
   } catch (err) {
@@ -61,8 +66,8 @@ async function loadAllData() {
     if (!currentAccount) return;
 
     setMessage("Loading your NFTs and rewards...");
-    const provider = new ethers.BrowserProvider(window.ethereum);
 
+    const provider = new ethers.BrowserProvider(window.ethereum);
     const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, provider);
     const nftContract = new ethers.Contract(NFT_CONTRACT, nftAbi, provider);
 
@@ -72,9 +77,13 @@ async function loadAllData() {
       rewardContract.totalRounds()
     ]);
 
-    document.getElementById("totalDeposited").textContent = formatEth(deposited) + " ETH";
-    document.getElementById("totalClaimed").textContent = formatEth(claimed) + " ETH";
-    document.getElementById("totalRounds").textContent = rounds.toString();
+    const totalDepositedEl = document.getElementById("totalDeposited");
+    const totalClaimedEl = document.getElementById("totalClaimed");
+    const totalRoundsEl = document.getElementById("totalRounds");
+
+    if (totalDepositedEl) totalDepositedEl.textContent = formatEth(deposited) + " ETH";
+    if (totalClaimedEl) totalClaimedEl.textContent = formatEth(claimed) + " ETH";
+    if (totalRoundsEl) totalRoundsEl.textContent = rounds.toString();
 
     const found = [];
     const target = currentAccount.toLowerCase();
@@ -85,30 +94,41 @@ async function loadAllData() {
         if (String(owner).toLowerCase() === target) {
           found.push(tokenId);
         }
-      } catch (_) {}
+      } catch (e) {
+        // ignore individual token errors
+      }
     }
 
     currentTokenIds = found;
 
     const badges = document.getElementById("tokenBadges");
-    badges.innerHTML = "";
+    const claimableValue = document.getElementById("claimableValue");
+
+    if (badges) badges.innerHTML = "";
 
     if (found.length === 0) {
-      badges.innerHTML = '<div class="small">No BullRun Key NFTs found on this wallet.</div>';
-      document.getElementById("claimableValue").textContent = "0 ETH";
+      if (badges) {
+        badges.innerHTML = '<div class="small">No BullRun Key NFTs found on this wallet.</div>';
+      }
+      if (claimableValue) claimableValue.textContent = "0 ETH";
       setMessage("Wallet connected.");
       return;
     }
 
-    found.forEach((id) => {
-      const span = document.createElement("span");
-      span.className = "badge";
-      span.textContent = "#" + id;
-      badges.appendChild(span);
-    });
+    if (badges) {
+      found.forEach((id) => {
+        const span = document.createElement("span");
+        span.className = "badge";
+        span.textContent = "#" + id;
+        badges.appendChild(span);
+      });
+    }
 
     const amount = await rewardContract.claimable(found);
-    document.getElementById("claimableValue").textContent = formatEth(amount) + " ETH";
+    if (claimableValue) {
+      claimableValue.textContent = formatEth(amount) + " ETH";
+    }
+
     setMessage("Wallet connected successfully.", "success");
   } catch (err) {
     setMessage(err.message || "Failed to load data.", "error");
@@ -150,7 +170,7 @@ async function claimRewards() {
   }
 }
 
-window.addEventListener("load", async () => {
+window.addEventListener("load", async function () {
   const openSeaLink = document.getElementById("openSeaLink");
   const openSeaLink2 = document.getElementById("openSeaLink2");
   const contractLink = document.getElementById("contractLink");
@@ -161,61 +181,52 @@ window.addEventListener("load", async () => {
   if (openSeaLink2) openSeaLink2.href = OPENSEA_URL;
   if (contractLink) contractLink.href = ETHERSCAN_URL;
 
-  if (connectBtn) connectBtn.addEventListener("click", connectWallet);
-  if (claimBtn) claimBtn.addEventListener("click", claimRewards);
-
-  if (window.ethereum) {
-    const accounts = await window.ethereum.request({ method: "eth_accounts" });
-    if (accounts && accounts.length > 0) {
-      currentAccount = accounts[0];
-      if (connectBtn) {
-        connectBtn.textContent = shortAddress(currentAccount);
-      }
-      await loadAllData();
-    }
-
-    window.ethereum.on("accountsChanged", async (accountsChanged) => {
-      currentAccount = accountsChanged[0] || "";
-      currentTokenIds = [];
-      if (connectBtn) {
-        connectBtn.textContent = currentAccount ? shortAddress(currentAccount) : "Connect Wallet";
-      }
-      const tokenBadges = document.getElementById("tokenBadges");
-      const claimableValue = document.getElementById("claimableValue");
-      if (tokenBadges) tokenBadges.innerHTML = "";
-      if (claimableValue) claimableValue.textContent = "0 ETH";
-      if (currentAccount) {
-        await loadAllData();
-      }
-    });
-
-    window.ethereum.on("chainChanged", () => {
-      window.location.reload();
-    });
+  if (connectBtn) {
+    connectBtn.addEventListener("click", connectWallet);
   }
-});
+
+  if (claimBtn) {
+    claimBtn.addEventListener("click", claimRewards);
+  }
 
   if (window.ethereum) {
-    const accounts = await window.ethereum.request({ method: "eth_accounts" });
-    if (accounts && accounts.length > 0) {
-      currentAccount = accounts[0];
-      document.getElementById("connectBtn").textContent = shortAddress(currentAccount);
-      await loadAllData();
-    }
+    try {
+      const accounts = await window.ethereum.request({ method: "eth_accounts" });
 
-    window.ethereum.on("accountsChanged", async (accountsChanged) => {
-      currentAccount = accountsChanged[0] || "";
-      currentTokenIds = [];
-      document.getElementById("connectBtn").textContent = currentAccount ? shortAddress(currentAccount) : "Connect Wallet";
-      document.getElementById("tokenBadges").innerHTML = "";
-      document.getElementById("claimableValue").textContent = "0 ETH";
-      if (currentAccount) {
+      if (accounts && accounts.length > 0) {
+        currentAccount = accounts[0];
+
+        if (connectBtn) {
+          connectBtn.textContent = shortAddress(currentAccount);
+        }
+
         await loadAllData();
       }
-    });
 
-    window.ethereum.on("chainChanged", () => {
-      window.location.reload();
-    });
+      window.ethereum.on("accountsChanged", async function (accountsChanged) {
+        currentAccount = accountsChanged[0] || "";
+        currentTokenIds = [];
+
+        const tokenBadges = document.getElementById("tokenBadges");
+        const claimableValue = document.getElementById("claimableValue");
+
+        if (connectBtn) {
+          connectBtn.textContent = currentAccount ? shortAddress(currentAccount) : "Connect Wallet";
+        }
+
+        if (tokenBadges) tokenBadges.innerHTML = "";
+        if (claimableValue) claimableValue.textContent = "0 ETH";
+
+        if (currentAccount) {
+          await loadAllData();
+        }
+      });
+
+      window.ethereum.on("chainChanged", function () {
+        window.location.reload();
+      });
+    } catch (err) {
+      setMessage(err.message || "Failed to initialize wallet.", "error");
+    }
   }
 });
