@@ -1,0 +1,183 @@
+const REWARD_CONTRACT = "0xb522609cF7f2e8aF1d55Af1B685Cc9f6A159BC4D";
+const NFT_CONTRACT = "0x367ac60FB4B2bb8851a46ab7A7FD13654eF70419";
+const OPENSEA_URL = "https://opensea.io/collection/bullrunkey";
+const ETHERSCAN_URL = "https://etherscan.io/address/" + REWARD_CONTRACT;
+
+const rewardAbi = [
+  "function claim(uint256[] calldata tokenIds)",
+  "function claimable(uint256[] calldata tokenIds) view returns (uint256)",
+  "function totalDeposited() view returns (uint256)",
+  "function totalClaimed() view returns (uint256)",
+  "function totalRounds() view returns (uint256)"
+];
+
+const nftAbi = [
+  "function ownerOf(uint256 tokenId) view returns (address)"
+];
+
+let currentAccount = "";
+let currentTokenIds = [];
+
+function formatEth(value) {
+  const eth = Number(ethers.formatEther(value));
+  return eth.toLocaleString(undefined, { maximumFractionDigits: 6 });
+}
+
+function shortAddress(address) {
+  return address.slice(0, 6) + "..." + address.slice(-4);
+}
+
+function setMessage(text, type = "") {
+  const el = document.getElementById("message");
+  el.className = type ? `notice ${type}` : "";
+  el.textContent = text || "";
+}
+
+async function connectWallet() {
+  try {
+    if (!window.ethereum) {
+      setMessage("MetaMask is not installed.", "error");
+      return;
+    }
+
+    const chainId = await window.ethereum.request({ method: "eth_chainId" });
+    if (parseInt(chainId, 16) !== 1) {
+      setMessage("Please switch MetaMask to Ethereum Mainnet.", "error");
+      return;
+    }
+
+    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    currentAccount = accounts[0];
+    document.getElementById("connectBtn").textContent = shortAddress(currentAccount);
+
+    await loadAllData();
+  } catch (err) {
+    setMessage(err.message || "Wallet connection failed.", "error");
+  }
+}
+
+async function loadAllData() {
+  try {
+    if (!currentAccount) return;
+
+    setMessage("Loading your NFTs and rewards...");
+    const provider = new ethers.BrowserProvider(window.ethereum);
+
+    const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, provider);
+    const nftContract = new ethers.Contract(NFT_CONTRACT, nftAbi, provider);
+
+    const [deposited, claimed, rounds] = await Promise.all([
+      rewardContract.totalDeposited(),
+      rewardContract.totalClaimed(),
+      rewardContract.totalRounds()
+    ]);
+
+    document.getElementById("totalDeposited").textContent = formatEth(deposited) + " ETH";
+    document.getElementById("totalClaimed").textContent = formatEth(claimed) + " ETH";
+    document.getElementById("totalRounds").textContent = rounds.toString();
+
+    const found = [];
+    const target = currentAccount.toLowerCase();
+
+    for (let tokenId = 1; tokenId <= 333; tokenId++) {
+      try {
+        const owner = await nftContract.ownerOf(tokenId);
+        if (String(owner).toLowerCase() === target) {
+          found.push(tokenId);
+        }
+      } catch (_) {}
+    }
+
+    currentTokenIds = found;
+
+    const badges = document.getElementById("tokenBadges");
+    badges.innerHTML = "";
+
+    if (found.length === 0) {
+      badges.innerHTML = '<div class="small">No BullRun Key NFTs found on this wallet.</div>';
+      document.getElementById("claimableValue").textContent = "0 ETH";
+      setMessage("Wallet connected.");
+      return;
+    }
+
+    found.forEach((id) => {
+      const span = document.createElement("span");
+      span.className = "badge";
+      span.textContent = "#" + id;
+      badges.appendChild(span);
+    });
+
+    const amount = await rewardContract.claimable(found);
+    document.getElementById("claimableValue").textContent = formatEth(amount) + " ETH";
+    setMessage("Wallet connected successfully.", "success");
+  } catch (err) {
+    setMessage(err.message || "Failed to load data.", "error");
+  }
+}
+
+async function claimRewards() {
+  try {
+    if (!window.ethereum) {
+      setMessage("MetaMask is not installed.", "error");
+      return;
+    }
+
+    if (!currentAccount) {
+      setMessage("Connect wallet first.", "error");
+      return;
+    }
+
+    if (currentTokenIds.length === 0) {
+      setMessage("No BullRun Key NFTs found on this wallet.", "error");
+      return;
+    }
+
+    setMessage("Sending claim transaction... Confirm it in MetaMask.");
+
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, signer);
+
+    const tx = await rewardContract.claim(currentTokenIds);
+    setMessage("Transaction sent. Waiting for confirmation...");
+
+    await tx.wait();
+
+    setMessage("Rewards claimed successfully.", "success");
+    await loadAllData();
+  } catch (err) {
+    setMessage(err.reason || err.shortMessage || err.message || "Claim failed.", "error");
+  }
+}
+
+window.addEventListener("load", async () => {
+  document.getElementById("openSeaLink").href = OPENSEA_URL;
+  document.getElementById("contractLink").href = ETHERSCAN_URL;
+
+  document.getElementById("connectBtn").addEventListener("click", connectWallet);
+  document.getElementById("claimBtn").addEventListener("click", claimRewards);
+
+  if (window.ethereum) {
+    const accounts = await window.ethereum.request({ method: "eth_accounts" });
+    if (accounts && accounts.length > 0) {
+      currentAccount = accounts[0];
+      document.getElementById("connectBtn").textContent = shortAddress(currentAccount);
+      await loadAllData();
+    }
+
+    window.ethereum.on("accountsChanged", async (accountsChanged) => {
+      currentAccount = accountsChanged[0] || "";
+      currentTokenIds = [];
+      document.getElementById("connectBtn").textContent = currentAccount ? shortAddress(currentAccount) : "Connect Wallet";
+      document.getElementById("tokenBadges").innerHTML = "";
+      document.getElementById("claimableValue").textContent = "0 ETH";
+      if (currentAccount) {
+        await loadAllData();
+      }
+    });
+
+    window.ethereum.on("chainChanged", () => {
+      window.location.reload();
+    });
+  }
+});
