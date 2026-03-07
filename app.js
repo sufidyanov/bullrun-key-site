@@ -151,11 +151,49 @@ async function claimRewards() {
 }
 
 window.addEventListener("load", async () => {
-  document.getElementById("openSeaLink").href = OPENSEA_URL;
-  document.getElementById("contractLink").href = ETHERSCAN_URL;
+  const openSeaLink = document.getElementById("openSeaLink");
+  const openSeaLink2 = document.getElementById("openSeaLink2");
+  const contractLink = document.getElementById("contractLink");
+  const connectBtn = document.getElementById("connectBtn");
+  const claimBtn = document.getElementById("claimBtn");
 
-  document.getElementById("connectBtn").addEventListener("click", connectWallet);
-  document.getElementById("claimBtn").addEventListener("click", claimRewards);
+  if (openSeaLink) openSeaLink.href = OPENSEA_URL;
+  if (openSeaLink2) openSeaLink2.href = OPENSEA_URL;
+  if (contractLink) contractLink.href = ETHERSCAN_URL;
+
+  if (connectBtn) connectBtn.addEventListener("click", connectWallet);
+  if (claimBtn) claimBtn.addEventListener("click", claimRewards);
+
+  if (window.ethereum) {
+    const accounts = await window.ethereum.request({ method: "eth_accounts" });
+    if (accounts && accounts.length > 0) {
+      currentAccount = accounts[0];
+      if (connectBtn) {
+        connectBtn.textContent = shortAddress(currentAccount);
+      }
+      await loadAllData();
+    }
+
+    window.ethereum.on("accountsChanged", async (accountsChanged) => {
+      currentAccount = accountsChanged[0] || "";
+      currentTokenIds = [];
+      if (connectBtn) {
+        connectBtn.textContent = currentAccount ? shortAddress(currentAccount) : "Connect Wallet";
+      }
+      const tokenBadges = document.getElementById("tokenBadges");
+      const claimableValue = document.getElementById("claimableValue");
+      if (tokenBadges) tokenBadges.innerHTML = "";
+      if (claimableValue) claimableValue.textContent = "0 ETH";
+      if (currentAccount) {
+        await loadAllData();
+      }
+    });
+
+    window.ethereum.on("chainChanged", () => {
+      window.location.reload();
+    });
+  }
+});
 
   if (window.ethereum) {
     const accounts = await window.ethereum.request({ method: "eth_accounts" });
