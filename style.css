@@ -171,3 +171,7 @@ a {
     grid-template-columns: 1fr;
   }
 }
+#liveClaimToast {
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  transform: translateY(0);
+}
