@@ -172,7 +172,7 @@ async function loadRecentClaims(provider) {
       item.className = "small";
       item.style.marginBottom = "8px";
 
-      item.textContent = `${short} claimed ${amount} ETH`;
+      item.innerHTML = `<a href="https://etherscan.io/address/${wallet}" target="_blank">${short}</a> claimed ${amount} ETH`;
 
       list.appendChild(item);
     }
