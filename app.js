@@ -10,6 +10,7 @@ const rewardAbi = [
   "function totalClaimed() view returns (uint256)",
   "function totalRounds() view returns (uint256)",
   "function roundInfo(uint256 roundId) view returns (uint256 amountDeposited, uint256 rewardPerToken, uint256 startTime, uint256 expiryTime, uint256 claimedAmount, uint256 remainingAmount, bool reclaimed, bool expired)"
+"event RewardsClaimed(address indexed user, uint256 amount, uint256[] tokenIds)"
 ];
 
 let currentAccount = "";
@@ -140,7 +141,45 @@ async function loadRewardHistory(rewardContract, totalRoundsValue) {
     }
   }
 }
+async function loadRecentClaims(provider) {
+  try {
+    const list = document.getElementById("recentClaimsList");
+    if (!list) return;
 
+    const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, provider);
+
+    const filter = rewardContract.filters.RewardsClaimed();
+
+    const events = await rewardContract.queryFilter(filter, -50000);
+
+    list.innerHTML = "";
+
+    if (!events.length) {
+      list.innerHTML = '<div class="small">No claims yet.</div>';
+      return;
+    }
+
+    const recent = events.slice(-5).reverse();
+
+    for (const e of recent) {
+      const wallet = e.args.user;
+      const amount = formatEth(e.args.amount);
+
+      const short =
+        wallet.slice(0, 6) + "..." + wallet.slice(-4);
+
+      const item = document.createElement("div");
+      item.className = "small";
+      item.style.marginBottom = "8px";
+
+      item.textContent = `${short} claimed ${amount} ETH`;
+
+      list.appendChild(item);
+    }
+  } catch (err) {
+    console.error("Claims load failed", err);
+  }
+}
 async function connectWallet() {
   try {
     if (!window.ethereum) {
@@ -183,6 +222,7 @@ async function loadAllData() {
     setClaimButtonState(false, "Loading...");
 
     const provider = new ethers.BrowserProvider(window.ethereum);
+    await loadRecentClaims(provider);
     const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, provider);
 
     const [deposited, claimed, rounds, holders] = await Promise.all([
