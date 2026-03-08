@@ -9,8 +9,8 @@ const rewardAbi = [
   "function totalDeposited() view returns (uint256)",
   "function totalClaimed() view returns (uint256)",
   "function totalRounds() view returns (uint256)",
-  "function roundInfo(uint256 roundId) view returns (uint256 amountDeposited, uint256 rewardPerToken, uint256 startTime, uint256 expiryTime, uint256 claimedAmount, uint256 remainingAmount, bool reclaimed, bool expired)"
-"event RewardsClaimed(address indexed user, uint256 amount, uint256[] tokenIds)"
+  "function roundInfo(uint256 roundId) view returns (uint256 amountDeposited, uint256 rewardPerToken, uint256 startTime, uint256 expiryTime, uint256 claimedAmount, uint256 remainingAmount, bool reclaimed, bool expired)",
+  "event RewardsClaimed(address indexed user, uint256 amount, uint256[] tokenIds)"
 ];
 
 let currentAccount = "";
