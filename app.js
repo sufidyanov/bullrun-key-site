@@ -48,6 +48,26 @@ function setClaimButtonState(enabled, text = "Claim Rewards") {
   btn.disabled = !enabled;
   btn.textContent = text;
 }
+function showLiveClaimToast(text) {
+  const toast = document.getElementById("liveClaimToast");
+  const toastText = document.getElementById("liveClaimToastText");
+
+  if (!toast || !toastText) return;
+
+  toastText.textContent = text;
+  toast.style.display = "block";
+  toast.style.opacity = "1";
+  toast.style.transform = "translateY(0)";
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(-6px)";
+  }, 3200);
+
+  setTimeout(() => {
+    toast.style.display = "none";
+  }, 3600);
+}
 
 function formatDateFromTimestamp(timestamp) {
   const ms = Number(timestamp) * 1000;
@@ -161,21 +181,26 @@ async function loadRecentClaims(provider) {
 
     const recent = events.slice(-5).reverse();
 
-    for (const e of recent) {
-      const wallet = e.args.user;
-      const amount = formatEth(e.args.amount);
+    for (let index = 0; index < recent.length; index++) {
+  const e = recent[index];
+  const wallet = e.args.user;
+  const amount = formatEth(e.args.amount);
 
-      const short =
-        wallet.slice(0, 6) + "..." + wallet.slice(-4);
+  const short = wallet.slice(0, 6) + "..." + wallet.slice(-4);
 
-      const item = document.createElement("div");
-      item.className = "small";
-      item.style.marginBottom = "8px";
+  const item = document.createElement("div");
+  item.className = "small";
+  item.style.marginBottom = "8px";
+  item.innerHTML = `<a href="https://etherscan.io/address/${wallet}" target="_blank">${short}</a> claimed ${amount} ETH`;
 
-      item.innerHTML = `<a href="https://etherscan.io/address/${wallet}" target="_blank">${short}</a> claimed ${amount} ETH`;
+  list.appendChild(item);
 
-      list.appendChild(item);
-    }
+  if (index === 0) {
+    setTimeout(() => {
+      showLiveClaimToast(`🔥 ${short} claimed ${amount} ETH`);
+    }, 800);
+  }
+}
   } catch (err) {
     console.error("Claims load failed", err);
   }
