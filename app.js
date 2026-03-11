@@ -242,9 +242,8 @@ async function loadRecentClaims(provider) {
       const short = wallet.slice(0, 6) + "..." + wallet.slice(-4);
 
       const item = document.createElement("div");
-      item.className = "small";
-      item.style.marginBottom = "8px";
-      item.innerHTML = `<a href="https://etherscan.io/address/${wallet}" target="_blank">${short}</a> claimed ${amount} ETH`;
+     item.className = "recent-claim-item";
+item.innerHTML = `<a href="https://etherscan.io/address/${wallet}" target="_blank">${short}</a> <span class="recent-claim-meta">claimed ${amount} ETH</span>`;
 
       list.appendChild(item);
 
