@@ -90,46 +90,49 @@ View verified contract on Etherscan →
         <a class="button-link" id="openSeaLink2" href="https://opensea.io/collection/bullrunkey" target="_blank">View on OpenSea</a>
       </div>
     </section>
+<div class="grid">
+  <div class="card">
+    <h2>BullRun Treasury</h2>
+    <p>
+      The public treasury for the next reward round. Its ETH balance is visible on-chain
+      and will be used to fund the upcoming BullRun distribution phase.
+    </p>
 
-    <div class="grid">
-      <div class="card">
-        <h2>Who are the BullRun Kids?</h2>
-        <ul>
-          <li>entered the market too late</li>
-          <li>bought the top</li>
-          <li>survived the bear market</li>
-          <li>learned the game</li>
-          <li>came back smarter</li>
-        </ul>
-        <p>They were early enough to fail, but persistent enough to stay.</p>
-        <p><strong>Now they are building the next cycle.</strong></p>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Treasury Balance</div>
+        <div class="stat-value" id="treasuryBalance">0 ETH</div>
       </div>
 
-      <div class="card">
-        <h2>BullRun Key</h2>
-        <p>BullRun Key is a membership NFT for the BullRun Kids community.</p>
-        <div class="stats">
-          <div class="stat">
-            <div class="stat-label">Supply</div>
-            <div class="stat-value">333</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Network</div>
-            <div class="stat-value">Ethereum</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Standard</div>
-            <div class="stat-value">ERC-721</div>
-          </div>
-        </div>
-        <p>
-          Holders may receive access to community perks, periodic on-chain reward
-          distributions, future ecosystem utilities, and early access to future
-          community initiatives.
-        </p>
+      <div class="stat">
+        <div class="stat-label">Round 1 Target</div>
+        <div class="stat-value" id="treasuryTarget">1 ETH</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">Treasury Wallet</div>
+        <div class="stat-value" id="treasuryAddress">0x9425...486d</div>
       </div>
     </div>
 
+    <div class="progress-wrap">
+      <div class="progress-bar">
+        <div class="progress-fill" id="treasuryProgressFill" style="width: 0%;"></div>
+      </div>
+      <div class="small" id="treasuryProgressText" style="margin-top:10px">0 / 1 ETH</div>
+    </div>
+
+    <div class="buttons">
+      <a
+        class="button-link"
+        href="https://etherscan.io/address/0x942587ffad5d0bc3e8ed72817ff27ff358e5486d"
+        target="_blank"
+      >
+        View Treasury on Etherscan
+      </a>
+    </div>
+  </div>
+  
     <div class="grid">
       <div class="card">
   <h2>Claim Rewards</h2>
