@@ -224,8 +224,15 @@ async function loadRecentClaims(provider) {
     if (!list) return;
 
     const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, provider);
-    const filter = rewardContract.filters.RewardsClaimed();
-    const events = await rewardContract.queryFilter(filter, -50000);
+const filter = rewardContract.filters.RewardsClaimed();
+
+let events = await rewardContract.queryFilter(filter, -50000);
+
+// сортируем от новых к старым
+events = events.sort((a, b) => b.blockNumber - a.blockNumber);
+
+// берём только последние 5
+events = events.slice(0, 5);
 
     list.innerHTML = "";
 
