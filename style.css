@@ -302,3 +302,20 @@ font-weight:600;
   margin-top: 12px;
   color: #9f9f9f;
 }
+.faq-item {
+  margin-bottom: 22px;
+}
+
+.faq-question {
+  color: #d7d7d7;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.faq-answer {
+  color: #b8b8b8;
+  line-height: 1.7;
+  font-size: 15px;
+}
