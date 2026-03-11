@@ -199,16 +199,16 @@ async function loadRewardHistory(rewardContract, totalRoundsValue) {
       const status = round.expired ? "Expired" : "Active";
 
       const item = document.createElement("div");
-      item.className = "stat";
-      item.style.marginBottom = "12px";
+      item.className = "history-round-card";
+item.style.marginBottom = "12px";
 
-      item.innerHTML = `
-        <div class="stat-label">Round #${i + 1}</div>
-        <div class="stat-value">${amountDeposited}</div>
-        <div class="small" style="margin-top: 8px;">Started: ${startDate}</div>
-        <div class="small">Status: ${status}</div>
-        <div class="small">Claim window: 365 days</div>
-      `;
+item.innerHTML = `
+  <div class="history-round-title">Round #${i + 1}</div>
+  <div class="history-round-amount">${amountDeposited}</div>
+  <div class="history-round-meta">Started: ${startDate}</div>
+  <div class="history-round-meta">Status: ${status}</div>
+  <div class="history-round-meta">Claim window: 365 days</div>
+`;
 
       list.appendChild(item);
     } catch (e) {
