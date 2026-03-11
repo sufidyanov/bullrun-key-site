@@ -337,3 +337,29 @@ font-weight:600;
 .recent-claim-meta {
   color: #9c9c9c;
 }
+.history-round-card {
+  padding: 18px 20px;
+  border: 1px solid #232323;
+  border-radius: 18px;
+  background: #0a0a0a;
+}
+
+.history-round-title {
+  color: #9c9c9c;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.history-round-amount {
+  font-size: 30px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 12px;
+}
+
+.history-round-meta {
+  color: #a6a6a6;
+  font-size: 14px;
+  line-height: 1.6;
+}
