@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta property="og:title" content="BullRun Key">
-<meta property="og:description" content="Membership key for the BullRun Kids community. Claim on-chain ETH rewards.">
-<meta property="og:image" content="https://bullrunkey.xyz/preview.png">
-<meta property="og:url" content="https://bullrunkey.xyz">
+  <meta property="og:title" content="BullRun Key">
+  <meta property="og:description" content="Membership key for the BullRun Kids community. Claim on-chain ETH rewards.">
+  <meta property="og:image" content="https://bullrunkey.xyz/preview.png">
+  <meta property="og:url" content="https://bullrunkey.xyz">
 
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="BullRun Key">
-<meta name="twitter:description" content="Membership key for the BullRun Kids community. Claim on-chain ETH rewards.">
-<meta name="twitter:image" content="https://bullrunkey.xyz/preview.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="BullRun Key">
+  <meta name="twitter:description" content="Membership key for the BullRun Kids community. Claim on-chain ETH rewards.">
+  <meta name="twitter:image" content="https://bullrunkey.xyz/preview.png">
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BullRun Key</title>
@@ -17,67 +18,67 @@
 </head>
 <body>
   <div id="liveClaimToast" style="
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #111;
-  color: white;
-  border: 1px solid #2a2a2a;
-  border-radius: 14px;
-  padding: 14px 18px;
-  z-index: 9999;
-  display: none;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-  max-width: 340px;
-  font-size: 14px;
-">
-  <span id="liveClaimToastText"></span>
-</div>
-<div class="container">
-
-<section class="hero">
-
-<h1>BullRun Key</h1>
-
-<div class="subtitle">
-Membership key for the BullRun Kids community.
-</div>
-
-<p class="small" style="margin-top:20px">
-On-chain community reward statistics
-</p>
-<a
-href="https://etherscan.io/address/0xb522609cf7f2e8af1d55af1b685cc9f6a159bc4d"
-target="_blank"
-class="small"
-style="display:inline-block;margin-top:10px"
->
-View verified contract on Etherscan →
-</a>
-
-<div class="stats" style="margin-top:30px">
-
-  <div class="stat">
-    <div class="stat-label">Total Deposited</div>
-    <div class="stat-value" id="heroDeposited">0 ETH</div>
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #111;
+    color: white;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 14px 18px;
+    z-index: 9999;
+    display: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    max-width: 340px;
+    font-size: 14px;
+  ">
+    <span id="liveClaimToastText"></span>
   </div>
 
-  <div class="stat">
-    <div class="stat-label">Total Claimed</div>
-    <div class="stat-value" id="heroClaimed">0 ETH</div>
-  </div>
+  <div class="container">
 
-  <div class="stat">
-    <div class="stat-label">Reward Rounds</div>
-    <div class="stat-value" id="heroRounds">0</div>
-  </div>
+    <section class="hero">
+      <h1>BullRun Key</h1>
 
-  <div class="stat">
-    <div class="stat-label">Holders</div>
-    <div class="stat-value" id="heroHolders">0</div>
-  </div>
+      <div class="subtitle">
+        Membership key for the BullRun Kids community.
+      </div>
 
-</div>
+      <p class="small" style="margin-top:20px">
+        On-chain community reward statistics
+      </p>
+
+      <a
+        href="https://etherscan.io/address/0xb522609cf7f2e8af1d55af1b685cc9f6a159bc4d"
+        target="_blank"
+        class="small"
+        style="display:inline-block;margin-top:10px"
+      >
+        View verified contract on Etherscan →
+      </a>
+
+      <div class="stats" style="margin-top:30px">
+        <div class="stat">
+          <div class="stat-label">Total Deposited</div>
+          <div class="stat-value" id="heroDeposited">0 ETH</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-label">Total Claimed</div>
+          <div class="stat-value" id="heroClaimed">0 ETH</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-label">Reward Rounds</div>
+          <div class="stat-value" id="heroRounds">0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-label">Holders</div>
+          <div class="stat-value" id="heroHolders">0</div>
+        </div>
+      </div>
+
       <p class="lead">
         333 NFTs representing the generation that entered the market at the top,
         survived the bear market, learned the game, and came back stronger.
@@ -87,126 +88,131 @@ View verified contract on Etherscan →
 
       <div class="buttons">
         <button id="connectBtn">Connect Wallet</button>
-        <a class="button-link" id="openSeaLink2" href="https://opensea.io/collection/bullrunkey" target="_blank">View on OpenSea</a>
+        <a class="button-link" href="https://opensea.io/collection/bullrunkey" target="_blank">View on OpenSea</a>
       </div>
     </section>
-<div class="grid">
-  <div class="card">
-    <h2>BullRun Treasury</h2>
-    <p>
-      The public treasury for the next reward round. Its ETH balance is visible on-chain
-      and will be used to fund the upcoming BullRun distribution phase.
-    </p>
 
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-label">Treasury Balance</div>
-        <div class="stat-value" id="treasuryBalance">0 ETH</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">Round 1 Target</div>
-        <div class="stat-value" id="treasuryTarget">1 ETH</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">Treasury Wallet</div>
-        <div class="stat-value" id="treasuryAddress">0x9425...486d</div>
-      </div>
-    </div>
-
-    <div class="progress-wrap">
-      <div class="progress-bar">
-        <div class="progress-fill" id="treasuryProgressFill" style="width: 0%;"></div>
-      </div>
-      <div class="small" id="treasuryProgressText" style="margin-top:10px">0 / 1 ETH</div>
-    </div>
-
-    <div class="buttons">
-      <a
-        class="button-link"
-        href="https://etherscan.io/address/0x942587ffad5d0bc3e8ed72817ff27ff358e5486d"
-        target="_blank"
-      >
-        View Treasury on Etherscan
-      </a>
-    </div>
-  </div>
-  
     <div class="grid">
       <div class="card">
-  <h2>Claim Rewards</h2>
-  <p>
-    Connect your wallet to view your BullRun Key NFTs and check whether rewards
-    are currently available to claim.
-  </p>
+        <h2>BullRun Treasury</h2>
+        <p>
+          The public treasury for the next reward round. Its ETH balance is visible on-chain
+          and will be used to fund the upcoming BullRun distribution phase.
+        </p>
 
-  <div class="stats">
-    <div class="stat">
-      <div class="stat-label">Wallet Status</div>
-      <div class="stat-value" id="walletStatus">Not connected</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">NFTs Found</div>
-      <div class="stat-value" id="nftCount">0</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Available Rewards</div>
-      <div class="stat-value" id="claimableValue">0 ETH</div>
-    </div>
-  </div>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-label">Treasury Balance</div>
+            <div class="stat-value" id="treasuryBalance">0 ETH</div>
+          </div>
 
-  <div class="small" style="margin-top: 18px;">Your NFTs</div>
-  <div class="badges" id="tokenBadges"></div>
+          <div class="stat">
+            <div class="stat-label">Round 1 Target</div>
+            <div class="stat-value" id="treasuryTarget">1 ETH</div>
+          </div>
 
-  <div class="buttons">
-    <button id="claimBtn" disabled>Claim Rewards</button>
-  </div>
+          <div class="stat">
+            <div class="stat-label">Treasury Wallet</div>
+            <div class="stat-value" id="treasuryAddress">0x9425...486d</div>
+          </div>
+        </div>
 
-  <div id="message"></div>
-</div>
-<div class="card">
-  <h2>Recent Claims</h2>
+        <div class="progress-wrap">
+          <div class="progress-bar">
+            <div class="progress-fill" id="treasuryProgressFill" style="width: 0%;"></div>
+          </div>
+          <div class="small" id="treasuryProgressText" style="margin-top:10px">0 / 1 ETH</div>
+        </div>
 
-  <div id="recentClaimsList" class="badges" style="display:block;margin-top:20px">
-    <div class="small">Loading recent claims...</div>
-  </div>
-</div>
+        <div class="buttons">
+          <a
+            class="button-link"
+            href="https://etherscan.io/address/0x942587ffad5d0bc3e8ed72817ff27ff358e5486d"
+            target="_blank"
+          >
+            View Treasury on Etherscan
+          </a>
+        </div>
+      </div>
+
       <div class="card">
-  <h2>Next Reward Round</h2>
-  <p>
-    The next ETH reward round is planned after the current test phase.
-  </p>
+        <h2>Next Reward Round</h2>
+        <p>
+          The next ETH reward round will be funded publicly through the BullRun Treasury.
+          As the treasury grows, the progress toward the next round remains visible to all holders.
+        </p>
 
-  <div class="stats" style="margin-top:20px">
-    <div class="stat">
-      <div class="stat-label">Status</div>
-      <div class="stat-value" id="nextRoundStatus">Coming soon</div>
+        <div class="stats" style="margin-top:20px">
+          <div class="stat">
+            <div class="stat-label">Status</div>
+            <div class="stat-value" id="nextRoundStatus">Treasury Building</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-label">Target</div>
+            <div class="stat-value" id="nextRoundTiming">1 ETH</div>
+          </div>
+        </div>
+
+        <p class="small" style="margin-top:18px">
+          Once the treasury target is reached, the next main reward round can be announced.
+        </p>
+      </div>
     </div>
 
-    <div class="stat">
-      <div class="stat-label">Timing</div>
-      <div class="stat-value" id="nextRoundTiming">TBA</div>
-    </div>
-  </div>
+    <div class="grid">
+      <div class="card">
+        <h2>Claim Rewards</h2>
+        <p>
+          Connect your wallet to view your BullRun Key NFTs and check whether rewards
+          are currently available to claim.
+        </p>
 
-  <p class="small" style="margin-top:18px">
-    The next round may be funded after community testing is completed.
-  </p>
-</div>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-label">Wallet Status</div>
+            <div class="stat-value" id="walletStatus">Not connected</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">NFTs Found</div>
+            <div class="stat-value" id="nftCount">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Available Rewards</div>
+            <div class="stat-value" id="claimableValue">0 ETH</div>
+          </div>
+        </div>
+
+        <div class="small" style="margin-top: 18px;">Your NFTs</div>
+        <div class="badges" id="tokenBadges"></div>
+
+        <div class="buttons">
+          <button id="claimBtn" disabled>Claim Rewards</button>
+        </div>
+
+        <div id="message"></div>
+      </div>
+
+      <div class="card">
+        <h2>Recent Claims</h2>
+        <div id="recentClaimsList" class="badges" style="display:block;margin-top:20px">
+          <div class="small">Loading recent claims...</div>
+        </div>
+      </div>
+
       <div class="card">
         <h2>Rewards</h2>
         <p>
           From time to time, the project may allocate ETH to the community rewards contract.
         </p>
         <p>
-          Each reward round distributes ETH equally across all 333 BullRun Key NFTs.
-          Holders can claim available rewards directly from the smart contract.
+          Reward logic may evolve over time as the ecosystem grows, including future updates
+          related to rarity, utility, and holder benefits.
         </p>
         <ul>
           <li>rewards are distributed in ETH</li>
-          <li>each NFT receives an equal share</li>
           <li>claim period lasts 365 days</li>
+          <li>reward mechanics may evolve in future versions</li>
           <li>unclaimed rewards may later be recycled into future community reward rounds</li>
         </ul>
       </div>
@@ -220,113 +226,107 @@ View verified contract on Etherscan →
         </p>
         <p>Supply is permanently limited to 333 NFTs.</p>
         <div class="buttons">
-          <a class="button-link" id="openSeaLink2" href="https://opensea.io/collection/bullrunkey" target="_blank">View on OpenSea</a>
+          <a class="button-link" href="https://opensea.io/collection/bullrunkey" target="_blank">View on OpenSea</a>
         </div>
       </div>
 
       <div class="card">
-  <h2>Transparency</h2>
-  <p>
-    Community reward activity is recorded on-chain and can be independently verified through the smart contract.
-  </p>
+        <h2>Transparency</h2>
+        <p>
+          Community reward activity is recorded on-chain and can be independently verified through the smart contract.
+        </p>
 
-  <div class="stats">
-    <div class="stat">
-      <div class="stat-label">Total Deposited</div>
-      <div class="stat-value" id="totalDeposited">0 ETH</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Total Claimed</div>
-      <div class="stat-value" id="totalClaimed">0 ETH</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Reward Rounds</div>
-      <div class="stat-value" id="totalRounds">0</div>
-    </div>
-  </div>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-label">Total Deposited</div>
+            <div class="stat-value" id="totalDeposited">0 ETH</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Total Claimed</div>
+            <div class="stat-value" id="totalClaimed">0 ETH</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Reward Rounds</div>
+            <div class="stat-value" id="totalRounds">0</div>
+          </div>
+        </div>
 
-  <p class="small" style="margin-top: 18px;">
-    All values above are read directly from the rewards smart contract on Ethereum.
-  </p>
+        <p class="small" style="margin-top: 18px;">
+          All values above are read directly from the rewards smart contract on Ethereum.
+        </p>
 
-  <div class="buttons">
-    <div class="buttons">
+        <div class="buttons">
+          <a
+            class="button"
+            href="https://etherscan.io/address/0xb522609cf7f2e8af1d55af1b685cc9f6a159bc4d"
+            target="_blank"
+          >
+            View Smart Contract
+          </a>
 
-<a
-class="button"
-href="https://etherscan.io/address/0xb522609cf7f2e8af1d55af1b685cc9f6a159bc4d"
-target="_blank"
->
-View Smart Contract
-</a>
+          <a
+            class="button"
+            href="https://opensea.io/collection/bullrunkey"
+            target="_blank"
+          >
+            View Collection
+          </a>
+        </div>
+      </div>
 
-<a
-class="button"
-href="https://opensea.io/collection/bullrunkey"
-target="_blank"
->
-View Collection
-</a>
-
-</div>
-  </div>
-</div>
       <div class="card">
-  <h2>Reward History</h2>
-  <p>
-    A record of community reward rounds funded through the smart contract.
-  </p>
+        <h2>Reward History</h2>
+        <p>
+          A record of community reward rounds funded through the smart contract.
+        </p>
 
-  <div id="rewardHistoryList" class="badges" style="display: block; margin-top: 20px;">
-    <div class="small">No reward rounds loaded yet.</div>
-  </div>
-</div>
+        <div id="rewardHistoryList" class="badges" style="display: block; margin-top: 20px;">
+          <div class="small">No reward rounds loaded yet.</div>
+        </div>
       </div>
     </div>
-<div class="card">
 
-<h2>FAQ</h2>
+    <div class="card">
+      <h2>FAQ</h2>
 
-<div style="margin-top:20px">
+      <div style="margin-top:20px">
+        <div style="margin-bottom:18px">
+          <div class="stat-label">How do rewards work?</div>
+          <div class="small">
+            The creator periodically deposits ETH into the reward contract. BullRun Key holders can claim available rewards according to the active reward logic.
+          </div>
+        </div>
 
-<div style="margin-bottom:18px">
-<div class="stat-label">How do rewards work?</div>
-<div class="small">
-The creator periodically deposits ETH into the reward contract. Each BullRun Key NFT receives an equal share that can be claimed by the holder.
-</div>
-</div>
+        <div style="margin-bottom:18px">
+          <div class="stat-label">How often are reward rounds funded?</div>
+          <div class="small">
+            Reward rounds may be funded approximately every 1–3 months depending on market conditions and project activity.
+          </div>
+        </div>
 
-<div style="margin-bottom:18px">
-<div class="stat-label">How often are reward rounds funded?</div>
-<div class="small">
-Reward rounds may be funded approximately every 1–3 months depending on market conditions and project activity.
-</div>
-</div>
+        <div style="margin-bottom:18px">
+          <div class="stat-label">How long can rewards be claimed?</div>
+          <div class="small">
+            Each reward round has a claim window of 365 days.
+          </div>
+        </div>
 
-<div style="margin-bottom:18px">
-<div class="stat-label">How long can rewards be claimed?</div>
-<div class="small">
-Each reward round has a claim window of 365 days.
-</div>
-</div>
+        <div style="margin-bottom:18px">
+          <div class="stat-label">What happens to unclaimed rewards?</div>
+          <div class="small">
+            After the claim period ends, unclaimed ETH may be reclaimed by the project and redistributed in future reward rounds.
+          </div>
+        </div>
 
-<div style="margin-bottom:18px">
-<div class="stat-label">What happens to unclaimed rewards?</div>
-<div class="small">
-After the claim period ends, unclaimed ETH may be reclaimed by the project and redistributed in future reward rounds.
-</div>
-</div>
+        <div style="margin-bottom:18px">
+          <div class="stat-label">Where can I buy BullRun Key?</div>
+          <div class="small">
+            BullRun Keys are available on the secondary market on OpenSea.
+          </div>
+        </div>
+      </div>
+    </div>
 
-<div style="margin-bottom:18px">
-<div class="stat-label">Where can I buy BullRun Key?</div>
-<div class="small">
-BullRun Keys are available on the secondary market on OpenSea.
-</div>
-</div>
-
-</div>
-
-</div>
     <div class="card footer">
       <h2>Disclaimer</h2>
       <p>
@@ -337,60 +337,24 @@ BullRun Keys are available on the secondary market on OpenSea.
         BullRun Key should not be understood as an expectation of profit or financial return.
       </p>
     </div>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
   <script src="./app.js"></script>
+
   <footer style="margin-top:60px;padding:30px 0;border-top:1px solid #222;text-align:center">
+    <div class="small" style="margin-bottom:10px">
+      © BullRun Key
+    </div>
 
-<div class="small" style="margin-bottom:10px">
-© BullRun Key
-</div>
-
-<div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap">
-
-<a
-href="https://t.me/altmarate"
-target="_blank"
-class="small"
->
-Telegram
-</a>
-
-<a
-href="https://x.com/sufidyanov"
-target="_blank"
-class="small"
->
-X / Twitter
-</a>
-
-<a
-href="https://youtube.com/@sufidyanov"
-target="_blank"
-class="small"
->
-YouTube
-</a>
-
-<a
-href="https://opensea.io/collection/bullrunkey"
-target="_blank"
-class="small"
->
-OpenSea
-</a>
-
-<a
-href="https://etherscan.io/address/0xb522609cf7f2e8af1d55af1b685cc9f6a159bc4d"
-target="_blank"
-class="small"
->
-Smart Contract
-</a>
-
-</div>
-
-</footer>
+    <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap">
+      <a href="https://t.me/altmarate" target="_blank" class="small">Telegram</a>
+      <a href="https://x.com/sufidyanov" target="_blank" class="small">X / Twitter</a>
+      <a href="https://youtube.com/@sufidyanov" target="_blank" class="small">YouTube</a>
+      <a href="https://opensea.io/collection/bullrunkey" target="_blank" class="small">OpenSea</a>
+      <a href="https://etherscan.io/address/0xb522609cf7f2e8af1d55af1b685cc9f6a159bc4d" target="_blank" class="small">Smart Contract</a>
+    </div>
+  </footer>
 </body>
 </html>
