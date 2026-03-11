@@ -1,6 +1,8 @@
 const ALCHEMY_API_KEY = "GI1mqa4OtQHFVj00nNs9o";
 const REWARD_CONTRACT = "0xb522609cF7f2e8aF1d55Af1B685Cc9f6A159BC4D";
 const NFT_CONTRACT = "0x367ac60FB4B2bb8851a46ab7A7FD13654eF70419";
+const TREASURY_WALLET = "0x942587ffad5d0bc3e8ed72817ff27ff358e5486d";
+const TREASURY_TARGET_ETH = 1;
 const OPENSEA_URL = "https://opensea.io/collection/bullrunkey";
 
 const rewardAbi = [
@@ -48,6 +50,7 @@ function setClaimButtonState(enabled, text = "Claim Rewards") {
   btn.disabled = !enabled;
   btn.textContent = text;
 }
+
 function showLiveClaimToast(text) {
   const toast = document.getElementById("liveClaimToast");
   const toastText = document.getElementById("liveClaimToastText");
@@ -72,6 +75,12 @@ function showLiveClaimToast(text) {
 function formatDateFromTimestamp(timestamp) {
   const ms = Number(timestamp) * 1000;
   return new Date(ms).toLocaleDateString();
+}
+
+function dedupeTokenIds(tokenIds) {
+  return [...new Set(tokenIds)]
+    .filter((id) => Number.isInteger(id) && id >= 1 && id <= 333)
+    .sort((a, b) => a - b);
 }
 
 async function fetchTokenIdsFromAlchemy(ownerAddress) {
@@ -99,10 +108,9 @@ async function fetchTokenIdsFromAlchemy(ownerAddress) {
       const num = Number(raw);
       return Number.isInteger(num) ? num : null;
     })
-    .filter((id) => Number.isInteger(id) && id >= 1 && id <= 333)
-    .sort((a, b) => a - b);
+    .filter((id) => Number.isInteger(id) && id >= 1 && id <= 333);
 
-  return [...new Set(tokenIds)];
+  return dedupeTokenIds(tokenIds);
 }
 
 async function fetchHolderCount() {
@@ -118,6 +126,53 @@ async function fetchHolderCount() {
   const data = await response.json();
   const owners = Array.isArray(data.owners) ? data.owners : [];
   return owners.length;
+}
+
+async function loadTreasuryData() {
+  try {
+    const provider = new ethers.JsonRpcProvider(
+      `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`
+    );
+
+    const balanceWei = await provider.getBalance(TREASURY_WALLET);
+    const balanceEth = Number(ethers.formatEther(balanceWei));
+    const progress = Math.min((balanceEth / TREASURY_TARGET_ETH) * 100, 100);
+
+    const treasuryBalanceEl = document.getElementById("treasuryBalance");
+    const treasuryAddressEl = document.getElementById("treasuryAddress");
+    const treasuryTargetEl = document.getElementById("treasuryTarget");
+    const treasuryProgressTextEl = document.getElementById("treasuryProgressText");
+    const treasuryProgressFillEl = document.getElementById("treasuryProgressFill");
+
+    if (treasuryBalanceEl) {
+      treasuryBalanceEl.textContent =
+        balanceEth.toLocaleString(undefined, { maximumFractionDigits: 4 }) + " ETH";
+    }
+
+    if (treasuryAddressEl) {
+      treasuryAddressEl.textContent = shortAddress(TREASURY_WALLET);
+    }
+
+    if (treasuryTargetEl) {
+      treasuryTargetEl.textContent = TREASURY_TARGET_ETH + " ETH";
+    }
+
+    if (treasuryProgressTextEl) {
+      treasuryProgressTextEl.textContent =
+        balanceEth.toLocaleString(undefined, { maximumFractionDigits: 4 }) +
+        " / " +
+        TREASURY_TARGET_ETH +
+        " ETH";
+    }
+
+    if (treasuryProgressFillEl) {
+      treasuryProgressFillEl.style.width = `${progress}%`;
+    }
+  } catch (err) {
+    console.error("Treasury load failed", err);
+    const treasuryBalanceEl = document.getElementById("treasuryBalance");
+    if (treasuryBalanceEl) treasuryBalanceEl.textContent = "Unavailable";
+  }
 }
 
 async function loadRewardHistory(rewardContract, totalRoundsValue) {
@@ -161,15 +216,14 @@ async function loadRewardHistory(rewardContract, totalRoundsValue) {
     }
   }
 }
+
 async function loadRecentClaims(provider) {
   try {
     const list = document.getElementById("recentClaimsList");
     if (!list) return;
 
     const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, provider);
-
     const filter = rewardContract.filters.RewardsClaimed();
-
     const events = await rewardContract.queryFilter(filter, -50000);
 
     list.innerHTML = "";
@@ -182,29 +236,29 @@ async function loadRecentClaims(provider) {
     const recent = events.slice(-5).reverse();
 
     for (let index = 0; index < recent.length; index++) {
-  const e = recent[index];
-  const wallet = e.args.user;
-  const amount = formatEth(e.args.amount);
+      const e = recent[index];
+      const wallet = e.args.user;
+      const amount = formatEth(e.args.amount);
+      const short = wallet.slice(0, 6) + "..." + wallet.slice(-4);
 
-  const short = wallet.slice(0, 6) + "..." + wallet.slice(-4);
+      const item = document.createElement("div");
+      item.className = "small";
+      item.style.marginBottom = "8px";
+      item.innerHTML = `<a href="https://etherscan.io/address/${wallet}" target="_blank">${short}</a> claimed ${amount} ETH`;
 
-  const item = document.createElement("div");
-  item.className = "small";
-  item.style.marginBottom = "8px";
-  item.innerHTML = `<a href="https://etherscan.io/address/${wallet}" target="_blank">${short}</a> claimed ${amount} ETH`;
+      list.appendChild(item);
 
-  list.appendChild(item);
-
-  if (index === 0) {
-    setTimeout(() => {
-      showLiveClaimToast(`🔥 ${short} claimed ${amount} ETH`);
-    }, 800);
-  }
-}
+      if (index === 0) {
+        setTimeout(() => {
+          showLiveClaimToast(`🔥 ${short} claimed ${amount} ETH`);
+        }, 800);
+      }
+    }
   } catch (err) {
     console.error("Claims load failed", err);
   }
 }
+
 async function connectWallet() {
   try {
     if (!window.ethereum) {
@@ -240,6 +294,8 @@ async function connectWallet() {
 
 async function loadAllData() {
   try {
+    await loadTreasuryData();
+
     if (!currentAccount) return;
 
     setMessage("Loading rewards data...");
@@ -281,15 +337,15 @@ async function loadAllData() {
     setWalletStatus("Scanning NFTs");
 
     const found = await fetchTokenIdsFromAlchemy(currentAccount);
-    currentTokenIds = found;
-    setNftCount(found.length);
+    currentTokenIds = dedupeTokenIds(found);
+    setNftCount(currentTokenIds.length);
 
     const badges = document.getElementById("tokenBadges");
     const claimableValue = document.getElementById("claimableValue");
 
     if (badges) badges.innerHTML = "";
 
-    if (found.length === 0) {
+    if (currentTokenIds.length === 0) {
       if (badges) {
         badges.innerHTML = '<div class="small">No BullRun Key NFTs found on this wallet.</div>';
       }
@@ -303,7 +359,7 @@ async function loadAllData() {
     }
 
     if (badges) {
-      found.forEach((id) => {
+      currentTokenIds.forEach((id) => {
         const span = document.createElement("span");
         span.className = "badge";
         span.textContent = "#" + id;
@@ -314,7 +370,7 @@ async function loadAllData() {
     setMessage("Calculating rewards...");
     setWalletStatus("Calculating");
 
-    const amount = await rewardContract.claimable(found);
+    const amount = await rewardContract.claimable(currentTokenIds);
 
     if (claimableValue) {
       claimableValue.textContent = formatEth(amount) + " ETH";
@@ -348,6 +404,8 @@ async function claimRewards() {
       return;
     }
 
+    currentTokenIds = dedupeTokenIds(currentTokenIds);
+
     setClaimButtonState(false, "Claiming...");
     setWalletStatus("Claiming");
     setMessage("Sending claim transaction... Confirm it in your wallet.");
@@ -380,6 +438,8 @@ window.addEventListener("load", async function () {
   setWalletStatus("Not connected");
   setNftCount(0);
   setClaimButtonState(false, "Claim Rewards");
+
+  await loadTreasuryData();
 
   if (window.ethereum) {
     try {
