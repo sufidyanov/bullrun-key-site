@@ -18,6 +18,7 @@ const rewardAbi = [
 
 let currentAccount = "";
 let currentTokenIds = [];
+let lastTreasuryDepositHash = "";
 
 function formatEth(value) {
   const eth = Number(ethers.formatEther(value));
@@ -265,7 +266,55 @@ item.innerHTML = `<a href="https://etherscan.io/address/${wallet}" target="_blan
     console.error("Claims load failed", err);
   }
 }
+async function loadRecentTreasuryDeposits() {
+  try {
+    const url =
+      `https://api.etherscan.io/api?module=account&action=txlist` +
+      `&address=${TREASURY_WALLET}` +
+      `&startblock=0&endblock=99999999&page=1&offset=10&sort=desc` +
+      `&apikey=${ETHERSCAN_API_KEY}`;
 
+    const response = await fetch(url);
+    if (!response.ok) return;
+
+    const data = await response.json();
+    if (!data.result || !Array.isArray(data.result)) return;
+
+    const incomingEthTxs = data.result.filter((tx) => {
+      return (
+        tx.to &&
+        tx.to.toLowerCase() === TREASURY_WALLET.toLowerCase() &&
+        tx.value &&
+        BigInt(tx.value) > 0n
+      );
+    });
+
+    if (!incomingEthTxs.length) return;
+
+    const latest = incomingEthTxs[0];
+
+    if (!lastTreasuryDepositHash) {
+      lastTreasuryDepositHash = latest.hash;
+      return;
+    }
+
+    if (latest.hash !== lastTreasuryDepositHash) {
+      lastTreasuryDepositHash = latest.hash;
+
+      const from = latest.from;
+      const short = from.slice(0, 6) + "..." + from.slice(-4);
+      const amount = Number(ethers.formatEther(latest.value)).toLocaleString(undefined, {
+        maximumFractionDigits: 4
+      });
+
+      showLiveClaimToast(`💰 ${short} deposited ${amount} ETH into BullRun Treasury`);
+
+      await loadTreasuryData();
+    }
+  } catch (err) {
+    console.error("Treasury deposits load failed", err);
+  }
+}
 async function connectWallet() {
   try {
     if (!window.ethereum) {
@@ -447,6 +496,11 @@ window.addEventListener("load", async function () {
   setClaimButtonState(false, "Claim Rewards");
 
   await loadTreasuryData();
+  await loadRecentTreasuryDeposits();
+
+setInterval(async () => {
+  await loadRecentTreasuryDeposits();
+}, 30000);
 
   if (window.ethereum) {
     try {
