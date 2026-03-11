@@ -319,3 +319,21 @@ font-weight:600;
   line-height: 1.7;
   font-size: 15px;
 }
+.recent-claim-item {
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+.recent-claim-item a {
+  color: #f7931a;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.recent-claim-item a:hover {
+  text-decoration: underline;
+}
+
+.recent-claim-meta {
+  color: #9c9c9c;
+}
