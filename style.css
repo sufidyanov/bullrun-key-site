@@ -278,3 +278,23 @@ a {
   transform: scale(1.04);
   transition: all 0.2s ease;
 }
+.lore-section{
+margin:50px 0 40px 0;
+max-width:760px;
+}
+
+.lore-section h2{
+margin-bottom:24px;
+}
+
+.lore-text{
+color:#b8b8b8;
+line-height:1.8;
+margin-bottom:16px;
+font-size:16px;
+}
+
+.lore-text.highlight{
+color:#ffffff;
+font-weight:600;
+}
