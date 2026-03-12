@@ -74,12 +74,20 @@ button,
   border: 1px solid #222;
   border-radius: 22px;
   padding: 28px;
+
+  display:flex;
+  flex-direction:column;
+  height:100%;
 }
 
 .card p,
 .card li {
   color: #c8c8c8;
   line-height: 1.7;
+}
+
+.card p{
+  flex-grow:1;
 }
 
 .small {
