@@ -65,10 +65,11 @@ button,
 .grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:36px;
-  align-items:stretch;
+  gap:32px;
+  align-items:start;
   margin-bottom:32px;
 }
+
 @media (max-width: 900px){
   .grid{
     grid-template-columns:1fr;
@@ -387,5 +388,24 @@ font-weight:600;
 .card h2{
   margin-bottom:12px;
 }
+.cycle-structure-list{
+  line-height:1.85;
+}
 
+.faq-item{
+  margin-bottom:18px;
+}
+
+.faq-question{
+  color:#f3f3f3;
+  font-size:13px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+
+.faq-answer{
+  color:#c8c8c8;
+  line-height:1.7;
+}
 
