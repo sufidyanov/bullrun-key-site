@@ -211,13 +211,14 @@ Not everyone survives the bear market.
 
       <div class="stat">
         <div class="stat-label">Treasury Wallet</div>
-        <div
-          class="stat-value"
-          id="treasuryAddress"
-          title="0x942587ffad5d0bc3e8ed72817ff27ff358e5486d"
-        >
-          0x9425...486d
-        </div>
+      <div
+  class="stat-value wallet-copy"
+  id="treasuryAddress"
+  title="Click to copy: 0x942587ffad5d0bc3e8ed72817ff27ff358e5486d"
+  onclick="copyTreasuryWallet()"
+>
+  0x9425...486d
+</div>
       </div>
     </div>
 
@@ -521,5 +522,15 @@ Not everyone survives the bear market.
       <a href="https://etherscan.io/address/0xb522609cf7f2e8af1d55af1b685cc9f6a159bc4d" target="_blank" class="small">Smart Contract</a>
     </div>
   </footer>
+  <script>
+function copyTreasuryWallet() {
+  const wallet = "0x942587ffad5d0bc3e8ed72817ff27ff358e5486d";
+  navigator.clipboard.writeText(wallet).then(() => {
+    alert("Treasury wallet copied");
+  }).catch(() => {
+    alert("Copy failed. Wallet: " + wallet);
+  });
+}
+</script>
 </body>
 </html>
