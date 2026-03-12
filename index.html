@@ -183,7 +183,7 @@ Not everyone survives the bear market.
 </p>
 
 </section>
-  <div class="grid">
+<div class="grid">
   <div class="card">
     <h2>BullRun Treasury</h2>
     <p>
@@ -237,157 +237,210 @@ Not everyone survives the bear market.
   </div>
 
   <div class="card">
-    <h2>Next Reward Round</h2>
+    <h2>Reveal Unlock</h2>
     <p>
-      The next ETH reward round will be funded publicly through the BullRun Treasury.
-      As the treasury grows, the progress toward the next round remains visible to all holders.
+      The full BullRun Key reveal will unlock when the BullRun Treasury reaches 1 ETH.
+      Until then, every key remains sealed.
     </p>
 
     <div class="stats" style="margin-top:20px">
       <div class="stat">
         <div class="stat-label">Status</div>
-        <div class="stat-value" id="nextRoundStatus">Treasury Building</div>
+        <div class="stat-value">Locked</div>
       </div>
 
       <div class="stat">
-        <div class="stat-label">Target</div>
+        <div class="stat-label">Trigger</div>
+        <div class="stat-value">1 ETH</div>
+      </div>
+    </div>
+
+    <p class="small" style="margin-top:18px">
+      Once the treasury target is reached, all 333 keys will reveal their true type.
+    </p>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h2>Claim Rewards</h2>
+    <p>
+      Connect your wallet to view your BullRun Key NFTs and check whether rewards
+      are currently available to claim.
+    </p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Wallet Status</div>
+        <div class="stat-value" id="walletStatus">Not connected</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">NFTs Found</div>
+        <div class="stat-value" id="nftCount">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Available Rewards</div>
+        <div class="stat-value" id="claimableValue">0 ETH</div>
+      </div>
+    </div>
+
+    <div class="small" style="margin-top: 18px;">Your NFTs</div>
+    <div class="badges" id="tokenBadges"></div>
+
+    <div class="buttons">
+      <button id="claimBtn" disabled>Claim Rewards</button>
+    </div>
+
+    <div id="message"></div>
+  </div>
+
+  <div class="card">
+    <h2>Recent Claims</h2>
+    <div id="recentClaimsList" class="badges" style="display:block;margin-top:20px">
+      <div class="small">Loading recent claims...</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h2>Reward Round #1</h2>
+    <p>
+      The first main reward round will be triggered when the BullRun Treasury reaches 1 ETH.
+    </p>
+
+    <div class="stats" style="margin-top:20px">
+      <div class="stat">
+        <div class="stat-label">Status</div>
+        <div class="stat-value" id="nextRoundStatus">Pending</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">Reward Pool</div>
         <div class="stat-value" id="nextRoundTiming">1 ETH</div>
       </div>
     </div>
 
     <p class="small" style="margin-top:18px">
-      Once the treasury target is reached, the next main reward round can be announced
-      and funded publicly from the BullRun Treasury.
+      The first 1 ETH treasury milestone is planned to be distributed equally among all 333 BullRun Keys.
     </p>
+  </div>
+
+  <div class="card">
+    <h2>Rewards</h2>
+    <p>
+      From time to time, the project may allocate ETH to the community rewards contract.
+    </p>
+    <p>
+      Reward logic may evolve over time as the ecosystem grows, including future updates
+      related to rarity, utility, and holder benefits across different key tiers.
+    </p>
+    <ul>
+      <li>rewards are distributed in ETH</li>
+      <li>Round #1 is planned as an equal distribution</li>
+      <li>claim period lasts 365 days</li>
+      <li>future reward mechanics may evolve in later versions</li>
+    </ul>
   </div>
 </div>
 
-    <div class="grid">
-      <div class="card">
-        <h2>Claim Rewards</h2>
-        <p>
-          Connect your wallet to view your BullRun Key NFTs and check whether rewards
-          are currently available to claim.
-        </p>
+<div class="grid">
+  <div class="card">
+    <h2>Get BullRun Key</h2>
+    <p>
+      If you do not yet own a BullRun Key, you can acquire one on the secondary market.
+    </p>
+    <p>Supply is permanently limited to 333 NFTs.</p>
+    <div class="buttons">
+      <a class="button-link" href="https://opensea.io/collection/bullrunkey" target="_blank">View on OpenSea</a>
+    </div>
+  </div>
 
-        <div class="stats">
-          <div class="stat">
-            <div class="stat-label">Wallet Status</div>
-            <div class="stat-value" id="walletStatus">Not connected</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">NFTs Found</div>
-            <div class="stat-value" id="nftCount">0</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Available Rewards</div>
-            <div class="stat-value" id="claimableValue">0 ETH</div>
-          </div>
-        </div>
+  <div class="card">
+    <h2>Transparency</h2>
+    <p>
+      Community reward activity is recorded on-chain and can be independently verified through the smart contract.
+    </p>
 
-        <div class="small" style="margin-top: 18px;">Your NFTs</div>
-        <div class="badges" id="tokenBadges"></div>
-
-        <div class="buttons">
-          <button id="claimBtn" disabled>Claim Rewards</button>
-        </div>
-
-        <div id="message"></div>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Total Deposited</div>
+        <div class="stat-value" id="totalDeposited">0 ETH</div>
       </div>
-
-      <div class="card">
-        <h2>Recent Claims</h2>
-        <div id="recentClaimsList" class="badges" style="display:block;margin-top:20px">
-          <div class="small">Loading recent claims...</div>
-        </div>
+      <div class="stat">
+        <div class="stat-label">Total Claimed</div>
+        <div class="stat-value" id="totalClaimed">0 ETH</div>
       </div>
-
-      <div class="card">
-        <h2>Rewards</h2>
-        <p>
-          From time to time, the project may allocate ETH to the community rewards contract.
-        </p>
-        <p>
-  Reward logic may evolve over time as the ecosystem grows, including future updates
-  related to rarity, utility, and holder benefits across different key tiers.
-</p>
-        <ul>
-          <li>rewards are distributed in ETH</li>
-          <li>claim period lasts 365 days</li>
-          <li>reward mechanics may evolve in future versions</li>
-          <li>unclaimed rewards may later be recycled into future community reward rounds</li>
-        </ul>
+      <div class="stat">
+        <div class="stat-label">Reward Rounds</div>
+        <div class="stat-value" id="totalRounds">0</div>
       </div>
     </div>
 
-    <div class="grid">
-      <div class="card">
-        <h2>Get BullRun Key</h2>
-        <p>
-          If you do not yet own a BullRun Key, you can acquire one on the secondary market.
-        </p>
-        <p>Supply is permanently limited to 333 NFTs.</p>
-        <div class="buttons">
-          <a class="button-link" href="https://opensea.io/collection/bullrunkey" target="_blank">View on OpenSea</a>
-        </div>
-      </div>
+    <p class="small" style="margin-top: 18px;">
+      All values above are read directly from the rewards smart contract on Ethereum.
+    </p>
 
-      <div class="card">
-        <h2>Transparency</h2>
-        <p>
-          Community reward activity is recorded on-chain and can be independently verified through the smart contract.
-        </p>
+    <div class="buttons">
+      <a
+        class="button"
+        href="https://etherscan.io/address/0xb522609cf7f2e8af1d55af1b685cc9f6a159bc4d"
+        target="_blank"
+      >
+        View Smart Contract
+      </a>
 
-        <div class="stats">
-          <div class="stat">
-            <div class="stat-label">Total Deposited</div>
-            <div class="stat-value" id="totalDeposited">0 ETH</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Total Claimed</div>
-            <div class="stat-value" id="totalClaimed">0 ETH</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Reward Rounds</div>
-            <div class="stat-value" id="totalRounds">0</div>
-          </div>
-        </div>
-
-        <p class="small" style="margin-top: 18px;">
-          All values above are read directly from the rewards smart contract on Ethereum.
-        </p>
-
-        <div class="buttons">
-          <a
-            class="button"
-            href="https://etherscan.io/address/0xb522609cf7f2e8af1d55af1b685cc9f6a159bc4d"
-            target="_blank"
-          >
-            View Smart Contract
-          </a>
-
-          <a
-            class="button"
-            href="https://opensea.io/collection/bullrunkey"
-            target="_blank"
-          >
-            View Collection
-          </a>
-        </div>
-      </div>
-
-     <div class="card">
-  <h2>Reward History</h2>
-  <p>
-    A record of community reward rounds funded through the smart contract.
-    Rewards can be claimed by BullRun Key holders during the active claim window.
-  </p>
-
-        <div id="rewardHistoryList" class="badges" style="display: block; margin-top: 20px;">
-          <div class="small">No reward rounds loaded yet.</div>
-        </div>
-      </div>
+      <a
+        class="button"
+        href="https://opensea.io/collection/bullrunkey"
+        target="_blank"
+      >
+        View Collection
+      </a>
     </div>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h2>Reward History</h2>
+    <p>
+      A record of community reward rounds funded through the smart contract.
+    </p>
+
+    <div id="rewardHistoryList" class="badges" style="display: block; margin-top: 20px;">
+      <div class="small">No reward rounds loaded yet.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Cycle Structure</h2>
+    <p>
+      BullRun Keys represent the phases and forces of the crypto market cycle.
+    </p>
+
+    <div class="small" style="margin-top:16px; line-height:1.9;">
+      <strong>Common — 300</strong><br>
+      Accumulation Key — 60<br>
+      Expansion Key — 60<br>
+      Acceleration Key — 60<br>
+      Mania Key — 60<br>
+      Distribution Key — 60<br><br>
+
+      <strong>Rare — 30</strong><br>
+      Lightning Key — 10<br>
+      Solar Key — 10<br>
+      Cosmic Key — 10<br><br>
+
+      <strong>Legendary — 2</strong><br>
+      Black Hole Key — 1<br>
+      Reality Rift Key — 1<br><br>
+
+      <strong>God — 1</strong><br>
+      God Key — 1
+    </div>
+  </div>
+</div>
 
     <div class="card">
       <h2>FAQ</h2>
