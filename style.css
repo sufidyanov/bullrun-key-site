@@ -67,6 +67,7 @@ button,
   grid-template-columns:1fr 1fr;
   gap:32px;
   align-items:stretch;
+  margin-bottom:32px;
 }
 @media (max-width: 900px){
   .grid{
