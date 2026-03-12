@@ -65,7 +65,7 @@ button,
 .grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:32px;
+  gap:36px;
   align-items:stretch;
   margin-bottom:32px;
 }
