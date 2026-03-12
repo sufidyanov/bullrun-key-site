@@ -75,12 +75,14 @@ button,
   }
 }
 
-.card {
-  background: #111;
-  border: 1px solid #222;
-  border-radius: 22px;
-  padding: 28px;
+.card{
+  background:#111;
+  border:1px solid #222;
+  border-radius:22px;
+  padding:28px;
   height:100%;
+  overflow:hidden;
+}
 
 }
 
