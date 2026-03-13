@@ -350,8 +350,6 @@ async function connectWallet() {
 
 async function loadAllData() {
   try {
-    await loadTreasuryData();
-
     if (!currentAccount) return;
 
     setMessage("Loading rewards data...");
@@ -393,15 +391,16 @@ async function loadAllData() {
     setWalletStatus("Scanning NFTs");
 
     const found = await fetchTokenIdsFromAlchemy(currentAccount);
-    currentTokenIds = dedupeTokenIds(found);
-    setNftCount(currentTokenIds.length);
+    const uniqueTokenIds = dedupeTokenIds(found);
+    currentTokenIds = uniqueTokenIds;
+    setNftCount(uniqueTokenIds.length);
 
     const badges = document.getElementById("tokenBadges");
     const claimableValue = document.getElementById("claimableValue");
 
     if (badges) badges.innerHTML = "";
 
-    if (currentTokenIds.length === 0) {
+    if (uniqueTokenIds.length === 0) {
       if (badges) {
         badges.innerHTML = '<div class="small">No BullRun Key NFTs found on this wallet.</div>';
       }
@@ -415,7 +414,7 @@ async function loadAllData() {
     }
 
     if (badges) {
-      currentTokenIds.forEach((id) => {
+      uniqueTokenIds.forEach((id) => {
         const span = document.createElement("span");
         span.className = "badge";
         span.textContent = "#" + id;
@@ -426,7 +425,7 @@ async function loadAllData() {
     setMessage("Calculating rewards...");
     setWalletStatus("Calculating");
 
-    const amount = await rewardContract.claimable(currentTokenIds);
+    const amount = await rewardContract.claimable(uniqueTokenIds);
 
     if (claimableValue) {
       claimableValue.textContent = formatEth(amount) + " ETH";
@@ -455,12 +454,12 @@ async function claimRewards() {
       return;
     }
 
-    if (currentTokenIds.length === 0) {
+    const uniqueTokenIds = dedupeTokenIds(currentTokenIds);
+
+    if (uniqueTokenIds.length === 0) {
       setMessage("No BullRun Key NFTs found on this wallet.", "error");
       return;
     }
-
-    currentTokenIds = dedupeTokenIds(currentTokenIds);
 
     setClaimButtonState(false, "Claiming...");
     setWalletStatus("Claiming");
@@ -470,7 +469,7 @@ async function claimRewards() {
     const signer = await provider.getSigner();
     const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, signer);
 
-    const tx = await rewardContract.claim(currentTokenIds);
+    const tx = await rewardContract.claim(uniqueTokenIds);
     setMessage("Transaction sent. Waiting for confirmation...");
 
     await tx.wait();
