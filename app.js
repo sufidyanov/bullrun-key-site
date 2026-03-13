@@ -419,7 +419,7 @@ if (heroSocialProof) {
         claimableValue.textContent = "0 ETH";
       }
       setWalletStatus("Connected");
-      setClaimButtonState(false, "Claim Rewards");
+      setClaimButtonState(false, "No BullRun Keys");
       setMessage("Wallet connected, but no BullRun Key NFTs were found.");
       return;
     }
@@ -523,16 +523,21 @@ setInterval(async () => {
     try {
       const accounts = await window.ethereum.request({ method: "eth_accounts" });
 
-      if (accounts && accounts.length > 0) {
-        currentAccount = accounts[0];
+    if (accounts && accounts.length > 0) {
+  currentAccount = accounts[0];
 
-        if (connectBtn) {
-          connectBtn.textContent = shortAddress(currentAccount);
-        }
+  if (connectBtn) {
+    connectBtn.textContent = shortAddress(currentAccount);
+  }
 
-        setWalletStatus("Connected");
-        await loadAllData();
-      }
+  const disconnectBtn = document.getElementById("disconnectWallet");
+  if (disconnectBtn) {
+    disconnectBtn.style.display = "inline-block";
+  }
+
+  setWalletStatus("Connected");
+  await loadAllData();
+}
 
       window.ethereum.on("accountsChanged", async function (accountsChanged) {
         currentAccount = accountsChanged[0] || "";
