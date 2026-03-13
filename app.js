@@ -335,10 +335,16 @@ async function connectWallet() {
     const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
     currentAccount = accounts[0] || "";
 
-    const connectBtn = document.getElementById("connectBtn");
-    if (connectBtn && currentAccount) {
-      connectBtn.textContent = shortAddress(currentAccount);
-    }
+   const connectBtn = document.getElementById("connectBtn");
+const disconnectBtn = document.getElementById("disconnectWallet");
+
+if (connectBtn && currentAccount) {
+  connectBtn.textContent = shortAddress(currentAccount);
+}
+
+if (disconnectBtn && currentAccount) {
+  disconnectBtn.style.display = "inline-block";
+}
 
     setWalletStatus("Connected");
     await loadAllData();
@@ -494,6 +500,8 @@ window.addEventListener("load", async function () {
 
   if (connectBtn) connectBtn.addEventListener("click", connectWallet);
   if (claimBtn) claimBtn.addEventListener("click", claimRewards);
+  const disconnectBtn = document.getElementById("disconnectWallet");
+if (disconnectBtn) disconnectBtn.addEventListener("click", disconnectWallet);
 
   setWalletStatus("Not connected");
   setNftCount(0);
@@ -570,10 +578,14 @@ function disconnectWallet() {
   const claimableValue = document.getElementById("claimableValue");
   if (claimableValue) claimableValue.textContent = "0 ETH";
 
-  const connectBtn = document.getElementById("connectWallet");
+  const connectBtn = document.getElementById("connectBtn");
   const disconnectBtn = document.getElementById("disconnectWallet");
 
-  if (connectBtn) connectBtn.style.display = "inline-block";
+  if (connectBtn) {
+    connectBtn.style.display = "inline-block";
+    connectBtn.textContent = "Connect Wallet";
+  }
+
   if (disconnectBtn) disconnectBtn.style.display = "none";
 
   setMessage("Wallet disconnected.");
