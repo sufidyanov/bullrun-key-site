@@ -421,3 +421,8 @@ font-weight:600;
 .wallet-copy:hover{
   color:#f5a623;
 }
+.hero-note{
+  margin-top: 14px;
+  font-size: 15px;
+  color: #b8b8b8;
+}
