@@ -323,7 +323,7 @@ async function connectWallet() {
     }
 
     setWalletStatus("Connecting...");
-    setClaimButtonState(false, "Claim Rewards");
+   setClaimButtonState(false, "Checking rewards...");
 
     const chainId = await window.ethereum.request({ method: "eth_chainId" });
     if (parseInt(chainId, 16) !== 1) {
@@ -476,7 +476,7 @@ async function claimRewards() {
       return;
     }
 
-    setClaimButtonState(false, "No BullRun Keys");
+    setClaimButtonState(false, "Claiming...");
     setWalletStatus("Claiming");
     setMessage("Sending claim transaction... Confirm it in your wallet.");
 
@@ -555,7 +555,7 @@ setInterval(async () => {
           await loadAllData();
         } else {
           setWalletStatus("Not connected");
-          setClaimButtonState(false, "Checking rewards...");
+          setClaimButtonState(false, "Connect wallet to check rewards");
         }
       });
 
