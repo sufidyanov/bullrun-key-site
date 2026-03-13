@@ -349,9 +349,10 @@ if (disconnectBtn && currentAccount) {
     setWalletStatus("Connected");
     await loadAllData();
   } catch (err) {
-    setWalletStatus("Connection failed");
-    setMessage(err.message || "Wallet connection failed.", "error");
-  }
+  setWalletStatus("Connected");
+  setMessage(err.reason || err.shortMessage || err.message || "Claim failed.", "error");
+  await loadAllData();
+}
 }
 
 async function loadAllData() {
