@@ -447,8 +447,7 @@ if (heroSocialProof) {
   setClaimButtonState(false, "No rewards available");
 }
 
-    const canClaim = amount > 0n;
-    setClaimButtonState(canClaim, "Claim Rewards");
+  
     setWalletStatus("Connected");
     setMessage("Wallet connected successfully.", "success");
   } catch (err) {
@@ -477,7 +476,7 @@ async function claimRewards() {
       return;
     }
 
-    setClaimButtonState(false, "Claiming...");
+    setClaimButtonState(false, "No BullRun Keys");
     setWalletStatus("Claiming");
     setMessage("Sending claim transaction... Confirm it in your wallet.");
 
@@ -491,6 +490,7 @@ async function claimRewards() {
     await tx.wait();
 
     setMessage("Rewards claimed successfully.", "success");
+    setClaimButtonState(false, "Rewards claimed");
     await loadAllData();
   } catch (err) {
     setWalletStatus("Connected");
@@ -510,7 +510,7 @@ if (disconnectBtn) disconnectBtn.addEventListener("click", disconnectWallet);
 
   setWalletStatus("Not connected");
   setNftCount(0);
-  setClaimButtonState(false, "Checking rewards...");
+  setClaimButtonState(false, "Connect wallet to check rewards");
 
   await loadTreasuryData();
   await loadRecentTreasuryDeposits();
@@ -555,7 +555,7 @@ setInterval(async () => {
           await loadAllData();
         } else {
           setWalletStatus("Not connected");
-          setClaimButtonState(false, "Claim Rewards");
+          setClaimButtonState(false, "Checking rewards...");
         }
       });
 
@@ -568,13 +568,12 @@ setInterval(async () => {
     }
   }
 });
-document.getElementById("disconnectWallet")?.addEventListener("click", disconnectWallet);
 function disconnectWallet() {
   currentAccount = null;
   currentTokenIds = [];
 
   setWalletStatus("Disconnected");
-  setClaimButtonState(false, "Claim Rewards");
+  setClaimButtonState(false, "Connect wallet to check rewards");
   setNftCount(0);
 
   const badges = document.getElementById("tokenBadges");
