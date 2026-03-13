@@ -367,6 +367,7 @@ async function loadAllData() {
       fetchHolderCount()
     ]);
 
+    
     const totalDepositedEl = document.getElementById("totalDeposited");
     const totalClaimedEl = document.getElementById("totalClaimed");
     const totalRoundsEl = document.getElementById("totalRounds");
@@ -384,6 +385,10 @@ async function loadAllData() {
     if (heroClaimed) heroClaimed.textContent = formatEth(claimed) + " ETH";
     if (heroRounds) heroRounds.textContent = rounds.toString();
     if (heroHolders) heroHolders.textContent = String(holders);
+    const heroSocialProof = document.getElementById("heroSocialProof");
+if (heroSocialProof) {
+  heroSocialProof.textContent = `${holders} collectors already hold a piece of the cycle.`;
+}
 
     await loadRewardHistory(rewardContract, rounds);
 
