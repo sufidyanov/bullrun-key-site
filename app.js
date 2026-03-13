@@ -555,3 +555,26 @@ setInterval(async () => {
     }
   }
 });
+document.getElementById("disconnectWallet")?.addEventListener("click", disconnectWallet);
+function disconnectWallet() {
+  currentAccount = null;
+  currentTokenIds = [];
+
+  setWalletStatus("Disconnected");
+  setClaimButtonState(false, "Claim Rewards");
+  setNftCount(0);
+
+  const badges = document.getElementById("tokenBadges");
+  if (badges) badges.innerHTML = "";
+
+  const claimableValue = document.getElementById("claimableValue");
+  if (claimableValue) claimableValue.textContent = "0 ETH";
+
+  const connectBtn = document.getElementById("connectWallet");
+  const disconnectBtn = document.getElementById("disconnectWallet");
+
+  if (connectBtn) connectBtn.style.display = "inline-block";
+  if (disconnectBtn) disconnectBtn.style.display = "none";
+
+  setMessage("Wallet disconnected.");
+}
