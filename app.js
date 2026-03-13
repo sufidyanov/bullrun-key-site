@@ -494,7 +494,7 @@ async function claimRewards() {
     await loadAllData();
   } catch (err) {
     setWalletStatus("Connected");
-    setClaimButtonState(true, "Claim Rewards");
+    await loadAllData();
     setMessage(err.reason || err.shortMessage || err.message || "Claim failed.", "error");
   }
 }
