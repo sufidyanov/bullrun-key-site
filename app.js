@@ -441,6 +441,11 @@ if (heroSocialProof) {
     if (claimableValue) {
       claimableValue.textContent = formatEth(amount) + " ETH";
     }
+    if (amount > 0n) {
+  setClaimButtonState(true, "Claim " + formatEth(amount) + " ETH");
+} else {
+  setClaimButtonState(false, "No rewards available");
+}
 
     const canClaim = amount > 0n;
     setClaimButtonState(canClaim, "Claim Rewards");
@@ -448,7 +453,7 @@ if (heroSocialProof) {
     setMessage("Wallet connected successfully.", "success");
   } catch (err) {
     setWalletStatus("Error");
-    setClaimButtonState(false, "Claim Rewards");
+    setClaimButtonState(false, "No BullRun Keys");
     setMessage(err.message || "Failed to load data.", "error");
   }
 }
@@ -505,7 +510,7 @@ if (disconnectBtn) disconnectBtn.addEventListener("click", disconnectWallet);
 
   setWalletStatus("Not connected");
   setNftCount(0);
-  setClaimButtonState(false, "Claim Rewards");
+  setClaimButtonState(false, "Checking rewards...");
 
   await loadTreasuryData();
   await loadRecentTreasuryDeposits();
