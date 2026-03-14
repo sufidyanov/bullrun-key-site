@@ -313,9 +313,14 @@ async function loadRecentClaims(provider) {
     if (footer) {
       footer.textContent = `Total shown claimed: ${totalClaimed.toFixed(6)} ETH`;
     }
-  } catch (err) {
-    console.error("Claims load failed", err);
+ } catch (err) {
+  console.error("Claims load failed", err);
+
+  const list = document.getElementById("recentClaimsList");
+  if (list) {
+    list.innerHTML = `<div class="small" style="color:#ff8a8a">Failed to load recent claims</div>`;
   }
+}
 }
 async function loadRecentTreasuryDeposits() {
   try {
