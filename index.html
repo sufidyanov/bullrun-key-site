@@ -319,11 +319,18 @@ Copy Treasury Address
     <div id="message"></div>
   </div>
 
-  <div class="card">
-    <h2>Recent Claims</h2>
-    <div id="recentClaimsList" class="badges" style="display:block;margin-top:20px">
-      <div class="small">Loading recent claims...</div>
-    </div>
+ <div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+    <h2 style="margin:0">Recent Claims</h2>
+    <div id="recentClaimsCount" class="small" style="opacity:0.7">Live on-chain activity</div>
+  </div>
+
+  <div id="recentClaimsList" style="display:flex;flex-direction:column;gap:14px;margin-top:20px">
+    <div class="small">Loading recent claims...</div>
+  </div>
+
+  <div id="recentClaimsFooter" class="small" style="margin-top:18px;opacity:0.7">
+    Tracking latest rewards activity.
   </div>
 </div>
 
