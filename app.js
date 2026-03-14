@@ -269,20 +269,21 @@ async function loadRecentClaims(provider) {
     for (let index = 0; index < events.length; index++) {
       const e = events[index];
       const wallet = e.args.user;
-const amountRaw = e.args.amount;
-const tokenIds = e.args.tokenIds || [];
+      const amountRaw = e.args.amount;
+      const tokenIds = e.args.tokenIds || [];
 
-const amount = Number(ethers.formatEther(amountRaw)).toFixed(6);
-const amountNumber = Number(amount);
+      const amount = Number(ethers.formatEther(amountRaw)).toFixed(6);
+      const amountNumber = Number(amount);
 
-const short = wallet.slice(0, 6) + "..." + wallet.slice(-4);
+      const short = wallet.slice(0, 6) + "..." + wallet.slice(-4);
 
-let keyLabel = "Key";
-if (tokenIds.length === 1) {
-  keyLabel = `Key #${tokenIds[0].toString()}`;
-} else if (tokenIds.length > 1) {
-  keyLabel = `${tokenIds.length} Keys`;
-}
+      let keyLabel = "Key";
+      if (tokenIds.length === 1) {
+        keyLabel = `Key #${tokenIds[0].toString()}`;
+      } else if (tokenIds.length > 1) {
+        keyLabel = `${tokenIds.length} Keys`;
+      }
+
       totalClaimed += amountNumber;
 
       let claimTime = "";
@@ -305,6 +306,8 @@ if (tokenIds.length === 1) {
       item.style.borderBottom = "1px solid rgba(255,255,255,0.06)";
 
       item.innerHTML = `
+        <span class="recent-claim-meta" style="opacity:0.8">${keyLabel}</span>
+        <span class="recent-claim-meta">•</span>
         <a href="https://etherscan.io/address/${wallet}" target="_blank" rel="noopener noreferrer">${short}</a>
         <span class="recent-claim-meta">claimed</span>
         <strong>${amount} ETH</strong>
@@ -315,7 +318,7 @@ if (tokenIds.length === 1) {
 
       if (index === 0) {
         setTimeout(() => {
-          showLiveClaimToast(`🔥 ${short} claimed ${amount} ETH`);
+          showLiveClaimToast(`🔥 ${keyLabel} • ${short} claimed ${amount} ETH`);
         }, 800);
       }
     }
@@ -323,14 +326,14 @@ if (tokenIds.length === 1) {
     if (footer) {
       footer.textContent = `Total shown claimed: ${totalClaimed.toFixed(6)} ETH`;
     }
- } catch (err) {
-  console.error("Claims load failed", err);
+  } catch (err) {
+    console.error("Claims load failed", err);
 
-  const list = document.getElementById("recentClaimsList");
-  if (list) {
-    list.innerHTML = `<div class="small" style="color:#ff8a8a">Failed to load recent claims</div>`;
+    const list = document.getElementById("recentClaimsList");
+    if (list) {
+      list.innerHTML = `<div class="small" style="color:#ff8a8a">Failed to load recent claims</div>`;
+    }
   }
-}
 }
 async function loadRecentTreasuryDeposits() {
   try {
