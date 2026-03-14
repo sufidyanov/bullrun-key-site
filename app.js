@@ -270,7 +270,7 @@ async function loadRecentClaims(provider) {
       const e = events[index];
       const wallet = e.args.user;
       const amountRaw = e.args.amount;
-      const amountNumber = Number(ethers.utils.formatEther(amountRaw));
+      const amountNumber = Number(ethers.formatEther(amountRaw));
       const short = wallet.slice(0, 6) + "..." + wallet.slice(-4);
 
       totalClaimed += amountNumber;
