@@ -269,11 +269,20 @@ async function loadRecentClaims(provider) {
     for (let index = 0; index < events.length; index++) {
       const e = events[index];
       const wallet = e.args.user;
-      const amountRaw = e.args.amount;
-      const amount = Number(ethers.formatEther(amountRaw)).toFixed(6);
-      const amountNumber = Number(amount);
-      const short = wallet.slice(0, 6) + "..." + wallet.slice(-4);
+const amountRaw = e.args.amount;
+const tokenIds = e.args.tokenIds || [];
 
+const amount = Number(ethers.formatEther(amountRaw)).toFixed(6);
+const amountNumber = Number(amount);
+
+const short = wallet.slice(0, 6) + "..." + wallet.slice(-4);
+
+let keyLabel = "Key";
+if (tokenIds.length === 1) {
+  keyLabel = `Key #${tokenIds[0].toString()}`;
+} else if (tokenIds.length > 1) {
+  keyLabel = `${tokenIds.length} Keys`;
+}
       totalClaimed += amountNumber;
 
       let claimTime = "";
