@@ -218,41 +218,88 @@ item.innerHTML = `
     }
   }
 }
+function timeAgo(timestampMs) {
+  const seconds = Math.floor((Date.now() - timestampMs) / 1000);
 
+  if (seconds < 60) return `${seconds}s ago`;
+
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
 async function loadRecentClaims(provider) {
   try {
     const list = document.getElementById("recentClaimsList");
+    const countLabel = document.getElementById("recentClaimsCount");
+    const footer = document.getElementById("recentClaimsFooter");
+
     if (!list) return;
 
     const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, provider);
-const filter = rewardContract.filters.RewardsClaimed();
+    const filter = rewardContract.filters.RewardsClaimed();
 
-let events = await rewardContract.queryFilter(filter, -50000);
+    let events = await rewardContract.queryFilter(filter, -50000);
 
-// сортируем от новых к старым
-events = events.sort((a, b) => b.blockNumber - a.blockNumber);
+    // сортируем от новых к старым
+    events = events.sort((a, b) => b.blockNumber - a.blockNumber);
 
-// берём только последние 5
-events = events.slice(0, 5);
+    // берём только последние 5
+    events = events.slice(0, 5);
 
     list.innerHTML = "";
 
     if (!events.length) {
+      if (countLabel) countLabel.textContent = "No recent activity";
+      if (footer) footer.textContent = "No claims yet. Rewards activity will appear here.";
       list.innerHTML = '<div class="small">No claims yet.</div>';
       return;
     }
 
-    const recent = events.slice(-5).reverse();
+    if (countLabel) {
+      countLabel.textContent = `${events.length} recent claims`;
+    }
 
-    for (let index = 0; index < recent.length; index++) {
-      const e = recent[index];
+    let totalClaimed = 0;
+
+    for (let index = 0; index < events.length; index++) {
+      const e = events[index];
       const wallet = e.args.user;
-      const amount = formatEth(e.args.amount);
+      const amountRaw = e.args.amount;
+      const amount = formatEth(amountRaw);
       const short = wallet.slice(0, 6) + "..." + wallet.slice(-4);
 
+      totalClaimed += Number(amount);
+
+      let claimTime = "";
+      try {
+        const block = await provider.getBlock(e.blockNumber);
+        if (block && block.timestamp) {
+          claimTime = timeAgo(block.timestamp * 1000);
+        }
+      } catch (blockErr) {
+        console.warn("Failed to load block time for claim", blockErr);
+      }
+
       const item = document.createElement("div");
-     item.className = "recent-claim-item";
-item.innerHTML = `<a href="https://etherscan.io/address/${wallet}" target="_blank">${short}</a> <span class="recent-claim-meta">claimed ${amount} ETH</span>`;
+      item.className = "recent-claim-item";
+      item.style.display = "flex";
+      item.style.flexWrap = "wrap";
+      item.style.alignItems = "center";
+      item.style.gap = "8px";
+      item.style.padding = "10px 0";
+      item.style.borderBottom = "1px solid rgba(255,255,255,0.06)";
+
+      item.innerHTML = `
+        <a href="https://etherscan.io/address/${wallet}" target="_blank" rel="noopener noreferrer">${short}</a>
+        <span class="recent-claim-meta">claimed</span>
+        <strong>${amount} ETH</strong>
+        ${claimTime ? `<span class="recent-claim-meta">• ${claimTime}</span>` : ""}
+      `;
 
       list.appendChild(item);
 
@@ -261,6 +308,10 @@ item.innerHTML = `<a href="https://etherscan.io/address/${wallet}" target="_blan
           showLiveClaimToast(`🔥 ${short} claimed ${amount} ETH`);
         }, 800);
       }
+    }
+
+    if (footer) {
+      footer.textContent = `Total shown claimed: ${totalClaimed.toFixed(6)} ETH`;
     }
   } catch (err) {
     console.error("Claims load failed", err);
