@@ -413,18 +413,18 @@ async function loadDonatorLeaderboard() {
       throw new Error("Failed to load leaderboard data.");
     }
 
-  const data = await response.json();
-console.log("Leaderboard API response:", data);
+    const data = await response.json();
+    console.log("Leaderboard API response:", data);
 
-if (!data || data.status === "0") {
-  const apiMessage = data?.message || "Etherscan error";
-  const apiResult = typeof data?.result === "string" ? data.result : "Unknown API response";
-  throw new Error(`${apiMessage}: ${apiResult}`);
-}
+    if (!data || data.status === "0") {
+      const apiMessage = data?.message || "Etherscan error";
+      const apiResult = typeof data?.result === "string" ? data.result : "Unknown API response";
+      throw new Error(`${apiMessage}: ${apiResult}`);
+    }
 
-if (!Array.isArray(data.result)) {
-  throw new Error("Etherscan returned unexpected data format.");
-}
+    if (!Array.isArray(data.result)) {
+      throw new Error("Etherscan returned unexpected data format.");
+    }
 
     const incomingEthTxs = data.result.filter((tx) => {
       return (
@@ -529,7 +529,7 @@ if (!Array.isArray(data.result)) {
     }
 
     if (footer) {
-      footer.textContent = "Could not load treasury leaderboard right now.";
+      footer.textContent = err.message || "Could not load treasury leaderboard right now.";
     }
   }
 }
