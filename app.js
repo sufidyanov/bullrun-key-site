@@ -422,9 +422,15 @@ async function loadDonatorLeaderboard() {
     });
 
     if (!incomingEthTxs.length) {
-      list.innerHTML = '<div class="small">No treasury deposits yet.</div>';
-      if (countLabel) countLabel.textContent = "No donators yet";
-      if (footer) footer.textContent = "Leaderboard will appear after the first treasury deposit.";
+      list.innerHTML = `
+        <div class="small">
+          No signals detected yet.<br>
+          Be the first to enter the cycle.
+        </div>
+      `;
+
+      if (countLabel) countLabel.textContent = "No supporters yet";
+      if (footer) footer.textContent = "The cycle has already started.";
       return;
     }
 
@@ -438,30 +444,29 @@ async function loadDonatorLeaderboard() {
         donorMap.set(from, {
           address: tx.from,
           total: 0,
-          txCount: 0,
-          lastTimestamp: Number(tx.timeStamp || 0)
+          txCount: 0
         });
       }
 
       const donor = donorMap.get(from);
       donor.total += valueEth;
       donor.txCount += 1;
-      donor.lastTimestamp = Math.max(donor.lastTimestamp, Number(tx.timeStamp || 0));
     }
 
-    const sortedDonors = [...donorMap.values()].sort((a, b) => b.total - a.total).slice(0, 10);
+    const sortedDonors = [...donorMap.values()]
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 10);
 
     list.innerHTML = "";
 
     sortedDonors.forEach((donor, index) => {
+      let badge = "";
 
-  let badge = "";
+      if (index === 0) badge = "👑 Alpha";
+      else if (index === 1) badge = "🥇 Core";
+      else if (index === 2) badge = "🥈 Early";
 
-  if (index === 0) badge = "👑 Alpha";
-  else if (index === 1) badge = "🥇 Core";
-  else if (index === 2) badge = "🥈 Early";
-
-  const item = document.createElement("div");
+      const item = document.createElement("div");
       item.className = "recent-claim-item";
       item.style.display = "flex";
       item.style.justifyContent = "space-between";
@@ -477,7 +482,10 @@ async function loadDonatorLeaderboard() {
           <a href="https://etherscan.io/address/${donor.address}" target="_blank" rel="noopener noreferrer">
             ${shortAddress(donor.address)}
           </a>
-          <span class="recent-claim-meta" style="opacity:0.75">• ${donor.txCount} deposit${donor.txCount > 1 ? "s" : ""}</span>
+          ${badge ? `<span style="opacity:0.7">${badge}</span>` : ""}
+          <span class="recent-claim-meta" style="opacity:0.75">
+            • ${donor.txCount} deposit${donor.txCount > 1 ? "s" : ""}
+          </span>
         </div>
 
         <div style="font-weight:700">
@@ -488,14 +496,12 @@ async function loadDonatorLeaderboard() {
       list.appendChild(item);
     });
 
-    const totalTracked = sortedDonors.reduce((sum, donor) => sum + donor.total, 0);
-
     if (countLabel) {
-      countLabel.textContent = `${sortedDonors.length} top donators`;
+      countLabel.textContent = `${sortedDonors.length} tracked supporters`;
     }
 
     if (footer) {
-      footer.textContent = `Top ${sortedDonors.length} tracked: ${totalTracked.toLocaleString(undefined, { maximumFractionDigits: 4 })} ETH`;
+      footer.textContent = "Some entered early. Most are still outside.";
     }
   } catch (err) {
     console.error("Leaderboard load failed", err);
@@ -512,7 +518,6 @@ async function loadDonatorLeaderboard() {
     }
   }
 }
-
 async function connectWallet() {
   try {
     if (!window.ethereum) {
