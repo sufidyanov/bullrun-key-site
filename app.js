@@ -471,7 +471,7 @@ async function loadTreasuryNFTs() {
 
     container.innerHTML = "";
 
-    normalized.slice(0, 6).forEach((nft) => {
+    normalized.slice(0, 4).forEach((nft) => {
       const item = document.createElement("div");
       item.style.display = "flex";
       item.style.alignItems = "center";
