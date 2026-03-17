@@ -851,6 +851,7 @@ if (disconnectBtn) disconnectBtn.addEventListener("click", disconnectWallet);
 setInterval(async () => {
   await loadRecentTreasuryDeposits();
   await loadDonatorLeaderboard();
+  await loadTreasuryNFTs();
 }, 30000);
 
   if (window.ethereum) {
