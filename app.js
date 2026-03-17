@@ -492,8 +492,12 @@ async function loadTreasuryNFTs() {
         />
 
         <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
-          <div style="font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px">
-  ${nft.name}
+         <div style="display:flex;align-items:center;gap:8px">
+  <div style="font-weight:700;line-height:1.2">${nft.name}</div>
+  <span style="font-size:12px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,0.08);opacity:0.8">
+    🎁 Vault Asset
+  </span>
+</div>
 </div>
           <div class="small" style="opacity:0.7">${nft.collection}</div>
           ${
