@@ -392,6 +392,54 @@ if (!Array.isArray(data.result)) {
     console.error("Treasury deposits load failed", err);
   }
 }
+function loadTreasuryNFTs() {
+  const container = document.getElementById("treasuryNFTList");
+  if (!container) return;
+
+  const nfts = [
+    {
+      name: "BullRun Key #001",
+      image: "https://via.placeholder.com/56x56?text=KEY",
+      note: "Genesis treasury asset"
+    },
+    {
+      name: "BullRun Key #017",
+      image: "https://via.placeholder.com/56x56?text=KEY",
+      note: "Reserved for future giveaway"
+    },
+    {
+      name: "Mystery Artifact",
+      image: "https://via.placeholder.com/56x56?text=%3F%3F%3F",
+      note: "Will unlock later in the cycle"
+    }
+  ];
+
+  container.innerHTML = "";
+
+  nfts.forEach((nft) => {
+    const item = document.createElement("div");
+    item.style.display = "flex";
+    item.style.alignItems = "center";
+    item.style.gap = "12px";
+    item.style.padding = "10px 0";
+    item.style.borderBottom = "1px solid rgba(255,255,255,0.06)";
+
+    item.innerHTML = `
+      <img
+        src="${nft.image}"
+        alt="${nft.name}"
+        style="width:56px;height:56px;border-radius:12px;object-fit:cover;border:1px solid rgba(255,255,255,0.08)"
+      />
+
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="font-weight:700">${nft.name}</div>
+        <div class="small" style="opacity:0.7">${nft.note}</div>
+      </div>
+    `;
+
+    container.appendChild(item);
+  });
+}
 async function loadDonatorLeaderboard() {
   try {
     const list = document.getElementById("donatorLeaderboardList");
@@ -734,6 +782,7 @@ if (disconnectBtn) disconnectBtn.addEventListener("click", disconnectWallet);
   await loadTreasuryData();
   await loadRecentTreasuryDeposits();
   await loadDonatorLeaderboard();
+  loadTreasuryNFTs();
 
 setInterval(async () => {
   await loadRecentTreasuryDeposits();
