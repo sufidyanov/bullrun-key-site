@@ -384,6 +384,128 @@ async function loadRecentTreasuryDeposits() {
     console.error("Treasury deposits load failed", err);
   }
 }
+async function loadDonatorLeaderboard() {
+  try {
+    const list = document.getElementById("donatorLeaderboardList");
+    const countLabel = document.getElementById("donatorLeaderboardCount");
+    const footer = document.getElementById("donatorLeaderboardFooter");
+
+    if (!list) return;
+
+    list.innerHTML = '<div class="small">Loading leaderboard...</div>';
+
+    const url =
+      `https://api.etherscan.io/api?module=account&action=txlist` +
+      `&address=${TREASURY_WALLET}` +
+      `&startblock=0&endblock=99999999&page=1&offset=200&sort=desc` +
+      `&apikey=${ETHERSCAN_API_KEY}`;
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error("Failed to load leaderboard data.");
+    }
+
+    const data = await response.json();
+
+    if (!data.result || !Array.isArray(data.result)) {
+      throw new Error("Invalid leaderboard response.");
+    }
+
+    const incomingEthTxs = data.result.filter((tx) => {
+      return (
+        tx.to &&
+        tx.to.toLowerCase() === TREASURY_WALLET.toLowerCase() &&
+        tx.value &&
+        BigInt(tx.value) > 0n &&
+        tx.isError === "0"
+      );
+    });
+
+    if (!incomingEthTxs.length) {
+      list.innerHTML = '<div class="small">No treasury deposits yet.</div>';
+      if (countLabel) countLabel.textContent = "No donators yet";
+      if (footer) footer.textContent = "Leaderboard will appear after the first treasury deposit.";
+      return;
+    }
+
+    const donorMap = new Map();
+
+    for (const tx of incomingEthTxs) {
+      const from = tx.from.toLowerCase();
+      const valueEth = Number(ethers.formatEther(tx.value));
+
+      if (!donorMap.has(from)) {
+        donorMap.set(from, {
+          address: tx.from,
+          total: 0,
+          txCount: 0,
+          lastTimestamp: Number(tx.timeStamp || 0)
+        });
+      }
+
+      const donor = donorMap.get(from);
+      donor.total += valueEth;
+      donor.txCount += 1;
+      donor.lastTimestamp = Math.max(donor.lastTimestamp, Number(tx.timeStamp || 0));
+    }
+
+    const sortedDonors = [...donorMap.values()].sort((a, b) => b.total - a.total).slice(0, 10);
+
+    list.innerHTML = "";
+
+    sortedDonors.forEach((donor, index) => {
+      const item = document.createElement("div");
+      item.className = "recent-claim-item";
+      item.style.display = "flex";
+      item.style.justifyContent = "space-between";
+      item.style.alignItems = "center";
+      item.style.gap = "12px";
+      item.style.padding = "12px 0";
+      item.style.borderBottom = "1px solid rgba(255,255,255,0.06)";
+      item.style.flexWrap = "wrap";
+
+      item.innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <strong style="min-width:32px">#${index + 1}</strong>
+          <a href="https://etherscan.io/address/${donor.address}" target="_blank" rel="noopener noreferrer">
+            ${shortAddress(donor.address)}
+          </a>
+          <span class="recent-claim-meta" style="opacity:0.75">• ${donor.txCount} deposit${donor.txCount > 1 ? "s" : ""}</span>
+        </div>
+
+        <div style="font-weight:700">
+          ${donor.total.toLocaleString(undefined, { maximumFractionDigits: 4 })} ETH
+        </div>
+      `;
+
+      list.appendChild(item);
+    });
+
+    const totalTracked = sortedDonors.reduce((sum, donor) => sum + donor.total, 0);
+
+    if (countLabel) {
+      countLabel.textContent = `${sortedDonors.length} top donators`;
+    }
+
+    if (footer) {
+      footer.textContent = `Top ${sortedDonors.length} tracked: ${totalTracked.toLocaleString(undefined, { maximumFractionDigits: 4 })} ETH`;
+    }
+  } catch (err) {
+    console.error("Leaderboard load failed", err);
+
+    const list = document.getElementById("donatorLeaderboardList");
+    const footer = document.getElementById("donatorLeaderboardFooter");
+
+    if (list) {
+      list.innerHTML = '<div class="small" style="color:#ff8a8a">Failed to load leaderboard</div>';
+    }
+
+    if (footer) {
+      footer.textContent = "Could not load treasury leaderboard right now.";
+    }
+  }
+}
+
 async function connectWallet() {
   try {
     if (!window.ethereum) {
@@ -584,9 +706,11 @@ if (disconnectBtn) disconnectBtn.addEventListener("click", disconnectWallet);
 
   await loadTreasuryData();
   await loadRecentTreasuryDeposits();
+  await loadDonatorLeaderboard();
 
 setInterval(async () => {
   await loadRecentTreasuryDeposits();
+  await loadDonatorLeaderboard();
 }, 30000);
 
   if (window.ethereum) {
