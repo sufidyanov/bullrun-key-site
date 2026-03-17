@@ -346,9 +346,17 @@ async function loadRecentTreasuryDeposits() {
     const response = await fetch(url);
     if (!response.ok) return;
 
-    const data = await response.json();
-    if (!data.result || !Array.isArray(data.result)) return;
+   const data = await response.json();
 
+if (!data || data.status === "0") {
+  console.warn("Treasury deposits API issue:", data);
+  return;
+}
+
+if (!Array.isArray(data.result)) {
+  console.warn("Treasury deposits unexpected response:", data);
+  return;
+}
     const incomingEthTxs = data.result.filter((tx) => {
       return (
         tx.to &&
