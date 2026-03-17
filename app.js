@@ -540,7 +540,7 @@ async function connectWallet() {
       return;
     }
 
-    setWalletStatus("Connecting...");
+    setWalletStatus("Error");
    setClaimButtonState(false, "Checking rewards...");
 
     const chainId = await window.ethereum.request({ method: "eth_chainId" });
