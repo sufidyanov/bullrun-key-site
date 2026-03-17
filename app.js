@@ -499,7 +499,7 @@ async function loadTreasuryNFTs() {
   </span>
 </div>
 </div>
-          <div class="small" style="opacity:0.7">Locked inside treasury</div>
+          <div class="small" style="opacity:0.7">Locked in the treasury</div>
           ${
             openSeaUrl !== "#"
               ? `<a href="${openSeaUrl}" target="_blank" rel="noopener noreferrer" class="small" style="opacity:0.75">View asset</a>`
