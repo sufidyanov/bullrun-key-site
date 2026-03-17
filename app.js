@@ -460,13 +460,14 @@ async function loadTreasuryNFTs() {
   );
 
     if (!normalized.length) {
-      container.innerHTML = `
-        <div class="small">
-          NFTs were found, but no valid images were available.
-        </div>
-      `;
-      return;
-    }
+  container.innerHTML = `
+    <div class="small">
+      No featured vault assets are visible right now.<br>
+      New treasury rewards will appear here.
+    </div>
+  `;
+  return;
+}
 
     container.innerHTML = "";
 
