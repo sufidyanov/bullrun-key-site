@@ -5,6 +5,10 @@ const TREASURY_WALLET = "0x942587ffad5d0bc3e8ed72817ff27ff358e5486d";
 const TREASURY_TARGET_ETH = 1;
 const OPENSEA_URL = "https://opensea.io/collection/bullrunkey";
 const ETHERSCAN_API_KEY = "RAZNXPY4FWGKFQM82I3VYREWRPCUKYMNZP";
+const TREASURY_VAULT_CONTRACTS = [
+  "0x367ac60FB4B2bb8851a46ab7A7FD13654eF70419".toLowerCase(), // BullRun Key contract
+  "0xbe9371326f91345777b04394448c23e2bfeaa826".toLowerCase()  // если хочешь ещё одну коллекцию
+];
 
 const rewardAbi = [
   "function claim(uint256[] calldata tokenIds)",
