@@ -427,33 +427,37 @@ async function loadTreasuryNFTs() {
     }
 
     const normalized = ownedNfts
-      .map((nft) => {
-        const name =
-          nft?.name ||
-          nft?.title ||
-          `${nft?.contract?.name || "Unknown Collection"} #${nft?.tokenId || "?"}`;
+  .map((nft) => {
+    const name =
+      nft?.name ||
+      nft?.title ||
+      `${nft?.contract?.name || "Unknown Collection"} #${nft?.tokenId || "?"}`;
 
-        const image =
-          nft?.image?.cachedUrl ||
-          nft?.image?.pngUrl ||
-          nft?.image?.thumbnailUrl ||
-          nft?.media?.[0]?.gateway ||
-          nft?.raw?.metadata?.image ||
-          "";
+    const image =
+      nft?.image?.cachedUrl ||
+      nft?.image?.pngUrl ||
+      nft?.image?.thumbnailUrl ||
+      nft?.media?.[0]?.gateway ||
+      nft?.raw?.metadata?.image ||
+      "";
 
-        const contractAddress = nft?.contract?.address || "";
-        const tokenId = nft?.tokenId || "";
-        const collection = nft?.contract?.name || "Unknown Collection";
+    const contractAddress = nft?.contract?.address || "";
+    const tokenId = nft?.tokenId || "";
+    const collection = nft?.contract?.name || "Unknown Collection";
 
-        return {
-          name,
-          image,
-          tokenId,
-          collection,
-          contractAddress
-        };
-      })
-      .filter((nft) => nft.image);
+    return {
+      name,
+      image,
+      tokenId,
+      collection,
+      contractAddress
+    };
+  })
+  .filter((nft) => nft.image)
+  .filter((nft) =>
+    TREASURY_VAULT_CONTRACTS.length === 0 ||
+    TREASURY_VAULT_CONTRACTS.includes((nft.contractAddress || "").toLowerCase())
+  );
 
     if (!normalized.length) {
       container.innerHTML = `
