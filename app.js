@@ -338,10 +338,10 @@ async function loadRecentClaims(provider) {
 async function loadRecentTreasuryDeposits() {
   try {
     const url =
-      `https://api.etherscan.io/api?module=account&action=txlist` +
-      `&address=${TREASURY_WALLET}` +
-      `&startblock=0&endblock=99999999&page=1&offset=10&sort=desc` +
-      `&apikey=${ETHERSCAN_API_KEY}`;
+  `https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlist` +
+  `&address=${TREASURY_WALLET}` +
+  `&startblock=0&endblock=99999999&page=1&offset=10&sort=desc` +
+  `&apikey=${ETHERSCAN_API_KEY}`;
 
     const response = await fetch(url);
     if (!response.ok) return;
@@ -403,10 +403,10 @@ async function loadDonatorLeaderboard() {
     list.innerHTML = '<div class="small">Loading leaderboard...</div>';
 
     const url =
-      `https://api.etherscan.io/api?module=account&action=txlist` +
-      `&address=${TREASURY_WALLET}` +
-      `&startblock=0&endblock=99999999&page=1&offset=200&sort=desc` +
-      `&apikey=${ETHERSCAN_API_KEY}`;
+  `https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlist` +
+  `&address=${TREASURY_WALLET}` +
+  `&startblock=0&endblock=99999999&page=1&offset=200&sort=desc` +
+  `&apikey=${ETHERSCAN_API_KEY}`;
 
     const response = await fetch(url);
     if (!response.ok) {
