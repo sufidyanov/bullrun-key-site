@@ -454,7 +454,14 @@ async function loadDonatorLeaderboard() {
     list.innerHTML = "";
 
     sortedDonors.forEach((donor, index) => {
-      const item = document.createElement("div");
+
+  let badge = "";
+
+  if (index === 0) badge = "👑 Alpha";
+  else if (index === 1) badge = "🥇 Core";
+  else if (index === 2) badge = "🥈 Early";
+
+  const item = document.createElement("div");
       item.className = "recent-claim-item";
       item.style.display = "flex";
       item.style.justifyContent = "space-between";
