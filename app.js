@@ -392,53 +392,117 @@ if (!Array.isArray(data.result)) {
     console.error("Treasury deposits load failed", err);
   }
 }
-function loadTreasuryNFTs() {
+async function loadTreasuryNFTs() {
   const container = document.getElementById("treasuryNFTList");
   if (!container) return;
 
-  const nfts = [
-    {
-      name: "BullRun Key #001",
-      image: "https://via.placeholder.com/56x56?text=KEY",
-      note: "Genesis treasury asset"
-    },
-    {
-      name: "BullRun Key #017",
-      image: "https://via.placeholder.com/56x56?text=KEY",
-      note: "Reserved for future giveaway"
-    },
-    {
-      name: "Mystery Artifact",
-      image: "https://via.placeholder.com/56x56?text=%3F%3F%3F",
-      note: "Will unlock later in the cycle"
+  container.innerHTML = '<div class="small">Loading vault...</div>';
+
+  try {
+    const url =
+      `https://eth-mainnet.g.alchemy.com/nft/v3/${ALCHEMY_API_KEY}/getNFTsForOwner` +
+      `?owner=${TREASURY_WALLET}&withMetadata=true&pageSize=12`;
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error("Failed to load treasury NFTs.");
     }
-  ];
 
-  container.innerHTML = "";
+    const data = await response.json();
+    console.log("Treasury NFT API response:", data);
 
-  nfts.forEach((nft) => {
-    const item = document.createElement("div");
-    item.style.display = "flex";
-    item.style.alignItems = "center";
-    item.style.gap = "12px";
-    item.style.padding = "10px 0";
-    item.style.borderBottom = "1px solid rgba(255,255,255,0.06)";
+    const ownedNfts = Array.isArray(data.ownedNfts) ? data.ownedNfts : [];
 
-    item.innerHTML = `
-      <img
-        src="${nft.image}"
-        alt="${nft.name}"
-        style="width:56px;height:56px;border-radius:12px;object-fit:cover;border:1px solid rgba(255,255,255,0.08)"
-      />
+    if (!ownedNfts.length) {
+      container.innerHTML = `
+        <div class="small">
+          No NFTs detected in the treasury wallet yet.
+        </div>
+      `;
+      return;
+    }
 
-      <div style="display:flex;flex-direction:column;gap:4px">
-        <div style="font-weight:700">${nft.name}</div>
-        <div class="small" style="opacity:0.7">${nft.note}</div>
+    const normalized = ownedNfts
+      .map((nft) => {
+        const name =
+          nft?.name ||
+          nft?.title ||
+          `${nft?.contract?.name || "Unknown Collection"} #${nft?.tokenId || "?"}`;
+
+        const image =
+          nft?.image?.cachedUrl ||
+          nft?.image?.pngUrl ||
+          nft?.image?.thumbnailUrl ||
+          nft?.media?.[0]?.gateway ||
+          nft?.raw?.metadata?.image ||
+          "";
+
+        const contractAddress = nft?.contract?.address || "";
+        const tokenId = nft?.tokenId || "";
+        const collection = nft?.contract?.name || "Unknown Collection";
+
+        return {
+          name,
+          image,
+          tokenId,
+          collection,
+          contractAddress
+        };
+      })
+      .filter((nft) => nft.image);
+
+    if (!normalized.length) {
+      container.innerHTML = `
+        <div class="small">
+          NFTs were found, but no valid images were available.
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = "";
+
+    normalized.slice(0, 6).forEach((nft) => {
+      const item = document.createElement("div");
+      item.style.display = "flex";
+      item.style.alignItems = "center";
+      item.style.gap = "12px";
+      item.style.padding = "10px 0";
+      item.style.borderBottom = "1px solid rgba(255,255,255,0.06)";
+
+      const openSeaUrl = nft.contractAddress && nft.tokenId
+        ? `https://opensea.io/assets/ethereum/${nft.contractAddress}/${BigInt(nft.tokenId).toString()}`
+        : "#";
+
+      item.innerHTML = `
+        <img
+          src="${nft.image}"
+          alt="${nft.name}"
+          style="width:56px;height:56px;border-radius:12px;object-fit:cover;border:1px solid rgba(255,255,255,0.08);background:#111"
+          onerror="this.style.display='none'"
+        />
+
+        <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+          <div style="font-weight:700;line-height:1.2">${nft.name}</div>
+          <div class="small" style="opacity:0.7">${nft.collection}</div>
+          ${
+            openSeaUrl !== "#"
+              ? `<a href="${openSeaUrl}" target="_blank" rel="noopener noreferrer" class="small" style="opacity:0.75">View asset</a>`
+              : ""
+          }
+        </div>
+      `;
+
+      container.appendChild(item);
+    });
+  } catch (err) {
+    console.error("Treasury vault load failed", err);
+    container.innerHTML = `
+      <div class="small" style="color:#ff8a8a">
+        Failed to load treasury vault
       </div>
     `;
-
-    container.appendChild(item);
-  });
+  }
 }
 async function loadDonatorLeaderboard() {
   try {
