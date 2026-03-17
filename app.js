@@ -492,7 +492,9 @@ async function loadTreasuryNFTs() {
         />
 
         <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
-          <div style="font-weight:700;line-height:1.2">${nft.name}</div>
+          <div style="font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px">
+  ${nft.name}
+</div>
           <div class="small" style="opacity:0.7">${nft.collection}</div>
           ${
             openSeaUrl !== "#"
