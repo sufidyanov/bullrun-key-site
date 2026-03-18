@@ -526,7 +526,9 @@ async function loadDonatorLeaderboard() {
     const footer = document.getElementById("donatorLeaderboardFooter");
 
     if (!list) return;
-
+const EXCLUDED_WALLETS = [
+  "0x88eEb79b0cCE7000142BBB474562663B4aB623db".toLowerCase()
+];
     list.innerHTML = '<div class="small">Loading leaderboard...</div>';
 
     const url =
@@ -554,14 +556,15 @@ async function loadDonatorLeaderboard() {
     }
 
     const incomingEthTxs = data.result.filter((tx) => {
-      return (
-        tx.to &&
-        tx.to.toLowerCase() === TREASURY_WALLET.toLowerCase() &&
-        tx.value &&
-        BigInt(tx.value) > 0n &&
-        tx.isError === "0"
-      );
-    });
+  return (
+    tx.to &&
+    tx.to.toLowerCase() === TREASURY_WALLET.toLowerCase() &&
+    tx.value &&
+    BigInt(tx.value) > 0n &&
+    tx.isError === "0" &&
+    !EXCLUDED_WALLETS.includes(tx.from.toLowerCase()) // ← ВОТ ЭТО ВАЖНО
+  );
+});
 
     if (!incomingEthTxs.length) {
       list.innerHTML = `
