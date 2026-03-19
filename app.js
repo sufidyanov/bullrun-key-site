@@ -656,8 +656,14 @@ donorsWithEns.forEach((donor, index) => {
       item.innerHTML = `
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
           <strong style="min-width:32px">#${index + 1}</strong>
-          <a href="https://etherscan.io/address/${donor.address}" target="_blank" rel="noopener noreferrer">
-            ${shortAddress(donor.address)}
+       <a href="https://etherscan.io/address/${donor.address}" target="_blank" rel="noopener noreferrer" style="display:flex;flex-direction:column;line-height:1.15">
+  <span>${donor.ensName || shortAddress(donor.address)}</span>
+  ${
+    donor.ensName
+      ? `<span class="small" style="opacity:0.5">${shortAddress(donor.address)}</span>`
+      : ""
+  }
+</a>
           </a>
           ${badge ? `<span style="opacity:0.7">${badge}</span>` : ""}
           <span class="recent-claim-meta" style="opacity:0.75">
