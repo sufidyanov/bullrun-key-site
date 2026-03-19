@@ -952,3 +952,9 @@ function disconnectWallet() {
 
   setMessage("Wallet disconnected.");
 }
+.signal-note {
+  margin-top: 12px;
+  font-size: 13px;
+  opacity: 0.7;
+  line-height: 1.5;
+}
