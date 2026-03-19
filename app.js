@@ -9,6 +9,11 @@ const TREASURY_VAULT_CONTRACTS = [
   "0x367ac60FB4B2bb8851a46ab7A7FD13654eF70419".toLowerCase(), // BullRun Key contract
   "0xbe9371326f91345777b04394448c23e2bfeaa826".toLowerCase()  // если хочешь ещё одну коллекцию
 ];
+const ENS_PROVIDER = new ethers.JsonRpcProvider(
+  `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`
+);
+
+const ENS_CACHE = new Map();
 
 const rewardAbi = [
   "function claim(uint256[] calldata tokenIds)",
@@ -31,6 +36,23 @@ function formatEth(value) {
 
 function shortAddress(address) {
   return address.slice(0, 6) + "..." + address.slice(-4);
+}
+async function getEnsName(address) {
+  try {
+    const normalized = address.toLowerCase();
+
+    if (ENS_CACHE.has(normalized)) {
+      return ENS_CACHE.get(normalized);
+    }
+
+    const ensName = await ENS_PROVIDER.lookupAddress(address);
+
+    ENS_CACHE.set(normalized, ensName || null);
+    return ensName || null;
+  } catch (err) {
+    console.warn("ENS lookup failed for", address, err);
+    return null;
+  }
 }
 
 function setMessage(text, type = "") {
@@ -598,13 +620,23 @@ const EXCLUDED_WALLETS = [
       donor.txCount += 1;
     }
 
-    const sortedDonors = [...donorMap.values()]
-      .sort((a, b) => b.total - a.total)
-      .slice(0, 10);
+   const sortedDonors = [...donorMap.values()]
+  .sort((a, b) => b.total - a.total)
+  .slice(0, 10);
 
-    list.innerHTML = "";
+const donorsWithEns = await Promise.all(
+  sortedDonors.map(async (donor) => {
+    const ensName = await getEnsName(donor.address);
+    return {
+      ...donor,
+      ensName
+    };
+  })
+);
 
-    sortedDonors.forEach((donor, index) => {
+list.innerHTML = "";
+
+donorsWithEns.forEach((donor, index) => {
       let badge = "";
 
       if (index === 0) badge = "👑 Alpha";
