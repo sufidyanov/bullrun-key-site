@@ -43,9 +43,25 @@ h2 {
   margin-top: 24px;
 }
 
-button,
-.button-link {
+button {
   background: #f7931a;
+  color: black;
+  border: none;
+  padding: 14px 22px;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.button-link {
+  background: transparent;
+  color: white;
+  border: 1px solid #2a2a2a;
+  padding: 14px 22px;
+  border-radius: 12px;
+  text-decoration: none;
+}
   color: black;
   border: none;
   padding: 14px 22px;
