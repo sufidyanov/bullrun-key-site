@@ -344,7 +344,7 @@ async function loadRecentClaims(provider) {
 
       if (index === 0) {
         setTimeout(() => {
-          showLiveClaimToast(`🔥 ${keyLabel} • ${short} claimed ${amount} ETH`);
+          showLiveClaimToast(`🔥 ${keyLabel} • ${short} extracted ${amount} ETH`);
         }, 800);
       }
     }
@@ -410,7 +410,7 @@ if (!Array.isArray(data.result)) {
         maximumFractionDigits: 4
       });
 
-      showLiveClaimToast(`💰 ${short} deposited ${amount} ETH into BullRun Treasury`);
+      showLiveClaimToast(`💰 ${short} sent signal: ${amount} ETH`);
 
       await loadTreasuryData();
     }
