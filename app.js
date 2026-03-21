@@ -591,7 +591,8 @@ const EXCLUDED_WALLETS = [
     if (!incomingEthTxs.length) {
       list.innerHTML = `
         <div class="small">
-          No signals detected yet.<br>
+          No valid positions detected yet.
+Signals below 0.005 ETH do not enter the layer.<br>
           Be the first to enter the cycle.
         </div>
       `;
@@ -620,7 +621,10 @@ const EXCLUDED_WALLETS = [
       donor.txCount += 1;
     }
 
-   const sortedDonors = [...donorMap.values()]
+   const MIN_SIGNAL_ETH = 0.005;
+
+const sortedDonors = [...donorMap.values()]
+  .filter((donor) => donor.total >= MIN_SIGNAL_ETH)
   .sort((a, b) => b.total - a.total)
   .slice(0, 10);
 
