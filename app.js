@@ -698,11 +698,11 @@ donorsWithEns.forEach((donor, index) => {
     });
 
     if (countLabel) {
-      countLabel.textContent = `${sortedDonors.length} tracked supporters`;
+      countLabel.textContent = `${sortedDonors.length} tracked positions`;
     }
 
     if (footer) {
-      footer.textContent = "Some entered early. Most are still outside.";
+      footer.textContent = "Positions form as signals enter the system.";
     }
   } catch (err) {
     console.error("Leaderboard load failed", err);
