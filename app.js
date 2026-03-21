@@ -532,6 +532,33 @@ async function loadTreasuryNFTs() {
 
       container.appendChild(item);
     });
+    // добавляем скрытые элементы (placeholders)
+for (let i = 0; i < 2; i++) {
+  const hidden = document.createElement("div");
+  hidden.style.display = "flex";
+  hidden.style.alignItems = "center";
+  hidden.style.gap = "12px";
+  hidden.style.padding = "10px 0";
+  hidden.style.borderBottom = "1px solid rgba(255,255,255,0.06)";
+  hidden.style.opacity = "0.6";
+
+  hidden.innerHTML = `
+    <div style="
+      width:56px;
+      height:56px;
+      border-radius:12px;
+      background:linear-gradient(135deg,#111,#1a1a1a);
+      border:1px dashed rgba(255,255,255,0.12);
+    "></div>
+
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <div style="font-weight:600">Restricted Asset</div>
+      <div class="small">Visibility restricted by cycle state</div>
+    </div>
+  `;
+
+  container.appendChild(hidden);
+}
   } catch (err) {
     console.error("Treasury vault load failed", err);
     container.innerHTML = `
