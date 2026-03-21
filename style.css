@@ -62,15 +62,7 @@ button {
   border-radius: 12px;
   text-decoration: none;
 }
-  color: black;
-  border: none;
-  padding: 14px 22px;
-  border-radius: 12px;
-  font-size: 16px;
-  cursor: pointer;
-  text-decoration: none;
-  font-weight: bold;
-}
+  
 
 .button-secondary {
   background: transparent;
