@@ -634,10 +634,13 @@ Threshold: 1 ETH in treasury.
   <script>
 function copyTreasuryWallet() {
   const wallet = "0x942587ffad5d0bc3e8ed72817ff27ff358e5486d";
+
   navigator.clipboard.writeText(wallet).then(() => {
-    alert("Treasury wallet copied");
+    if (typeof showLiveClaimToast === "function") {
+      showLiveClaimToast("Treasury address copied");
+    }
   }).catch(() => {
-    alert("Copy failed. Wallet: " + wallet);
+    console.error("Copy failed");
   });
 }
 </script>
