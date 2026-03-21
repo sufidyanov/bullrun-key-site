@@ -642,6 +642,8 @@ donorsWithEns.forEach((donor, index) => {
       if (index === 0) badge = "👑 Alpha";
       else if (index === 1) badge = "🥇 Core";
       else if (index === 2) badge = "🥈 Early";
+   else if (index === 3) badge = "Signal";
+   else if (index === 4) badge = "Trace";
 
       const item = document.createElement("div");
       item.className = "recent-claim-item";
