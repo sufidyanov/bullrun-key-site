@@ -668,6 +668,13 @@ donorsWithEns.forEach((donor, index) => {
 </a>
           
           ${badge ? `<span style="opacity:0.7">${badge}</span>` : ""}
+          <span class="recent-claim-meta" style="opacity:0.5">
+  • Position Strength: ${
+    donor.total >= 0.05 ? "High" :
+    donor.total >= 0.01 ? "Medium" :
+    "Low"
+  }
+</span>
           <span class="recent-claim-meta" style="opacity:0.75">
             • ${donor.txCount} deposit${donor.txCount > 1 ? "s" : ""}
           </span>
