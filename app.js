@@ -553,7 +553,7 @@ box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
     "></div>
 
     <div style="display:flex;flex-direction:column;gap:4px">
-      <div style="font-weight:600">Restricted Asset</div>
+      <div style="font-weight:600">Sealed Asset</div>
       <div class="small">Visibility restricted by cycle state</div>
     </div>
   `;
