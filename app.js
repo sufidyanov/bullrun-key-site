@@ -690,7 +690,10 @@ donorsWithEns.forEach((donor, index) => {
       item.innerHTML = `
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-width:0;flex:1;">
           <strong style="min-width:32px">#${index + 1}</strong>
-       <a href="https://etherscan.io/address/${donor.address}" target="_blank" rel="noopener noreferrer" style="display:flex;flex-direction:column;line-height:1.15;min-width:0;">
+     <a href="https://etherscan.io/address/${donor.address}" target="_blank" rel="noopener noreferrer" style="display:flex;flex-direction:column;line-height:1.15;min-width:0;">
+  <span style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+    ${donor.ensName || shortAddress(donor.address)}
+  </span>
   ${
     donor.ensName
       ? `<span class="small" style="opacity:0.5">${shortAddress(donor.address)}</span>`
