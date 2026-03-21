@@ -547,7 +547,8 @@ for (let i = 0; i < 2; i++) {
       width:56px;
       height:56px;
       border-radius:12px;
-      background:linear-gradient(135deg,#111,#1a1a1a);
+      background:linear-gradient(135deg,#0f0f0f,#1c1c1c);
+box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
       border:1px dashed rgba(255,255,255,0.12);
     "></div>
 
