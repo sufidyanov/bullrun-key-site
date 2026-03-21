@@ -675,6 +675,15 @@ donorsWithEns.forEach((donor, index) => {
   ${donor.total.toLocaleString(undefined, { maximumFractionDigits: 4 })} ETH
 </div>
       `;
+  if (index === 0) {
+  item.style.background = "rgba(255, 170, 0, 0.04)";
+  item.style.borderRadius = "8px";
+  item.style.padding = "12px 8px";
+  item.style.boxShadow = "0 0 0 1px rgba(255, 170, 0, 0.08)";
+}
+  if (index === 0) {
+  item.querySelector("strong").style.color = "#ffd166";
+}
 
       list.appendChild(item);
     });
