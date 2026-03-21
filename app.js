@@ -344,7 +344,7 @@ async function loadRecentClaims(provider) {
 
       if (index === 0) {
         setTimeout(() => {
-          showLiveClaimToast(`🔥 ${keyLabel} • ${short} extracted ${amount} ETH`);
+          showLiveClaimToast(`${keyLabel} • ${short} extracted ${amount} ETH`);
         }, 800);
       }
     }
