@@ -651,7 +651,7 @@ donorsWithEns.forEach((donor, index) => {
       item.style.gap = "12px";
       item.style.padding = "12px 0";
       item.style.borderBottom = "1px solid rgba(255,255,255,0.06)";
-      item.style.flexWrap = "wrap";
+      item.style.flexWrap = "nowrap";
 
       item.innerHTML = `
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
