@@ -655,26 +655,25 @@ donorsWithEns.forEach((donor, index) => {
   item.style.alignItems = "center";
 
       item.innerHTML = `
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-width:0;flex:1;">
           <strong style="min-width:32px">#${index + 1}</strong>
-       <a href="https://etherscan.io/address/${donor.address}" target="_blank" rel="noopener noreferrer" style="display:flex;flex-direction:column;line-height:1.15">
-  <span>${donor.ensName || shortAddress(donor.address)}</span>
+       <a href="https://etherscan.io/address/${donor.address}" target="_blank" rel="noopener noreferrer" style="display:flex;flex-direction:column;line-height:1.15;min-width:0;">
   ${
     donor.ensName
       ? `<span class="small" style="opacity:0.5">${shortAddress(donor.address)}</span>`
       : ""
   }
 </a>
-          </a>
+          
           ${badge ? `<span style="opacity:0.7">${badge}</span>` : ""}
           <span class="recent-claim-meta" style="opacity:0.75">
             • ${donor.txCount} deposit${donor.txCount > 1 ? "s" : ""}
           </span>
         </div>
 
-        <div style="font-weight:700">
-          ${donor.total.toLocaleString(undefined, { maximumFractionDigits: 4 })} ETH
-        </div>
+        <div style="font-weight:700; white-space:nowrap; min-width:110px; text-align:right; flex-shrink:0;">
+  ${donor.total.toLocaleString(undefined, { maximumFractionDigits: 4 })} ETH
+</div>
       `;
 
       list.appendChild(item);
