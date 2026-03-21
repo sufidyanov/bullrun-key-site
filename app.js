@@ -723,6 +723,8 @@ donorsWithEns.forEach((donor, index) => {
   item.style.borderRadius = "8px";
   item.style.padding = "12px 8px";
   item.style.boxShadow = "0 0 0 1px rgba(255, 170, 0, 0.08)";
+    item.style.boxShadow = "0 0 30px rgba(255, 170, 0, 0.08)";
+item.style.border = "1px solid rgba(255, 170, 0, 0.18)";
 }
   if (index === 0) {
   item.querySelector("strong").style.color = "#ffd166";
