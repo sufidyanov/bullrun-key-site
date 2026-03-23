@@ -514,15 +514,18 @@ font-weight:600;
 
 .god-key-bg {
   position: absolute;
-  right: -10px;
-  bottom: 0;
-  width: 240px;
-  opacity: 0.28;
-  filter: blur(1px) brightness(1);
+  right: -18px;
+  bottom: -6px;
+  width: 255px;
+  opacity: 0.22;
+  filter: blur(1.2px) brightness(0.95) contrast(1.05);
   pointer-events: none;
   transition: all 0.35s ease;
-  mask-image: radial-gradient(circle at 60% 40%, black 60%, transparent 100%);
--webkit-mask-image: radial-gradient(circle at 60% 40%, black 60%, transparent 100%);
+
+  mix-blend-mode: screen;
+
+  mask-image: radial-gradient(circle at 72% 58%, black 38%, transparent 72%);
+  -webkit-mask-image: radial-gradient(circle at 72% 58%, black 38%, transparent 72%);
 }
 
 .god-key-content {
@@ -536,17 +539,20 @@ font-weight:600;
   inset: 0;
   background: linear-gradient(
     120deg,
-    rgba(0,0,0,0.75) 20%,
-    rgba(0,0,0,0.45) 60%,
-    rgba(0,0,0,0.15) 100%
+    rgba(0,0,0,0.82) 18%,
+    rgba(0,0,0,0.55) 58%,
+    rgba(0,0,0,0.2) 100%
   );
   z-index: 1;
 }
 
 .god-key-card:hover .god-key-bg {
-  opacity: 0.45;
-  filter: blur(0.4px) brightness(1.15);
+  opacity: 0.34;
+  filter: blur(0.6px) brightness(1.08) contrast(1.08);
   transform: scale(1.04);
+
+  mask-image: radial-gradient(circle at 72% 58%, black 42%, transparent 76%);
+  -webkit-mask-image: radial-gradient(circle at 72% 58%, black 42%, transparent 76%);
 }
 
 .god-key-card:hover {
