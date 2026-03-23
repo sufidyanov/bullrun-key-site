@@ -507,3 +507,21 @@ font-weight:600;
   color: #ffd166;
   text-shadow: 0 0 18px rgba(255, 209, 102, 0.16);
 }
+.hero-artifact {
+  width: 90px;
+  margin-top: 18px;
+  opacity: 0.85;
+
+  filter:
+    drop-shadow(0 0 20px rgba(255, 180, 80, 0.18))
+    brightness(0.95);
+
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.hero-artifact:hover {
+  transform: scale(1.04);
+  filter:
+    drop-shadow(0 0 30px rgba(255, 180, 80, 0.28))
+    brightness(1);
+}
