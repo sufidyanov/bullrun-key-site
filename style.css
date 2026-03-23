@@ -521,6 +521,8 @@ font-weight:600;
   filter: blur(1px) brightness(1);
   pointer-events: none;
   transition: all 0.35s ease;
+  mask-image: radial-gradient(circle at 60% 40%, black 60%, transparent 100%);
+-webkit-mask-image: radial-gradient(circle at 60% 40%, black 60%, transparent 100%);
 }
 
 .god-key-content {
