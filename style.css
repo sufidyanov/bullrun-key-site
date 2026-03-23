@@ -517,10 +517,11 @@ font-weight:600;
   right: -10px;
   bottom: 0;
 
-  width: 220px;              /* ← КРИТИЧНО */
-  opacity: 0.18;             /* ← КРИТИЧНО */
+  width: 240px;
+  opacity: 0.28;   /* было 0.18 → усилили */
 
-  filter: blur(1.5px) brightness(0.9);
+  filter: blur(1px) brightness(1); /* убрали затемнение */
+
   pointer-events: none;
 }
 
