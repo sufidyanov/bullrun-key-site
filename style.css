@@ -515,7 +515,7 @@ font-weight:600;
 .god-key-bg {
   position: absolute;
   right: -18px;
-  bottom: -6px;
+  bottom: -12px;
   width: 255px;
   opacity: 0.22;
   filter: blur(1.2px) brightness(0.95) contrast(1.05);
@@ -537,11 +537,12 @@ font-weight:600;
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    120deg,
-    rgba(0,0,0,0.82) 18%,
-    rgba(0,0,0,0.55) 58%,
-    rgba(0,0,0,0.2) 100%
+ background: linear-gradient(
+  140deg,
+  rgba(0,0,0,0.78) 15%,
+  rgba(0,0,0,0.55) 50%,
+  rgba(0,0,0,0.25) 75%,
+  rgba(0,0,0,0.1) 100%
   );
   z-index: 1;
 }
