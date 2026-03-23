@@ -491,3 +491,19 @@ font-weight:600;
   opacity: 1;
   transform: translateY(-1px);
 }
+.stat-value.is-forming {
+  opacity: 0.78;
+}
+
+.stat-value.is-building {
+  opacity: 0.9;
+}
+
+.stat-value.is-approaching {
+  color: #ffd08a;
+}
+
+.stat-value.is-ready {
+  color: #ffd166;
+  text-shadow: 0 0 18px rgba(255, 209, 102, 0.16);
+}
