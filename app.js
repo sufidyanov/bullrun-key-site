@@ -175,6 +175,10 @@ async function loadTreasuryData() {
 const revealStateTextEl = document.getElementById("revealStateText");
 const revealNoteEl = document.getElementById("revealNote");
 const systemStateEl = document.getElementById("systemState");
+    const nextRoundStatusEl = document.getElementById("nextRoundStatus");
+const nextRoundTimingEl = document.getElementById("nextRoundTiming");
+const roundIntroEl = document.getElementById("roundIntro");
+const roundNoteEl = document.getElementById("roundNote");
 
     if (treasuryBalanceEl) {
       treasuryBalanceEl.textContent =
@@ -231,6 +235,24 @@ if (balanceEth >= 1) {
   if (systemStateEl) {
     systemStateEl.classList.add("is-triggered");
   }
+  if (nextRoundStatusEl) {
+  nextRoundStatusEl.textContent = "Ready";
+}
+
+if (nextRoundTimingEl) {
+  nextRoundTimingEl.textContent = "1 ETH";
+}
+
+if (roundIntroEl) {
+  roundIntroEl.innerHTML = `
+    Reward Round #1 is now unlocked by the first cycle threshold.<br>
+    Treasury trigger: reached.
+  `;
+}
+
+if (roundNoteEl) {
+  roundNoteEl.textContent = "The first system-wide distribution is now ready to activate.";
+}
 } else if (balanceEth >= 0.8) {
   if (cycleStateTextEl) {
     cycleStateTextEl.textContent = "Cycle: Reveal Approaching";
@@ -254,6 +276,24 @@ if (balanceEth >= 1) {
   if (systemStateEl) {
     systemStateEl.classList.add("is-hot");
   }
+  if (nextRoundStatusEl) {
+  nextRoundStatusEl.textContent = "Approaching";
+}
+
+if (nextRoundTimingEl) {
+  nextRoundTimingEl.textContent = `${balanceEth.toLocaleString(undefined, { maximumFractionDigits: 4 })} / 1 ETH`;
+}
+
+if (roundIntroEl) {
+  roundIntroEl.innerHTML = `
+    Reward Round #1 is approaching activation.<br>
+    The treasury is nearing its first trigger.
+  `;
+}
+
+if (roundNoteEl) {
+  roundNoteEl.textContent = "The first distribution layer is close to forming.";
+}
 } else if (balanceEth >= 0.5) {
   if (cycleStateTextEl) {
     cycleStateTextEl.textContent = "Cycle: Threshold Forming";
@@ -273,6 +313,24 @@ if (balanceEth >= 1) {
   if (treasuryProgressFillEl) {
     treasuryProgressFillEl.classList.add("is-warming");
   }
+  if (nextRoundStatusEl) {
+  nextRoundStatusEl.textContent = "Building";
+}
+
+if (nextRoundTimingEl) {
+  nextRoundTimingEl.textContent = `${balanceEth.toLocaleString(undefined, { maximumFractionDigits: 4 })} / 1 ETH`;
+}
+
+if (roundIntroEl) {
+  roundIntroEl.innerHTML = `
+    Reward Round #1 is forming inside the treasury.<br>
+    The first trigger is beginning to take shape.
+  `;
+}
+
+if (roundNoteEl) {
+  roundNoteEl.textContent = "Treasury pressure is building toward the first round.";
+}
 } else {
   if (cycleStateTextEl) {
     cycleStateTextEl.textContent = "Cycle: Accumulating Signals";
@@ -281,6 +339,24 @@ if (balanceEth >= 1) {
   if (revealStateTextEl) {
     revealStateTextEl.textContent = "Reveal: Locked (1 ETH threshold)";
   }
+  if (nextRoundStatusEl) {
+  nextRoundStatusEl.textContent = "Forming";
+}
+
+if (nextRoundTimingEl) {
+  nextRoundTimingEl.textContent = "Pending";
+}
+
+if (roundIntroEl) {
+  roundIntroEl.innerHTML = `
+    The first cycle threshold activates Reward Round #1.<br>
+    Threshold: 1 ETH in treasury.
+  `;
+}
+
+if (roundNoteEl) {
+  roundNoteEl.textContent = "The first round is still forming inside the treasury.";
+}
 
   if (revealNoteEl) {
     revealNoteEl.innerHTML = `
