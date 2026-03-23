@@ -461,3 +461,33 @@ font-weight:600;
 .system-state {
   animation: subtlePulse 4s ease-in-out infinite;
 }
+.system-state {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.progress-fill {
+  transition: width 0.6s ease, box-shadow 0.4s ease, filter 0.4s ease;
+}
+
+.progress-fill.is-warming {
+  box-shadow: 0 0 24px rgba(247, 147, 26, 0.45);
+}
+
+.progress-fill.is-hot {
+  box-shadow: 0 0 34px rgba(247, 147, 26, 0.65);
+  filter: brightness(1.08);
+}
+
+.progress-fill.is-triggered {
+  box-shadow: 0 0 42px rgba(247, 147, 26, 0.85);
+  filter: brightness(1.14);
+}
+
+.system-state.is-hot {
+  opacity: 1;
+}
+
+.system-state.is-triggered {
+  opacity: 1;
+  transform: translateY(-1px);
+}
