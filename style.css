@@ -543,3 +543,14 @@ font-weight:600;
 
   z-index: 1;
 }
+.god-key-card:hover .god-key-bg {
+  opacity: 0.38;
+  filter: blur(0.6px) brightness(1.1);
+
+  transform: scale(1.03);
+  transition: all 0.35s ease;
+}
+
+.god-key-bg {
+  transition: all 0.35s ease;
+}
