@@ -171,6 +171,10 @@ async function loadTreasuryData() {
     const treasuryTargetEl = document.getElementById("treasuryTarget");
     const treasuryProgressTextEl = document.getElementById("treasuryProgressText");
     const treasuryProgressFillEl = document.getElementById("treasuryProgressFill");
+    const cycleStateTextEl = document.getElementById("cycleStateText");
+const revealStateTextEl = document.getElementById("revealStateText");
+const revealNoteEl = document.getElementById("revealNote");
+const systemStateEl = document.getElementById("systemState");
 
     if (treasuryBalanceEl) {
       treasuryBalanceEl.textContent =
@@ -196,6 +200,95 @@ async function loadTreasuryData() {
     if (treasuryProgressFillEl) {
       treasuryProgressFillEl.style.width = `${progress}%`;
     }
+    if (treasuryProgressFillEl) {
+  treasuryProgressFillEl.classList.remove("is-warming", "is-hot", "is-triggered");
+}
+
+if (systemStateEl) {
+  systemStateEl.classList.remove("is-hot", "is-triggered");
+}
+
+if (balanceEth >= 1) {
+  if (cycleStateTextEl) {
+    cycleStateTextEl.textContent = "Cycle: Threshold Reached";
+  }
+
+  if (revealStateTextEl) {
+    revealStateTextEl.textContent = "Reveal: Trigger unlocked";
+  }
+
+  if (revealNoteEl) {
+    revealNoteEl.innerHTML = `
+      The first trigger has been reached.<br>
+      The system is ready to transition.
+    `;
+  }
+
+  if (treasuryProgressFillEl) {
+    treasuryProgressFillEl.classList.add("is-triggered");
+  }
+
+  if (systemStateEl) {
+    systemStateEl.classList.add("is-triggered");
+  }
+} else if (balanceEth >= 0.8) {
+  if (cycleStateTextEl) {
+    cycleStateTextEl.textContent = "Cycle: Reveal Approaching";
+  }
+
+  if (revealStateTextEl) {
+    revealStateTextEl.textContent = "Reveal: Signal pressure increasing";
+  }
+
+  if (revealNoteEl) {
+    revealNoteEl.innerHTML = `
+      The first trigger is close.<br>
+      System tension is rising.
+    `;
+  }
+
+  if (treasuryProgressFillEl) {
+    treasuryProgressFillEl.classList.add("is-hot");
+  }
+
+  if (systemStateEl) {
+    systemStateEl.classList.add("is-hot");
+  }
+} else if (balanceEth >= 0.5) {
+  if (cycleStateTextEl) {
+    cycleStateTextEl.textContent = "Cycle: Threshold Forming";
+  }
+
+  if (revealStateTextEl) {
+    revealStateTextEl.textContent = "Reveal: Locked, but drawing closer";
+  }
+
+  if (revealNoteEl) {
+    revealNoteEl.innerHTML = `
+      The first trigger is forming.<br>
+      Positioning pressure is building.
+    `;
+  }
+
+  if (treasuryProgressFillEl) {
+    treasuryProgressFillEl.classList.add("is-warming");
+  }
+} else {
+  if (cycleStateTextEl) {
+    cycleStateTextEl.textContent = "Cycle: Accumulating Signals";
+  }
+
+  if (revealStateTextEl) {
+    revealStateTextEl.textContent = "Reveal: Locked (1 ETH threshold)";
+  }
+
+  if (revealNoteEl) {
+    revealNoteEl.innerHTML = `
+      1 ETH is not a goal.<br>
+      It is the first trigger.
+    `;
+  }
+}
   } catch (err) {
     console.error("Treasury load failed", err);
     const treasuryBalanceEl = document.getElementById("treasuryBalance");
