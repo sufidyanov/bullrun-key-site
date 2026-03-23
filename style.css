@@ -516,41 +516,37 @@ font-weight:600;
   position: absolute;
   right: -10px;
   bottom: 0;
-
   width: 240px;
-  opacity: 0.28;   /* было 0.18 → усилили */
-
-  filter: blur(1px) brightness(1); /* убрали затемнение */
-
+  opacity: 0.28;
+  filter: blur(1px) brightness(1);
   pointer-events: none;
+  transition: all 0.35s ease;
 }
 
 .god-key-content {
   position: relative;
   z-index: 2;
 }
+
 .god-key-card::after {
   content: "";
   position: absolute;
   inset: 0;
-
   background: linear-gradient(
     120deg,
     rgba(0,0,0,0.75) 20%,
     rgba(0,0,0,0.45) 60%,
     rgba(0,0,0,0.15) 100%
   );
-
   z-index: 1;
 }
-.god-key-card:hover .god-key-bg {
-  opacity: 0.38;
-  filter: blur(0.6px) brightness(1.1);
 
-  transform: scale(1.03);
-  transition: all 0.35s ease;
+.god-key-card:hover .god-key-bg {
+  opacity: 0.45;
+  filter: blur(0.4px) brightness(1.15);
+  transform: scale(1.04);
 }
 
-.god-key-bg {
-  transition: all 0.35s ease;
+.god-key-card:hover {
+  box-shadow: 0 0 40px rgba(255, 180, 80, 0.08);
 }
