@@ -517,9 +517,10 @@ font-weight:600;
   right: -10px;
   bottom: 0;
 
-  width: 220px;
- opacity: 0.18;
-filter: blur(1.5px) brightness(0.9);
+  width: 220px;              /* ← КРИТИЧНО */
+  opacity: 0.18;             /* ← КРИТИЧНО */
+
+  filter: blur(1.5px) brightness(0.9);
   pointer-events: none;
 }
 
