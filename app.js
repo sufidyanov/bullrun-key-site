@@ -179,6 +179,9 @@ const systemStateEl = document.getElementById("systemState");
 const nextRoundTimingEl = document.getElementById("nextRoundTiming");
 const roundIntroEl = document.getElementById("roundIntro");
 const roundNoteEl = document.getElementById("roundNote");
+    if (nextRoundStatusEl) {
+  nextRoundStatusEl.classList.remove("is-forming", "is-building", "is-approaching", "is-ready");
+}
 
     if (treasuryBalanceEl) {
       treasuryBalanceEl.textContent =
@@ -216,7 +219,9 @@ if (balanceEth >= 1) {
   if (cycleStateTextEl) {
     cycleStateTextEl.textContent = "Cycle: Threshold Reached";
   }
-
+if (nextRoundStatusEl) {
+  nextRoundStatusEl.classList.add("is-ready");
+}
   if (revealStateTextEl) {
     revealStateTextEl.textContent = "Reveal: Trigger unlocked";
   }
@@ -257,7 +262,9 @@ if (roundNoteEl) {
   if (cycleStateTextEl) {
     cycleStateTextEl.textContent = "Cycle: Reveal Approaching";
   }
-
+if (nextRoundStatusEl) {
+  nextRoundStatusEl.classList.add("is-approaching");
+}
   if (revealStateTextEl) {
     revealStateTextEl.textContent = "Reveal: Signal pressure increasing";
   }
@@ -298,7 +305,9 @@ if (roundNoteEl) {
   if (cycleStateTextEl) {
     cycleStateTextEl.textContent = "Cycle: Threshold Forming";
   }
-
+if (nextRoundStatusEl) {
+  nextRoundStatusEl.classList.add("is-building");
+}
   if (revealStateTextEl) {
     revealStateTextEl.textContent = "Reveal: Locked, but drawing closer";
   }
@@ -335,7 +344,9 @@ if (roundNoteEl) {
   if (cycleStateTextEl) {
     cycleStateTextEl.textContent = "Cycle: Accumulating Signals";
   }
-
+if (nextRoundStatusEl) {
+  nextRoundStatusEl.classList.add("is-forming");
+}
   if (revealStateTextEl) {
     revealStateTextEl.textContent = "Reveal: Locked (1 ETH threshold)";
   }
