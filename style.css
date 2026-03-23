@@ -507,3 +507,24 @@ font-weight:600;
   color: #ffd166;
   text-shadow: 0 0 18px rgba(255, 209, 102, 0.16);
 }
+.god-key-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.god-key-bg {
+  position: absolute;
+  right: -40px;
+  bottom: -20px;
+
+  width: 220px;
+  opacity: 0.12;
+
+  filter: blur(2px) brightness(0.8);
+  pointer-events: none;
+}
+
+.god-key-content {
+  position: relative;
+  z-index: 2;
+}
