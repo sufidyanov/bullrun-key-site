@@ -528,3 +528,17 @@ font-weight:600;
   position: relative;
   z-index: 2;
 }
+.god-key-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    120deg,
+    rgba(0,0,0,0.9) 20%,
+    rgba(0,0,0,0.7) 60%,
+    rgba(0,0,0,0.3) 100%
+  );
+
+  z-index: 1;
+}
