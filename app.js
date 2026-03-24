@@ -570,6 +570,7 @@ async function loadRecentClaims(provider) {
         // пропускаем mint/burn
         if (!from || !to) continue;
         if (from === ethers.ZeroAddress || to === ethers.ZeroAddress) continue;
+        if (from.toLowerCase() === to.toLowerCase()) continue;
 
         let timestampMs = 0;
         try {
