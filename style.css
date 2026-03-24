@@ -566,3 +566,11 @@ font-weight:600;
   opacity: 0.9;
   font-style: italic;
 }
+.recent-claim-item.system {
+  opacity: 0.9;
+}
+
+.recent-claim-item.system .recent-claim-meta {
+  opacity: 0.7;
+  letter-spacing: 0.2px;
+}
