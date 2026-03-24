@@ -447,48 +447,157 @@ async function loadRecentClaims(provider) {
     if (!list) return;
 
     const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, provider);
-    const filter = rewardContract.filters.RewardsClaimed();
+const filter = rewardContract.filters.RewardsClaimed();
 
-    let events = await rewardContract.queryFilter(filter, -50000);
+let claimEvents = await rewardContract.queryFilter(filter, -50000);
+claimEvents = claimEvents.sort((a, b) => b.blockNumber - a.blockNumber);
 
-    // сортируем от новых к старым
-    events = events.sort((a, b) => b.blockNumber - a.blockNumber);
+const activityItems = [];
 
-    // берём только последние 5
-    events = events.slice(0, 5);
+// claims
+for (const e of claimEvents.slice(0, 5)) {
+  let claimTime = "";
+  let timestampMs = 0;
 
-    list.innerHTML = "";
+  try {
+    const block = await provider.getBlock(e.blockNumber);
+    if (block && block.timestamp) {
+      timestampMs = block.timestamp * 1000;
+      claimTime = timeAgo(timestampMs);
+    }
+  } catch (blockErr) {
+    console.warn("Failed to load block time for claim", blockErr);
+  }
 
-    if (!events.length) {
+  const wallet = e.args.user;
+  const amountRaw = e.args.amount;
+  const tokenIds = e.args.tokenIds || [];
+
+  let keyLabel = "Key";
+  if (tokenIds.length === 1) {
+    keyLabel = `Key #${tokenIds[0].toString()}`;
+  } else if (tokenIds.length > 1) {
+    keyLabel = `${tokenIds.length} Keys`;
+  }
+
+  activityItems.push({
+    type: "claim",
+    wallet,
+    short: shortAddress(wallet),
+    amount: Number(ethers.formatEther(amountRaw)),
+    label: keyLabel,
+    timestampMs
+  });
+}
+
+// treasury signals
+try {
+  const treasuryUrl =
+    `https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlist` +
+    `&address=${TREASURY_WALLET}` +
+    `&startblock=0&endblock=99999999&page=1&offset=10&sort=desc` +
+    `&apikey=${ETHERSCAN_API_KEY}`;
+
+  const treasuryResponse = await fetch(treasuryUrl);
+  if (treasuryResponse.ok) {
+    const treasuryData = await treasuryResponse.json();
+
+    if (treasuryData && Array.isArray(treasuryData.result)) {
+      const incomingSignals = treasuryData.result.filter((tx) => {
+        return (
+          tx.to &&
+          tx.to.toLowerCase() === TREASURY_WALLET.toLowerCase() &&
+          tx.value &&
+          BigInt(tx.value) > 0n &&
+          tx.isError === "0"
+        );
+      });
+
+      for (const tx of incomingSignals.slice(0, 5)) {
+        const timestampMs = Number(tx.timeStamp) * 1000;
+
+        activityItems.push({
+          type: "signal",
+          wallet: tx.from,
+          short: shortAddress(tx.from),
+          amount: Number(ethers.formatEther(tx.value)),
+          label: "Treasury Signal",
+          timestampMs
+        });
+      }
+    }
+  }
+} catch (signalErr) {
+  console.warn("Failed to load treasury signals for activity", signalErr);
+}
+
+activityItems.sort((a, b) => b.timestampMs - a.timestampMs);
+const recentItems = activityItems.slice(0, 5);
+
+list.innerHTML = "";
+
+    if (!recentItems.length) {
       if (countLabel) countLabel.textContent = "No recent activity";
-      if (footer) footer.textContent = "No claims yet. Rewards activity will appear here.";
+      if (footer) footer.textContent = "No recent system activity yet.";
       list.innerHTML = '<div class="small">No claims yet.</div>';
       return;
     }
 
     if (countLabel) {
-      countLabel.textContent = `${events.length} recent claims`;
+      countLabel.textContent = `${recentItems.length} recent events`;
     }
 
     let totalClaimed = 0;
 
-    for (let index = 0; index < events.length; index++) {
-      const e = events[index];
-      const wallet = e.args.user;
-      const amountRaw = e.args.amount;
-      const tokenIds = e.args.tokenIds || [];
+    let totalShown = 0;
 
-      const amount = Number(ethers.formatEther(amountRaw)).toFixed(6);
-      const amountNumber = Number(amount);
+for (let index = 0; index < recentItems.length; index++) {
+  const itemData = recentItems[index];
+  totalShown += itemData.amount;
 
-      const short = wallet.slice(0, 6) + "..." + wallet.slice(-4);
+  const activityTime = itemData.timestampMs ? timeAgo(itemData.timestampMs) : "";
 
-      let keyLabel = "Key";
-      if (tokenIds.length === 1) {
-        keyLabel = `Key #${tokenIds[0].toString()}`;
-      } else if (tokenIds.length > 1) {
-        keyLabel = `${tokenIds.length} Keys`;
+  const item = document.createElement("div");
+  item.className = "recent-claim-item";
+  item.style.display = "flex";
+  item.style.flexWrap = "wrap";
+  item.style.alignItems = "center";
+  item.style.gap = "8px";
+  item.style.padding = "10px 0";
+  item.style.borderBottom = "1px solid rgba(255,255,255,0.06)";
+
+  if (itemData.type === "claim") {
+    item.innerHTML = `
+      <span class="recent-claim-meta" style="opacity:0.8">${itemData.label}</span>
+      <span class="recent-claim-meta">•</span>
+      <a href="https://etherscan.io/address/${itemData.wallet}" target="_blank" rel="noopener noreferrer">${itemData.short}</a>
+      <span class="recent-claim-meta">extracted</span>
+      <strong>${itemData.amount.toFixed(6)} ETH</strong>
+      ${activityTime ? `<span class="recent-claim-meta">• ${activityTime}</span>` : ""}
+    `;
+  } else {
+    item.innerHTML = `
+      <span class="recent-claim-meta" style="opacity:0.8">${itemData.label}</span>
+      <span class="recent-claim-meta">•</span>
+      <a href="https://etherscan.io/address/${itemData.wallet}" target="_blank" rel="noopener noreferrer">${itemData.short}</a>
+      <span class="recent-claim-meta">submitted</span>
+      <strong>${itemData.amount.toFixed(4)} ETH</strong>
+      ${activityTime ? `<span class="recent-claim-meta">• ${activityTime}</span>` : ""}
+    `;
+  }
+
+  list.appendChild(item);
+
+  if (index === 0) {
+    setTimeout(() => {
+      if (itemData.type === "claim") {
+        showLiveClaimToast(`${itemData.label} • ${itemData.short} extracted ${itemData.amount.toFixed(6)} ETH`);
+      } else {
+        showLiveClaimToast(`Signal detected: ${itemData.amount.toFixed(4)} ETH`);
       }
+    }, 800);
+  }
+}
 
       totalClaimed += amountNumber;
 
@@ -530,7 +639,7 @@ async function loadRecentClaims(provider) {
     }
 
     if (footer) {
-      footer.textContent = `Total shown claimed: ${totalClaimed.toFixed(6)} ETH`;
+      footer.textContent = `Total value shown: ${totalShown.toFixed(6)} ETH`;
     }
   } catch (err) {
     console.error("Claims load failed", err);
