@@ -562,3 +562,7 @@ font-weight:600;
 .recent-claim-item strong {
   color: #ffd166;
 }
+.recent-claim-item.system {
+  opacity: 0.9;
+  font-style: italic;
+}
