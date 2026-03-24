@@ -24,6 +24,9 @@ const rewardAbi = [
   "function roundInfo(uint256 roundId) view returns (uint256 amountDeposited, uint256 rewardPerToken, uint256 startTime, uint256 expiryTime, uint256 claimedAmount, uint256 remainingAmount, bool reclaimed, bool expired)",
   "event RewardsClaimed(address indexed user, uint256 amount, uint256[] tokenIds)"
 ];
+const nftActivityAbi = [
+  "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)"
+];
 
 let currentAccount = "";
 let currentTokenIds = [];
@@ -446,54 +449,67 @@ async function loadRecentClaims(provider) {
 
     if (!list) return;
 
-    const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, provider);
-    const filter = rewardContract.filters.RewardsClaimed();
-
-    let claimEvents = await rewardContract.queryFilter(filter, -50000);
-    claimEvents = claimEvents.sort((a, b) => b.blockNumber - a.blockNumber);
+    list.innerHTML = "";
 
     const activityItems = [];
+    const nowMs = Date.now();
+    const oneDayMs = 24 * 60 * 60 * 1000;
 
-    // Claims
-    for (const e of claimEvents.slice(0, 5)) {
-      let timestampMs = 0;
+    // -------------------------
+    // 1) CLAIMS
+    // -------------------------
+    try {
+      const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, provider);
+      const claimFilter = rewardContract.filters.RewardsClaimed();
 
-      try {
-        const block = await provider.getBlock(e.blockNumber);
-        if (block && block.timestamp) {
-          timestampMs = block.timestamp * 1000;
+      let claimEvents = await rewardContract.queryFilter(claimFilter, -50000);
+      claimEvents = claimEvents.sort((a, b) => b.blockNumber - a.blockNumber);
+
+      for (const e of claimEvents.slice(0, 5)) {
+        let timestampMs = 0;
+
+        try {
+          const block = await provider.getBlock(e.blockNumber);
+          if (block && block.timestamp) {
+            timestampMs = block.timestamp * 1000;
+          }
+        } catch (blockErr) {
+          console.warn("Failed to load block time for claim", blockErr);
         }
-      } catch (blockErr) {
-        console.warn("Failed to load block time for claim", blockErr);
+
+        const wallet = e.args.user;
+        const amountRaw = e.args.amount;
+        const tokenIds = e.args.tokenIds || [];
+
+        let keyLabel = "Key";
+        if (tokenIds.length === 1) {
+          keyLabel = `Key #${tokenIds[0].toString()}`;
+        } else if (tokenIds.length > 1) {
+          keyLabel = `${tokenIds.length} Keys`;
+        }
+
+        activityItems.push({
+          type: "claim",
+          wallet,
+          short: shortAddress(wallet),
+          amount: Number(ethers.formatEther(amountRaw)),
+          label: keyLabel,
+          timestampMs
+        });
       }
-
-      const wallet = e.args.user;
-      const amountRaw = e.args.amount;
-      const tokenIds = e.args.tokenIds || [];
-
-      let keyLabel = "Key";
-      if (tokenIds.length === 1) {
-        keyLabel = `Key #${tokenIds[0].toString()}`;
-      } else if (tokenIds.length > 1) {
-        keyLabel = `${tokenIds.length} Keys`;
-      }
-
-      activityItems.push({
-        type: "claim",
-        wallet,
-        short: shortAddress(wallet),
-        amount: Number(ethers.formatEther(amountRaw)),
-        label: keyLabel,
-        timestampMs
-      });
+    } catch (claimErr) {
+      console.warn("Failed to load claim activity", claimErr);
     }
 
-    // Treasury signals
+    // -------------------------
+    // 2) TREASURY SIGNALS
+    // -------------------------
+    let recentSignals = [];
     try {
       const treasuryUrl =
         `https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlist` +
         `&address=${TREASURY_WALLET}` +
-        `&startblock=0&endblock=99999999&page=1&offset=10&sort=desc` +
+        `&startblock=0&endblock=99999999&page=1&offset=20&sort=desc` +
         `&apikey=${ETHERSCAN_API_KEY}`;
 
       const treasuryResponse = await fetch(treasuryUrl);
@@ -511,6 +527,8 @@ async function loadRecentClaims(provider) {
               tx.isError === "0"
             );
           });
+
+          recentSignals = incomingSignals;
 
           for (const tx of incomingSignals.slice(0, 5)) {
             const timestampMs = Number(tx.timeStamp) * 1000;
@@ -530,10 +548,121 @@ async function loadRecentClaims(provider) {
       console.warn("Failed to load treasury signals for activity", signalErr);
     }
 
-    activityItems.sort((a, b) => b.timestampMs - a.timestampMs);
-    const recentItems = activityItems.slice(0, 5);
+    // -------------------------
+    // 3) NFT TRANSFERS
+    // -------------------------
+    try {
+      const nftContract = new ethers.Contract(NFT_CONTRACT, nftActivityAbi, provider);
+      const transferFilter = nftContract.filters.Transfer();
 
-    list.innerHTML = "";
+      let transferEvents = await nftContract.queryFilter(transferFilter, -50000);
+      transferEvents = transferEvents.sort((a, b) => b.blockNumber - a.blockNumber);
+
+      let addedTransfers = 0;
+
+      for (const e of transferEvents) {
+        if (addedTransfers >= 5) break;
+
+        const from = e.args.from;
+        const to = e.args.to;
+        const tokenId = e.args.tokenId?.toString?.() || String(e.args.tokenId);
+
+        // пропускаем mint/burn
+        if (!from || !to) continue;
+        if (from === ethers.ZeroAddress || to === ethers.ZeroAddress) continue;
+
+        let timestampMs = 0;
+        try {
+          const block = await provider.getBlock(e.blockNumber);
+          if (block && block.timestamp) {
+            timestampMs = block.timestamp * 1000;
+          }
+        } catch (blockErr) {
+          console.warn("Failed to load block time for transfer", blockErr);
+        }
+
+        activityItems.push({
+          type: "transfer",
+          from,
+          to,
+          fromShort: shortAddress(from),
+          toShort: shortAddress(to),
+          label: `Key #${tokenId}`,
+          timestampMs
+        });
+
+        addedTransfers += 1;
+      }
+    } catch (transferErr) {
+      console.warn("Failed to load transfer activity", transferErr);
+    }
+
+    // -------------------------
+    // 4) AUTOMATIC SYSTEM EVENTS
+    // -------------------------
+    try {
+      const treasuryBalanceWei = await provider.getBalance(TREASURY_WALLET);
+      const treasuryBalanceEth = Number(ethers.formatEther(treasuryBalanceWei));
+
+      // threshold event
+      if (treasuryBalanceEth >= 0.8) {
+        activityItems.push({
+          type: "system",
+          label: "System",
+          text: "reveal pressure increasing",
+          timestampMs: nowMs - 60 * 1000
+        });
+      } else if (treasuryBalanceEth >= 0.5) {
+        activityItems.push({
+          type: "system",
+          label: "System",
+          text: "threshold forming",
+          timestampMs: nowMs - 2 * 60 * 1000
+        });
+      }
+
+      // signal cluster event (если 3+ сигналов за 24ч)
+      const signalsLast24h = recentSignals.filter((tx) => {
+        const ts = Number(tx.timeStamp) * 1000;
+        return nowMs - ts <= oneDayMs;
+      });
+
+      if (signalsLast24h.length >= 3) {
+        const latestSignalTs = Number(signalsLast24h[0].timeStamp) * 1000;
+
+        activityItems.push({
+          type: "system",
+          label: "System",
+          text: "positioning activity increasing",
+          timestampMs: latestSignalTs + 1
+        });
+      }
+
+      // reward activity event (если были клеймы)
+      const hasRecentClaim = activityItems.some((item) => item.type === "claim");
+      if (hasRecentClaim) {
+        const latestClaim = activityItems
+          .filter((item) => item.type === "claim")
+          .sort((a, b) => b.timestampMs - a.timestampMs)[0];
+
+        if (latestClaim) {
+          activityItems.push({
+            type: "system",
+            label: "System",
+            text: "reward activity detected",
+            timestampMs: latestClaim.timestampMs + 1
+          });
+        }
+      }
+    } catch (systemErr) {
+      console.warn("Failed to build system activity", systemErr);
+    }
+
+    // -------------------------
+    // 5) SORT + LIMIT
+    // -------------------------
+    activityItems.sort((a, b) => b.timestampMs - a.timestampMs);
+    const recentItems = activityItems.slice(0, 7);
 
     if (!recentItems.length) {
       if (countLabel) countLabel.textContent = "No recent activity";
@@ -550,9 +679,11 @@ async function loadRecentClaims(provider) {
 
     for (let index = 0; index < recentItems.length; index++) {
       const itemData = recentItems[index];
-      totalShown += itemData.amount;
-
       const activityTime = itemData.timestampMs ? timeAgo(itemData.timestampMs) : "";
+
+      if (itemData.amount) {
+        totalShown += itemData.amount;
+      }
 
       const item = document.createElement("div");
       item.className = "recent-claim-item";
@@ -572,13 +703,29 @@ async function loadRecentClaims(provider) {
           <strong>${itemData.amount.toFixed(6)} ETH</strong>
           ${activityTime ? `<span class="recent-claim-meta">• ${activityTime}</span>` : ""}
         `;
-      } else {
+      } else if (itemData.type === "signal") {
         item.innerHTML = `
           <span class="recent-claim-meta" style="opacity:0.8">${itemData.label}</span>
           <span class="recent-claim-meta">•</span>
           <a href="https://etherscan.io/address/${itemData.wallet}" target="_blank" rel="noopener noreferrer">${itemData.short}</a>
-          <span class="recent-claim-meta">submitted</span>
+          <span class="recent-claim-meta">positioned</span>
           <strong>${itemData.amount.toFixed(4)} ETH</strong>
+          ${activityTime ? `<span class="recent-claim-meta">• ${activityTime}</span>` : ""}
+        `;
+      } else if (itemData.type === "transfer") {
+        item.innerHTML = `
+          <span class="recent-claim-meta" style="opacity:0.8">${itemData.label}</span>
+          <span class="recent-claim-meta">•</span>
+          <a href="https://etherscan.io/address/${itemData.from}" target="_blank" rel="noopener noreferrer">${itemData.fromShort}</a>
+          <span class="recent-claim-meta">transferred to</span>
+          <a href="https://etherscan.io/address/${itemData.to}" target="_blank" rel="noopener noreferrer">${itemData.toShort}</a>
+          ${activityTime ? `<span class="recent-claim-meta">• ${activityTime}</span>` : ""}
+        `;
+      } else {
+        item.innerHTML = `
+          <span class="recent-claim-meta" style="opacity:0.8">${itemData.label}</span>
+          <span class="recent-claim-meta">•</span>
+          <span class="recent-claim-meta">${itemData.text}</span>
           ${activityTime ? `<span class="recent-claim-meta">• ${activityTime}</span>` : ""}
         `;
       }
@@ -589,15 +736,19 @@ async function loadRecentClaims(provider) {
         setTimeout(() => {
           if (itemData.type === "claim") {
             showLiveClaimToast(`${itemData.label} • ${itemData.short} extracted ${itemData.amount.toFixed(6)} ETH`);
-          } else {
+          } else if (itemData.type === "signal") {
             showLiveClaimToast(`Signal detected: ${itemData.amount.toFixed(4)} ETH`);
+          } else if (itemData.type === "transfer") {
+            showLiveClaimToast(`${itemData.label} transferred`);
+          } else if (itemData.type === "system") {
+            showLiveClaimToast(`System: ${itemData.text}`);
           }
         }, 800);
       }
     }
 
     if (footer) {
-      footer.textContent = `Total value shown: ${totalShown.toFixed(6)} ETH`;
+      footer.textContent = `Value shown (signals + rewards): ${totalShown.toFixed(6)} ETH`;
     }
   } catch (err) {
     console.error("Activity load failed", err);
