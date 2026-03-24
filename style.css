@@ -559,3 +559,6 @@ font-weight:600;
 .god-key-card:hover {
   box-shadow: 0 0 40px rgba(255, 180, 80, 0.08);
 }
+.recent-claim-item strong {
+  color: #ffd166;
+}
