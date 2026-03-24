@@ -454,7 +454,7 @@ async function loadRecentClaims(provider) {
     const activityItems = [];
     const nowMs = Date.now();
     const oneDayMs = 24 * 60 * 60 * 1000;
-
+let recentTransfers = [];
     // -------------------------
     // 1) CLAIMS
     // -------------------------
@@ -557,6 +557,7 @@ async function loadRecentClaims(provider) {
 
       let transferEvents = await nftContract.queryFilter(transferFilter, -50000);
       transferEvents = transferEvents.sort((a, b) => b.blockNumber - a.blockNumber);
+      recentTransfers = transferEvents;
 
       let addedTransfers = 0;
 
@@ -638,7 +639,21 @@ async function loadRecentClaims(provider) {
           timestampMs: latestSignalTs + 1
         });
       }
+const transfersLast24h = activityItems.filter((item) => {
+  return item.type === "transfer" && nowMs - item.timestampMs <= oneDayMs;
+});
 
+if (transfersLast24h.length >= 3) {
+  const latestTransferTs = transfersLast24h
+    .sort((a, b) => b.timestampMs - a.timestampMs)[0].timestampMs;
+
+  activityItems.push({
+    type: "system",
+    label: "System",
+    text: "key movement increasing",
+    timestampMs: latestTransferTs + 1
+  });
+}
       // reward activity event (если были клеймы)
       const hasRecentClaim = activityItems.some((item) => item.type === "claim");
       if (hasRecentClaim) {
