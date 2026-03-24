@@ -720,6 +720,7 @@ if (transfersLast24h.length >= 3) {
           ${activityTime ? `<span class="recent-claim-meta">• ${activityTime}</span>` : ""}
         `;
       } else if (itemData.type === "signal") {
+    
         item.innerHTML = `
           <span class="recent-claim-meta" style="opacity:0.8">${itemData.label}</span>
           <span class="recent-claim-meta">•</span>
@@ -738,6 +739,7 @@ if (transfersLast24h.length >= 3) {
           ${activityTime ? `<span class="recent-claim-meta">• ${activityTime}</span>` : ""}
         `;
       } else {
+         item.classList.add("system");
         item.innerHTML = `
           <span class="recent-claim-meta" style="opacity:0.8">${itemData.label}</span>
           <span class="recent-claim-meta">•</span>
