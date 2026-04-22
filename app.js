@@ -75,7 +75,7 @@ let lastTreasuryDepositHash = "";
 
 function formatEth(value) {
   const eth = Number(ethers.formatEther(value));
-  return eth.toLocaleString(undefined, { maximumFractionDigits: 6 });
+  return eth.toLocaleString("en-US", { maximumFractionDigits: 6 });
 }
 
 function shortAddress(address) {
@@ -243,7 +243,7 @@ const roundNoteEl = document.getElementById("roundNote");
 
     if (treasuryBalanceEl) {
       treasuryBalanceEl.textContent =
-        balanceEth.toLocaleString(undefined, { maximumFractionDigits: 4 }) + " ETH";
+        balanceEth.toLocaleString("en-US", { maximumFractionDigits: 4 }) + " ETH";
     }
 
     if (treasuryAddressEl) {
@@ -256,7 +256,7 @@ const roundNoteEl = document.getElementById("roundNote");
 
     if (treasuryProgressTextEl) {
       treasuryProgressTextEl.textContent =
-        balanceEth.toLocaleString(undefined, { maximumFractionDigits: 4 }) +
+        balanceEth.toLocaleString("en-US", { maximumFractionDigits: 4 }) +
         " / " +
         TREASURY_TARGET_ETH +
         " ETH";
@@ -340,7 +340,7 @@ if (nextRoundStatusEl) {
 }
 
 if (nextRoundTimingEl) {
-  nextRoundTimingEl.textContent = `${balanceEth.toLocaleString(undefined, { maximumFractionDigits: 4 })} / 1 ETH`;
+  nextRoundTimingEl.textContent = `${balanceEth.toLocaleString("en-US", { maximumFractionDigits: 4 })} / 1 ETH`;
 }
 
 if (roundIntroEl) {
@@ -376,7 +376,7 @@ if (nextRoundStatusEl) {
 }
 
 if (nextRoundTimingEl) {
-  nextRoundTimingEl.textContent = `${balanceEth.toLocaleString(undefined, { maximumFractionDigits: 4 })} / 1 ETH`;
+  nextRoundTimingEl.textContent = `${balanceEth.toLocaleString("en-US", { maximumFractionDigits: 4 })} / 1 ETH`;
 }
 
 if (roundIntroEl) {
@@ -868,7 +868,7 @@ if (!Array.isArray(data.result)) {
 
       const from = latest.from;
       const short = from.slice(0, 6) + "..." + from.slice(-4);
-      const amount = Number(ethers.formatEther(latest.value)).toLocaleString(undefined, {
+      const amount = Number(ethers.formatEther(latest.value)).toLocaleString("en-US", {
         maximumFractionDigits: 4
       });
 
@@ -1163,7 +1163,7 @@ donorsWithEns.forEach((donor, index) => {
         </div>
 
         <div style="font-weight:700; white-space:nowrap; text-align:right; flex-shrink:0; margin-left:auto;">
-  ${donor.total.toLocaleString(undefined, { maximumFractionDigits: 4 })} ETH
+  ${donor.total.toLocaleString("en-US", { maximumFractionDigits: 4 })} ETH
 </div>
       `;
   if (index === 0) {
@@ -1206,7 +1206,7 @@ item.style.border = "1px solid rgba(255, 170, 0, 0.18)";
 async function connectWallet() {
   try {
     if (!window.ethereum) {
-      setMessage("MetaMask or Rabby is not installed.", "error");
+      setMessage("No wallet detected. Install MetaMask or Rabby to connect.");
       return;
     }
 
@@ -1499,6 +1499,7 @@ if (disconnectBtn) disconnectBtn.addEventListener("click", disconnectWallet);
   setWalletStatus("Not connected");
   setNftCount(0);
   setClaimButtonState(false, "Connect wallet to check rewards");
+  setMessage(""); // clear any stale messages on load
 
   // Публичные блоки — грузим до коннекта кошелька,
   // чтобы анонимный посетитель видел живые данные, а не "Loading...".
