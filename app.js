@@ -517,7 +517,7 @@ let recentTransfers = [];
       const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, provider);
       const claimFilter = rewardContract.filters.RewardsClaimed();
 
-      let claimEvents = await rewardContract.queryFilter(claimFilter, -50000);
+      let claimEvents = await rewardContract.queryFilter(claimFilter, -5000);
       claimEvents = claimEvents.sort((a, b) => b.blockNumber - a.blockNumber);
 
       for (const e of claimEvents.slice(0, 5)) {
@@ -609,7 +609,7 @@ let recentTransfers = [];
       const nftContract = new ethers.Contract(NFT_CONTRACT, nftActivityAbi, provider);
       const transferFilter = nftContract.filters.Transfer();
 
-      let transferEvents = await nftContract.queryFilter(transferFilter, -50000);
+      let transferEvents = await nftContract.queryFilter(transferFilter, -5000);
       transferEvents = transferEvents.sort((a, b) => b.blockNumber - a.blockNumber);
       recentTransfers = transferEvents;
 
@@ -1514,12 +1514,13 @@ if (disconnectBtn) disconnectBtn.addEventListener("click", disconnectWallet);
 
   wireSignalButtons();
 
+// Лёгкий poll каждые 3 минуты — только treasury и leaderboard (Etherscan, дёшево).
+// loadRecentClaims и loadTreasuryNFTs убраны из цикла: они дорогие (eth_getLogs + NFT API).
+// Они грузятся один раз при загрузке страницы — этого достаточно.
 setInterval(async () => {
   await loadRecentTreasuryDeposits();
   await loadDonatorLeaderboard();
-  await loadTreasuryNFTs();
-  await loadRecentClaims(READ_PROVIDER);
-}, 30000);
+}, 180000);
 
   if (window.ethereum) {
     try {
