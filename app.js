@@ -3,7 +3,7 @@
 // Все внешние ключи (Alchemy, Etherscan) живут внутри Cloudflare Worker,
 // см. 03_site/proxy/worker.js + 03_site/proxy/README.md.
 // В этот JS не должно попасть ни одного секрета.
-const PROXY_BASE = "https://api.bullrunkey.xyz";
+const PROXY_BASE = "https://bullrun-key-proxy.bullrunkey.workers.dev";
 
 const REWARD_CONTRACT = "0xb522609cF7f2e8aF1d55Af1B685Cc9f6A159BC4D";
 const NFT_CONTRACT = "0x367ac60FB4B2bb8851a46ab7A7FD13654eF70419";
