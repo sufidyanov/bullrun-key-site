@@ -496,6 +496,10 @@ function timeAgo(timestampMs) {
   const days = Math.floor(hours / 24);
   return `${days}d ago`;
 }
+// loadRecentClaims — полностью переписана на Etherscan API.
+// Старая версия использовала queryFilter (eth_getLogs через Alchemy) — очень дорого.
+// Теперь все данные берутся через Etherscan: tokentx для NFT-трансферов,
+// txlist для treasury-сигналов. Alchemy не используется вообще.
 async function loadRecentClaims(provider = READ_PROVIDER) {
   try {
     const list = document.getElementById("recentClaimsList");
@@ -509,57 +513,11 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
     const activityItems = [];
     const nowMs = Date.now();
     const oneDayMs = 24 * 60 * 60 * 1000;
-let recentTransfers = [];
-    // -------------------------
-    // 1) CLAIMS
-    // -------------------------
-    try {
-      const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, provider);
-      const claimFilter = rewardContract.filters.RewardsClaimed();
-
-      let claimEvents = await rewardContract.queryFilter(claimFilter, -5000);
-      claimEvents = claimEvents.sort((a, b) => b.blockNumber - a.blockNumber);
-
-      for (const e of claimEvents.slice(0, 5)) {
-        let timestampMs = 0;
-
-        try {
-          const block = await provider.getBlock(e.blockNumber);
-          if (block && block.timestamp) {
-            timestampMs = block.timestamp * 1000;
-          }
-        } catch (blockErr) {
-          console.warn("Failed to load block time for claim", blockErr);
-        }
-
-        const wallet = e.args.user;
-        const amountRaw = e.args.amount;
-        const tokenIds = e.args.tokenIds || [];
-
-        let keyLabel = "Key";
-        if (tokenIds.length === 1) {
-          keyLabel = `Key #${tokenIds[0].toString()}`;
-        } else if (tokenIds.length > 1) {
-          keyLabel = `${tokenIds.length} Keys`;
-        }
-
-        activityItems.push({
-          type: "claim",
-          wallet,
-          short: shortAddress(wallet),
-          amount: Number(ethers.formatEther(amountRaw)),
-          label: keyLabel,
-          timestampMs
-        });
-      }
-    } catch (claimErr) {
-      console.warn("Failed to load claim activity", claimErr);
-    }
-
-    // -------------------------
-    // 2) TREASURY SIGNALS
-    // -------------------------
     let recentSignals = [];
+
+    // -------------------------
+    // 1) TREASURY SIGNALS (Etherscan txlist — дёшево)
+    // -------------------------
     try {
       const treasuryUrl =
         `${PROXY_BASE}/etherscan?chainid=1&module=account&action=txlist` +
@@ -586,7 +544,6 @@ let recentTransfers = [];
 
           for (const tx of incomingSignals.slice(0, 5)) {
             const timestampMs = Number(tx.timeStamp) * 1000;
-
             activityItems.push({
               type: "signal",
               wallet: tx.from,
@@ -603,54 +560,43 @@ let recentTransfers = [];
     }
 
     // -------------------------
-    // 3) NFT TRANSFERS
+    // 2) NFT TRANSFERS (Etherscan tokentx — дёшево, без eth_getLogs)
     // -------------------------
     try {
-      const nftContract = new ethers.Contract(NFT_CONTRACT, nftActivityAbi, provider);
-      const transferFilter = nftContract.filters.Transfer();
+      const transferUrl =
+        `${PROXY_BASE}/etherscan?chainid=1&module=account&action=tokennfttx` +
+        `&contractaddress=${NFT_CONTRACT}` +
+        `&page=1&offset=20&sort=desc`;
 
-      let transferEvents = await nftContract.queryFilter(transferFilter, -5000);
-      transferEvents = transferEvents.sort((a, b) => b.blockNumber - a.blockNumber);
-      recentTransfers = transferEvents;
+      const transferResponse = await fetch(transferUrl);
 
-      let addedTransfers = 0;
+      if (transferResponse.ok) {
+        const transferData = await transferResponse.json();
 
-      for (const e of transferEvents) {
-        if (addedTransfers >= 5) break;
+        if (transferData && Array.isArray(transferData.result)) {
+          const secondaryTransfers = transferData.result.filter((tx) => {
+            return (
+              tx.from !== "0x0000000000000000000000000000000000000000" &&
+              tx.to !== "0x0000000000000000000000000000000000000000"
+            );
+          });
 
-        const from = e.args.from;
-        const to = e.args.to;
-        const tokenId = e.args.tokenId?.toString?.() || String(e.args.tokenId);
-
-        // пропускаем mint/burn
-        if (!from || !to) continue;
-        if (from === ethers.ZeroAddress || to === ethers.ZeroAddress) continue;
-        if (from.toLowerCase() === to.toLowerCase()) continue;
-
-        let timestampMs = 0;
-        try {
-          const block = await provider.getBlock(e.blockNumber);
-          if (block && block.timestamp) {
-            timestampMs = block.timestamp * 1000;
+          for (const tx of secondaryTransfers.slice(0, 5)) {
+            const timestampMs = Number(tx.timeStamp) * 1000;
+            activityItems.push({
+              type: "transfer",
+              from: tx.from,
+              to: tx.to,
+              fromShort: shortAddress(tx.from),
+              toShort: shortAddress(tx.to),
+              label: `Key #${tx.tokenID}`,
+              timestampMs
+            });
           }
-        } catch (blockErr) {
-          console.warn("Failed to load block time for transfer", blockErr);
         }
-
-        activityItems.push({
-          type: "transfer",
-          from,
-          to,
-          fromShort: shortAddress(from),
-          toShort: shortAddress(to),
-          label: `Key #${tokenId}`,
-          timestampMs
-        });
-
-        addedTransfers += 1;
       }
     } catch (transferErr) {
-      console.warn("Failed to load transfer activity", transferErr);
+      console.warn("Failed to load NFT transfer activity", transferErr);
     }
 
     // -------------------------
@@ -693,21 +639,6 @@ let recentTransfers = [];
           timestampMs: latestSignalTs + 1
         });
       }
-const transfersLast24h = activityItems.filter((item) => {
-  return item.type === "transfer" && nowMs - item.timestampMs <= oneDayMs;
-});
-
-if (transfersLast24h.length >= 3) {
-  const latestTransferTs = transfersLast24h
-    .sort((a, b) => b.timestampMs - a.timestampMs)[0].timestampMs;
-
-  activityItems.push({
-    type: "system",
-    label: "System",
-    text: "key movement increasing",
-    timestampMs: latestTransferTs + 1
-  });
-}
       // reward activity event (если были клеймы)
       const hasRecentClaim = activityItems.some((item) => item.type === "claim");
       if (hasRecentClaim) {
