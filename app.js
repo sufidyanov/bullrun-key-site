@@ -1,17 +1,58 @@
-const ALCHEMY_API_KEY = "GI1mqa4OtQHFVj00nNs9o";
+// BullRun Key — site config
+//
+// Все внешние ключи (Alchemy, Etherscan) живут внутри Cloudflare Worker,
+// см. 03_site/proxy/worker.js + 03_site/proxy/README.md.
+// В этот JS не должно попасть ни одного секрета.
+const PROXY_BASE = "https://api.bullrunkey.xyz";
+
 const REWARD_CONTRACT = "0xb522609cF7f2e8aF1d55Af1B685Cc9f6A159BC4D";
 const NFT_CONTRACT = "0x367ac60FB4B2bb8851a46ab7A7FD13654eF70419";
 const TREASURY_WALLET = "0x942587ffad5d0bc3e8ed72817ff27ff358e5486d";
 const TREASURY_TARGET_ETH = 1;
 const OPENSEA_URL = "https://opensea.io/collection/bullrunkey";
-const ETHERSCAN_API_KEY = "RAZNXPY4FWGKFQM82I3VYREWRPCUKYMNZP";
+
+// Коллекции, которые подсвечиваются в Treasury Vault:
+//   - BullRun Key (основная)
+//   - Gemesis (OpenSea commemorative, лежит в treasury как артефакт эпохи)
 const TREASURY_VAULT_CONTRACTS = [
-  "0x367ac60FB4B2bb8851a46ab7A7FD13654eF70419".toLowerCase(), // BullRun Key contract
-  "0xbe9371326f91345777b04394448c23e2bfeaa826".toLowerCase()  // если хочешь ещё одну коллекцию
+  "0x367ac60FB4B2bb8851a46ab7A7FD13654eF70419".toLowerCase(), // BullRun Key
+  "0xbe9371326f91345777b04394448c23e2bfeaa826".toLowerCase()  // Gemesis (OpenSea, ERC721SeaDrop)
 ];
-const ENS_PROVIDER = new ethers.JsonRpcProvider(
-  `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`
-);
+
+// Общий read-only провайдер для публичных запросов до коннекта кошелька.
+// Для on-chain записей (claim / signal) используется BrowserProvider над window.ethereum.
+const READ_PROVIDER = new ethers.JsonRpcProvider(`${PROXY_BASE}/rpc`);
+const ENS_PROVIDER = READ_PROVIDER;
+
+// Минимальный осмысленный сигнал, см. 06_strategy/signals.md
+const SIGNAL_MIN_ETH = 0.005;
+const SIGNAL_ANCHOR_ETH = 0.01;
+
+// Кошельки, которые не считаются публичными сигналами (founder top-ups и т.п.).
+// Единый источник — используется и в leaderboard, и в recent deposits, и в toast.
+const EXCLUDED_WALLETS = [
+  "0x88eEb79b0cCE7000142BBB474562663B4aB623db".toLowerCase()
+];
+
+// Единый фильтр входящих сигналов на treasury. Используется везде,
+// где читаются txlist: leaderboard, recent deposits, toast на новый сигнал.
+// Требования: успешная tx, value > 0, адресат = treasury, отправитель не из EXCLUDED_WALLETS.
+function filterIncomingTreasurySignals(txs) {
+  if (!Array.isArray(txs)) return [];
+  const treasury = TREASURY_WALLET.toLowerCase();
+  return txs.filter((tx) => {
+    if (!tx || !tx.to || !tx.from || !tx.value) return false;
+    if (tx.to.toLowerCase() !== treasury) return false;
+    try {
+      if (BigInt(tx.value) <= 0n) return false;
+    } catch (_) {
+      return false;
+    }
+    if (tx.isError !== "0") return false;
+    if (EXCLUDED_WALLETS.includes(tx.from.toLowerCase())) return false;
+    return true;
+  });
+}
 
 const ENS_CACHE = new Map();
 
@@ -116,7 +157,7 @@ function dedupeTokenIds(tokenIds) {
 
 async function fetchTokenIdsFromAlchemy(ownerAddress) {
   const url =
-    `https://eth-mainnet.g.alchemy.com/nft/v3/${ALCHEMY_API_KEY}/getNFTsForOwner` +
+    `${PROXY_BASE}/nft/getNFTsForOwner` +
     `?owner=${encodeURIComponent(ownerAddress)}` +
     `&contractAddresses[]=${NFT_CONTRACT}` +
     `&withMetadata=false`;
@@ -144,9 +185,26 @@ async function fetchTokenIdsFromAlchemy(ownerAddress) {
   return dedupeTokenIds(tokenIds);
 }
 
+// Загружает holder-счётчик и социальный proof в hero до коннекта кошелька.
+// Без этого #heroSocialProof остаётся пустым абзацем для анонимных посетителей.
+async function loadHeroSocialProof() {
+  try {
+    const holders = await fetchHolderCount();
+    const heroHolders = document.getElementById("heroHolders");
+    const heroSocialProof = document.getElementById("heroSocialProof");
+
+    if (heroHolders) heroHolders.textContent = String(holders);
+    if (heroSocialProof) {
+      heroSocialProof.textContent = `${holders} collectors already hold a piece of the cycle.`;
+    }
+  } catch (err) {
+    console.warn("Hero social proof load failed", err);
+  }
+}
+
 async function fetchHolderCount() {
   const url =
-    `https://eth-mainnet.g.alchemy.com/nft/v3/${ALCHEMY_API_KEY}/getOwnersForContract` +
+    `${PROXY_BASE}/nft/getOwnersForContract` +
     `?contractAddress=${NFT_CONTRACT}`;
 
   const response = await fetch(url);
@@ -161,9 +219,7 @@ async function fetchHolderCount() {
 
 async function loadTreasuryData() {
   try {
-    const provider = new ethers.JsonRpcProvider(
-      `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`
-    );
+    const provider = READ_PROVIDER;
 
     const balanceWei = await provider.getBalance(TREASURY_WALLET);
     const balanceEth = Number(ethers.formatEther(balanceWei));
@@ -174,8 +230,7 @@ async function loadTreasuryData() {
     const treasuryTargetEl = document.getElementById("treasuryTarget");
     const treasuryProgressTextEl = document.getElementById("treasuryProgressText");
     const treasuryProgressFillEl = document.getElementById("treasuryProgressFill");
-    const cycleStateTextEl = document.getElementById("cycleStateText");
-const revealStateTextEl = document.getElementById("revealStateText");
+    const systemStateTextEl = document.getElementById("systemStateText");
 const revealNoteEl = document.getElementById("revealNote");
 const systemStateEl = document.getElementById("systemState");
     const nextRoundStatusEl = document.getElementById("nextRoundStatus");
@@ -219,15 +274,12 @@ if (systemStateEl) {
 }
 
 if (balanceEth >= 1) {
-  if (cycleStateTextEl) {
-    cycleStateTextEl.textContent = "Cycle: Threshold Reached";
+  if (systemStateTextEl) {
+    systemStateTextEl.textContent = "Trigger reached";
   }
 if (nextRoundStatusEl) {
   nextRoundStatusEl.classList.add("is-ready");
 }
-  if (revealStateTextEl) {
-    revealStateTextEl.textContent = "Reveal: Trigger unlocked";
-  }
 
   if (revealNoteEl) {
     revealNoteEl.innerHTML = `
@@ -262,15 +314,12 @@ if (roundNoteEl) {
   roundNoteEl.textContent = "The first system-wide distribution is now ready to activate.";
 }
 } else if (balanceEth >= 0.8) {
-  if (cycleStateTextEl) {
-    cycleStateTextEl.textContent = "Cycle: Reveal Approaching";
+  if (systemStateTextEl) {
+    systemStateTextEl.textContent = "Trigger approaching";
   }
 if (nextRoundStatusEl) {
   nextRoundStatusEl.classList.add("is-approaching");
 }
-  if (revealStateTextEl) {
-    revealStateTextEl.textContent = "Reveal: Signal pressure increasing";
-  }
 
   if (revealNoteEl) {
     revealNoteEl.innerHTML = `
@@ -305,15 +354,12 @@ if (roundNoteEl) {
   roundNoteEl.textContent = "The first distribution layer is close to forming.";
 }
 } else if (balanceEth >= 0.5) {
-  if (cycleStateTextEl) {
-    cycleStateTextEl.textContent = "Cycle: Threshold Forming";
+  if (systemStateTextEl) {
+    systemStateTextEl.textContent = "Threshold forming";
   }
 if (nextRoundStatusEl) {
   nextRoundStatusEl.classList.add("is-building");
 }
-  if (revealStateTextEl) {
-    revealStateTextEl.textContent = "Reveal: Locked, but drawing closer";
-  }
 
   if (revealNoteEl) {
     revealNoteEl.innerHTML = `
@@ -344,15 +390,12 @@ if (roundNoteEl) {
   roundNoteEl.textContent = "Treasury pressure is building toward the first round.";
 }
 } else {
-  if (cycleStateTextEl) {
-    cycleStateTextEl.textContent = "Cycle: Accumulating Signals";
+  if (systemStateTextEl) {
+    systemStateTextEl.textContent = "Accumulating signals";
   }
 if (nextRoundStatusEl) {
   nextRoundStatusEl.classList.add("is-forming");
 }
-  if (revealStateTextEl) {
-    revealStateTextEl.textContent = "Reveal: Locked (1 ETH threshold)";
-  }
   if (nextRoundStatusEl) {
   nextRoundStatusEl.textContent = "Forming";
 }
@@ -411,14 +454,26 @@ async function loadRewardHistory(rewardContract, totalRoundsValue) {
 
       const item = document.createElement("div");
       item.className = "history-round-card";
-item.style.marginBottom = "12px";
+      item.style.marginBottom = "12px";
 
-item.innerHTML = `
-  <div class="history-round-title">Round #${i + 1}</div>
+      // Round 0 (contract index 0) is a public test round — claimable by all holders,
+      // but with a small amount to verify the reward flow. Not the main Round #1.
+      // Public Round #1 triggers when Treasury hits 1 ETH — it will be contract index 1+.
+      const isTestRound = i === 0;
+      const roundTitle = isTestRound
+        ? `Round 0 <span class="history-round-tag">Test</span>`
+        : `Round #${i}`;
+      const roundNote = isTestRound
+        ? `<div class="history-round-meta history-round-note">Public test round. Claimable by all holders, small amount. Run to verify the reward flow before the main 1 ETH cycle round.</div>`
+        : "";
+
+      item.innerHTML = `
+  <div class="history-round-title">${roundTitle}</div>
   <div class="history-round-amount">${amountDeposited}</div>
   <div class="history-round-meta">Started: ${startDate}</div>
   <div class="history-round-meta">Status: ${status}</div>
   <div class="history-round-meta">Claim window: 365 days</div>
+  ${roundNote}
 `;
 
       list.appendChild(item);
@@ -441,7 +496,7 @@ function timeAgo(timestampMs) {
   const days = Math.floor(hours / 24);
   return `${days}d ago`;
 }
-async function loadRecentClaims(provider) {
+async function loadRecentClaims(provider = READ_PROVIDER) {
   try {
     const list = document.getElementById("recentClaimsList");
     const countLabel = document.getElementById("recentClaimsCount");
@@ -507,10 +562,9 @@ let recentTransfers = [];
     let recentSignals = [];
     try {
       const treasuryUrl =
-        `https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlist` +
+        `${PROXY_BASE}/etherscan?chainid=1&module=account&action=txlist` +
         `&address=${TREASURY_WALLET}` +
-        `&startblock=0&endblock=99999999&page=1&offset=20&sort=desc` +
-        `&apikey=${ETHERSCAN_API_KEY}`;
+        `&startblock=0&endblock=99999999&page=1&offset=20&sort=desc`;
 
       const treasuryResponse = await fetch(treasuryUrl);
 
@@ -780,10 +834,9 @@ if (transfersLast24h.length >= 3) {
 async function loadRecentTreasuryDeposits() {
   try {
     const url =
-  `https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlist` +
+  `${PROXY_BASE}/etherscan?chainid=1&module=account&action=txlist` +
   `&address=${TREASURY_WALLET}` +
-  `&startblock=0&endblock=99999999&page=1&offset=10&sort=desc` +
-  `&apikey=${ETHERSCAN_API_KEY}`;
+  `&startblock=0&endblock=99999999&page=1&offset=10&sort=desc`;
 
     const response = await fetch(url);
     if (!response.ok) return;
@@ -799,14 +852,7 @@ if (!Array.isArray(data.result)) {
   console.warn("Treasury deposits unexpected response:", data);
   return;
 }
-    const incomingEthTxs = data.result.filter((tx) => {
-      return (
-        tx.to &&
-        tx.to.toLowerCase() === TREASURY_WALLET.toLowerCase() &&
-        tx.value &&
-        BigInt(tx.value) > 0n
-      );
-    });
+    const incomingEthTxs = filterIncomingTreasurySignals(data.result);
 
     if (!incomingEthTxs.length) return;
 
@@ -826,7 +872,7 @@ if (!Array.isArray(data.result)) {
         maximumFractionDigits: 4
       });
 
-      showLiveClaimToast(`💰 ${short} sent signal: ${amount} ETH`);
+      showLiveClaimToast(`New signal · ${short} · ${amount} ETH`);
 
       await loadTreasuryData();
     }
@@ -842,7 +888,7 @@ async function loadTreasuryNFTs() {
 
   try {
     const url =
-      `https://eth-mainnet.g.alchemy.com/nft/v3/${ALCHEMY_API_KEY}/getNFTsForOwner` +
+      `${PROXY_BASE}/nft/getNFTsForOwner` +
       `?owner=${TREASURY_WALLET}&withMetadata=true&pageSize=12`;
 
     const response = await fetch(url);
@@ -922,21 +968,19 @@ async function loadTreasuryNFTs() {
         : "#";
 
       item.innerHTML = `
-       <img
-  src="${nft.image}"
-  alt="${nft.name}"
-  style="width:56px;height:56px;border-radius:12px;object-fit:cover;border:1px solid rgba(255,255,255,0.08);background:#111;box-shadow:0 0 20px rgba(255,200,80,0.15)"
-  onerror="this.style.display='none'"
-/>
-
+        <img
+          src="${nft.image}"
+          alt="${nft.name}"
+          style="width:56px;height:56px;border-radius:12px;object-fit:cover;border:1px solid rgba(255,255,255,0.08);background:#111;box-shadow:0 0 20px rgba(255,200,80,0.15)"
+          onerror="this.style.display='none'"
+        />
         <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
-         <div style="display:flex;align-items:center;gap:8px">
-  <div style="font-weight:700;line-height:1.2">${nft.name}</div>
-  <span style="font-size:12px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,0.08);opacity:0.8">
-    🎁 Vault Asset
-  </span>
-</div>
-</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <div style="font-weight:700;line-height:1.2">${nft.name}</div>
+            <span style="font-size:12px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,0.08);opacity:0.8">
+              Vault Asset
+            </span>
+          </div>
           <div class="small" style="opacity:0.7">Locked in the treasury</div>
           ${
             openSeaUrl !== "#"
@@ -992,16 +1036,12 @@ async function loadDonatorLeaderboard() {
     const footer = document.getElementById("donatorLeaderboardFooter");
 
     if (!list) return;
-const EXCLUDED_WALLETS = [
-  "0x88eEb79b0cCE7000142BBB474562663B4aB623db".toLowerCase()
-];
     list.innerHTML = '<div class="small">Loading leaderboard...</div>';
 
     const url =
-  `https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlist` +
+  `${PROXY_BASE}/etherscan?chainid=1&module=account&action=txlist` +
   `&address=${TREASURY_WALLET}` +
-  `&startblock=0&endblock=99999999&page=1&offset=200&sort=desc` +
-  `&apikey=${ETHERSCAN_API_KEY}`;
+  `&startblock=0&endblock=99999999&page=1&offset=10000&sort=desc`;
 
     const response = await fetch(url);
     if (!response.ok) {
@@ -1021,16 +1061,7 @@ const EXCLUDED_WALLETS = [
       throw new Error("Etherscan returned unexpected data format.");
     }
 
-    const incomingEthTxs = data.result.filter((tx) => {
-  return (
-    tx.to &&
-    tx.to.toLowerCase() === TREASURY_WALLET.toLowerCase() &&
-    tx.value &&
-    BigInt(tx.value) > 0n &&
-    tx.isError === "0" &&
-    !EXCLUDED_WALLETS.includes(tx.from.toLowerCase()) // ← ВОТ ЭТО ВАЖНО
-  );
-});
+    const incomingEthTxs = filterIncomingTreasurySignals(data.result);
 
     if (!incomingEthTxs.length) {
       list.innerHTML = `
@@ -1085,13 +1116,13 @@ const donorsWithEns = await Promise.all(
 list.innerHTML = "";
 
 donorsWithEns.forEach((donor, index) => {
+      // Minimal tier markers — no emojis, no crowns. Premium/calm tone per 04_content/twitter/README.md.
       let badge = "";
-
-      if (index === 0) badge = "👑 Alpha";
-      else if (index === 1) badge = "🥇 Core";
-      else if (index === 2) badge = "🥈 Early";
-   else if (index === 3) badge = "◦ Signal";
-   else if (index === 4) badge = "· Trace";
+      if (index === 0) badge = "Alpha";
+      else if (index === 1) badge = "Core";
+      else if (index === 2) badge = "Early";
+      else if (index === 3) badge = "Signal";
+      else if (index === 4) badge = "Trace";
 
       const item = document.createElement("div");
       item.className = "recent-claim-item";
@@ -1118,7 +1149,7 @@ donorsWithEns.forEach((donor, index) => {
   }
 </a>
           
-          ${badge ? `<span style="opacity:0.7">${badge}</span>` : ""}
+          ${badge ? `<span class="leaderboard-tier tier-${badge.toLowerCase()}">${badge}</span>` : ""}
           <span class="recent-claim-meta" style="opacity:0.5">
   • Position Strength: ${
     donor.total >= 0.05 ? "High" :
@@ -1357,6 +1388,105 @@ async function claimRewards() {
   }
 }
 
+// ----- Signals -----
+// Сигнал — это не donate. Это позиционирование (см. 06_strategy/signals.md).
+// Кнопки отправляют ETH на TREASURY_WALLET. Если кошелёк не подключён — сначала
+// запрашиваем коннект, потом отправляем. Если MetaMask/Rabby не установлены —
+// открываем ethereum:-deep-link как fallback (работает на мобильных кошельках).
+
+async function sendSignal(amountEth) {
+  try {
+    if (!Number.isFinite(amountEth) || amountEth <= 0) {
+      setMessage("Enter a valid ETH amount.", "error");
+      return;
+    }
+
+    if (amountEth < SIGNAL_MIN_ETH) {
+      const proceed = confirm(
+        `Signals below ${SIGNAL_MIN_ETH} ETH are considered noise and do not enter the leaderboard.\n\n` +
+        `Send ${amountEth} ETH anyway?`
+      );
+      if (!proceed) return;
+    }
+
+    const valueWei = ethers.parseEther(String(amountEth));
+    const valueHex = "0x" + valueWei.toString(16);
+
+    if (!window.ethereum) {
+      // Fallback: открыть кошелёк через ethereum: URI (работает на iOS/Android MetaMask).
+      window.open(
+        `ethereum:${TREASURY_WALLET}?value=${valueWei.toString()}`,
+        "_blank"
+      );
+      return;
+    }
+
+    // Коннект, если ещё не.
+    if (!currentAccount) {
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+      currentAccount = accounts?.[0] || "";
+      if (!currentAccount) {
+        setMessage("Wallet connection rejected.", "error");
+        return;
+      }
+    }
+
+    const chainId = await window.ethereum.request({ method: "eth_chainId" });
+    if (parseInt(chainId, 16) !== 1) {
+      setMessage("Please switch wallet to Ethereum Mainnet before signaling.", "error");
+      return;
+    }
+
+    setMessage(`Sending signal of ${amountEth} ETH... confirm in your wallet.`);
+
+    const txHash = await window.ethereum.request({
+      method: "eth_sendTransaction",
+      params: [{
+        from: currentAccount,
+        to: TREASURY_WALLET,
+        value: valueHex,
+      }],
+    });
+
+    setMessage(`Signal submitted. Tx: ${txHash.slice(0, 10)}...`, "success");
+    showLiveClaimToast(`Signal submitted: ${amountEth} ETH`);
+
+    // Даём сети пару секунд, потом подтягиваем фронт.
+    setTimeout(async () => {
+      await loadTreasuryData();
+      await loadRecentTreasuryDeposits();
+      await loadDonatorLeaderboard();
+    }, 3000);
+  } catch (err) {
+    const msg = err?.reason || err?.shortMessage || err?.message || "Signal failed.";
+    setMessage(msg, "error");
+  }
+}
+
+function wireSignalButtons() {
+  const buttons = document.querySelectorAll("[data-signal-amount]");
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const amount = Number(btn.getAttribute("data-signal-amount"));
+      sendSignal(amount);
+    });
+  });
+
+  const customBtn = document.querySelector("[data-signal-custom]");
+  if (customBtn) {
+    customBtn.addEventListener("click", () => {
+      const raw = prompt(
+        `Custom signal amount, ETH.\n` +
+        `Minimum meaningful: ${SIGNAL_MIN_ETH}. Psychological anchor: ${SIGNAL_ANCHOR_ETH}.`,
+        String(SIGNAL_ANCHOR_ETH)
+      );
+      if (raw === null) return;
+      const amount = Number(String(raw).replace(",", "."));
+      sendSignal(amount);
+    });
+  }
+}
+
 window.addEventListener("load", async function () {
   const connectBtn = document.getElementById("connectBtn");
   const claimBtn = document.getElementById("claimBtn");
@@ -1370,15 +1500,24 @@ if (disconnectBtn) disconnectBtn.addEventListener("click", disconnectWallet);
   setNftCount(0);
   setClaimButtonState(false, "Connect wallet to check rewards");
 
-  await loadTreasuryData();
-  await loadRecentTreasuryDeposits();
-  await loadDonatorLeaderboard();
-  loadTreasuryNFTs();
+  // Публичные блоки — грузим до коннекта кошелька,
+  // чтобы анонимный посетитель видел живые данные, а не "Loading...".
+  await Promise.all([
+    loadTreasuryData(),
+    loadHeroSocialProof(),
+    loadRecentTreasuryDeposits(),
+    loadDonatorLeaderboard(),
+    loadTreasuryNFTs(),
+    loadRecentClaims(READ_PROVIDER),
+  ]);
+
+  wireSignalButtons();
 
 setInterval(async () => {
   await loadRecentTreasuryDeposits();
   await loadDonatorLeaderboard();
   await loadTreasuryNFTs();
+  await loadRecentClaims(READ_PROVIDER);
 }, 30000);
 
   if (window.ethereum) {

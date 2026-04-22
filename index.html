@@ -46,13 +46,13 @@
 </div>
 
       <div class="subtitle">
-        Membership key for the BullRun Kids community.
+        333 sealed keys. One cycle. A system forming in public.
       </div>
 
 <p id="heroSocialProof" class="hero-note"></p>
 
       <p class="small" style="margin-top:20px">
-        On-chain community reward statistics
+        Live state of the system
       </p>
 
       <a
@@ -160,6 +160,7 @@
     <p>The artifact that unlocks the system.</p>
   </div>
 </div>
+  </div>
 </section>
     <section class="lore-section">
 
@@ -195,6 +196,45 @@ Not everyone survives the bear market.
 </p>
 
 </section>
+
+<section class="thesis-section">
+  <div class="thesis-eyebrow">Thesis</div>
+  <h2 class="thesis-title">NFT &gt; Altcoins</h2>
+
+  <p class="thesis-lead">
+    Altcoins are temporary speculation.
+    NFTs can become culture, identity, and artifacts of the cycle.
+  </p>
+
+  <p class="thesis-line">
+    You won't remember which tokens you held.
+  </p>
+
+  <p class="thesis-line highlight">
+    You will remember the NFTs that defined your cycle.
+  </p>
+
+  <div class="thesis-grid">
+    <div class="thesis-cell">
+      <div class="thesis-cell-label">Altcoin</div>
+      <div class="thesis-cell-text">
+        Rotated out of.<br>
+        Name forgotten by the next cycle.<br>
+        Leaves no trace in your identity.
+      </div>
+    </div>
+
+    <div class="thesis-cell thesis-cell-strong">
+      <div class="thesis-cell-label">BullRun Key</div>
+      <div class="thesis-cell-text">
+        Sealed artifact of this cycle.<br>
+        Tied to a public treasury and reveal logic.<br>
+        A position you can still point to in ten years.
+      </div>
+    </div>
+  </div>
+</section>
+
 <div class="grid">
   <div class="card">
     <h2>BullRun Treasury</h2>
@@ -234,8 +274,8 @@ Not everyone survives the bear market.
      <div class="small" id="treasuryProgressText" style="margin-top:10px">0 / 1 ETH</div>
 
 <div class="system-state" id="systemState">
-  <div class="small" id="cycleStateText">Cycle: Accumulating Signals</div>
-  <div class="small" id="revealStateText">Reveal: Locked (1 ETH threshold)</div>
+  <div class="system-state-label">System State</div>
+  <div class="system-state-value" id="systemStateText">Accumulating signals</div>
 </div>
 
 <p class="reveal-note" id="revealNote">
@@ -318,16 +358,21 @@ Copy Treasury Address
       Signals from those taking position in the cycle.
     </p>
     <div class="signal-note">
-  This is not a donation system.<br> 
+  This is not a donation system.<br>
   This is positioning.<br><br>
 
-  Signals define your position.<br><br>
-  
-  A signal below 0.005 ETH is considered noise.<br>
-  Below that — it's just noise.<br><br>
-  
-  Most choose 0.01 ETH.
+  A signal below 0.005 ETH is noise.<br>
+  0.01 ETH is where most position themselves.
 </div>
+
+    <div class="signal-actions">
+      <button type="button" class="signal-btn" data-signal-amount="0.005">Signal 0.005 ETH</button>
+      <button type="button" class="signal-btn signal-btn-primary" data-signal-amount="0.01">Signal 0.01 ETH</button>
+      <button type="button" class="signal-btn signal-btn-ghost" data-signal-custom="true">Custom</button>
+    </div>
+    <p class="small signal-actions-note">
+      No tokens minted. No airdrop promised. Just positioning.
+    </p>
 
     <div id="donatorLeaderboardList" style="display:flex;flex-direction:column;gap:14px;margin-top:20px">
       <div class="small">Loading leaderboard...</div>
@@ -412,10 +457,10 @@ Signals and positioning matter.<br><br>
 
 <div class="grid">
   <div class="card">
-    <h2>Reward Round #1</h2>
+    <h2>Round #1 — Upcoming</h2>
    <p id="roundIntro">
-  The first cycle threshold activates Reward Round #1.<br>
-  Threshold: 1 ETH in treasury.
+  The first public round is not yet live.<br>
+  It triggers when Treasury reaches 1 ETH.
 </p>
 
 <div class="stats" style="margin-top:20px">
@@ -431,25 +476,26 @@ Signals and positioning matter.<br><br>
 </div>
 
 <p class="small" id="roundNote" style="margin-top:18px">
-  The first round is still forming inside the treasury.
+  Round #1 is intentionally simple: 1 ETH split equally across all 333 keys.
+  Later rounds become more strategic — tiers, combinations, cycle phase.
 </p>
   </div>
 
   <div class="card">
-    <h2>Rewards</h2>
+    <h2>How Rewards Work</h2>
     <p>
-      From time to time, the project may allocate ETH to the community rewards contract.
-    </p>
-    <p>
-      Reward logic may evolve over time as the ecosystem grows, including future updates
-      related to rarity, utility, and holder benefits across different key tiers.
+      Rewards are funded into a public smart contract, then claimed by whoever holds the key at the moment of claim.
     </p>
     <ul>
-      <li>rewards are distributed in ETH</li>
-      <li>Round #1 is planned as an equal distribution</li>
-      <li>claim period lasts 365 days</li>
-      <li>future reward mechanics may evolve in later versions</li>
+      <li>distributed in ETH, on-chain</li>
+      <li>claim window: 365 days per round</li>
+      <li>Round #1: equal split across 333 keys</li>
+      <li>later rounds: may depend on tier, combinations, or cycle phase</li>
+      <li>rules of each round are announced before the round, never after</li>
     </ul>
+    <p class="small" style="margin-top:14px;opacity:0.75">
+      Any change to reward logic is made in favor of holders, never against them.
+    </p>
   </div>
 </div>
 
@@ -457,10 +503,11 @@ Signals and positioning matter.<br><br>
   <div class="card">
     <h2>Get BullRun Key</h2>
     <p>
-      If you do not yet own a BullRun Key, you can acquire one on the secondary market.
+      Mint is closed. The only way in is the secondary market.
     </p>
-  <p>Supply is permanently limited to 333 NFTs.</p>
-<p>Only 333 keys will ever exist.</p>
+    <p class="small">
+      Supply is fixed at 333. No new keys will ever be minted.
+    </p>
     <div class="buttons">
       <a class="button-link" href="https://opensea.io/collection/bullrunkey" target="_blank">View on OpenSea</a>
     </div>
@@ -565,7 +612,7 @@ Signals and positioning matter.<br><br>
     </div>
 
       <div class="faq-item">
-      <div class="faq-question">WHO CAN CLAIM REWARDS?</div>
+      <div class="faq-question">Who can claim rewards?</div>
       <div class="faq-answer">
         Rewards can only be claimed by the wallet that currently holds the BullRun Key NFT at the moment of claiming.
       </div>
@@ -586,7 +633,7 @@ Signals and positioning matter.<br><br>
     </div>
     
  <div class="faq-item">
-      <div class="faq-question">WHAT HAPPENS TO UNCLAIMED REWARDS?</div>
+      <div class="faq-question">What happens to unclaimed rewards?</div>
       <div class="faq-answer">
         Unclaimed rewards remain claimable for 365 days. After the claim period ends, unclaimed ETH may be reclaimed by the project owner and used for future ecosystem activities or future reward rounds.
       </div>
@@ -596,7 +643,7 @@ Signals and positioning matter.<br><br>
     <div class="faq-item">
       <div class="faq-question">What happens at 1 ETH treasury?</div>
       <div class="faq-answer">
-        The first 1 ETH treasury milestone is planned to unlock Reward Round #1 and the full BullRun Key reveal.
+        At exactly 1 ETH the reveal unlocks and the public Round #1 begins: 1 ETH is split equally across all 333 keys. It's the first public reward round — the earlier on-chain round was a small-amount technical test of the reward flow.
       </div>
     </div>
 
