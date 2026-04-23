@@ -1222,7 +1222,23 @@ a {
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: #666;
-  margin-bottom: 14px;
+  margin-bottom: 20px;
+}
+
+.founder-inner {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.founder-photo {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #2a2a2a;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 20px rgba(247,147,26,0.15));
 }
 
 .founder-title {
@@ -1261,6 +1277,8 @@ a {
 
 @media (max-width: 540px) {
   .founder-section { padding: 24px 20px; }
+  .founder-inner { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .founder-photo { width: 72px; height: 72px; }
 }
 /* ── end founder section ── */
 
