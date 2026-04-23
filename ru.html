@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta property="og:title" content="BullRun Key — 333 Запечатанных Ключа">
+  <meta property="og:description" content="333 запечатанных ключа. Один on-chain казначей. Ревил разблокируется при 1 ETH. Ты забудешь какие токены держал — но запомнишь NFT, которые определили твой цикл.">
+  <meta property="og:image" content="https://bullrunkey.xyz/preview.png">
+  <meta property="og:url" content="https://bullrunkey.xyz">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="BullRun Key — 333 Запечатанных Ключа">
+  <meta name="twitter:description" content="333 запечатанных ключа. Один on-chain казначей. Ревил при 1 ETH. NFT > Альткоины.">
+  <meta name="twitter:image" content="https://bullrunkey.xyz/preview.png">
+
+  <meta name="description" content="333 запечатанных ключа привязаны к живому казначейству и раундам наград. Ревил разблокируется когда казначейство достигает 1 ETH. Позиционируйся первым.">
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BullRun Key — 333 Запечатанных Ключа</title>
+  <link rel="icon" type="image/png" href="./logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div id="liveClaimToast" style="
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #111;
+    color: white;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 14px 18px;
+    z-index: 9999;
+    display: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    max-width: 340px;
+    font-size: 14px;
+  ">
+    <span id="liveClaimToastText"></span>
+  </div>
+
+  <nav class="sticky-nav" id="stickyNav">
+    <div class="sticky-nav-inner">
+      <a href="#section-treasury" class="snav-link">Treasury</a>
+      <a href="#section-keys" class="snav-link">Key Types</a>
+      <a href="#section-signals" class="snav-link">Signals</a>
+      <a href="#section-rewards" class="snav-link">Rewards</a>
+      <a href="#section-faq" class="snav-link">FAQ</a>
+      <a href="./index.html" class="snav-lang">EN</a>
+      <a href="https://opensea.io/collection/bullrunkey" target="_blank" class="snav-cta">OpenSea →</a>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <section class="hero">
+      <div class="hero-layout">
+
+        <div class="hero-content">
+          <div class="hero-title">
+            <img src="./logo.png" class="hero-logo" alt="BullRun Key logo">
+            <h1>BullRun Key</h1>
+          </div>
+
+          <div class="subtitle">
+            333 запечатанных ключа. Один цикл. Система, которая строится публично.
+          </div>
+
+          <p id="heroSocialProof" class="hero-note"></p>
+
+          <p class="small" style="margin-top:20px">
+            Живое состояние системы
+          </p>
+
+          <a
+            href="https://etherscan.io/address/0xb522609cf7f2e8af1d55af1b685cc9f6a159bc4d"
+            target="_blank"
+            class="small"
+            style="display:inline-block;margin-top:10px"
+          >
+            Верифицированный контракт на Etherscan →
+          </a>
+
+          <div class="stats" style="margin-top:30px">
+            <div class="stat">
+              <div class="stat-label">Казначейство</div>
+              <div class="stat-value" id="heroTreasury">— ETH</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Цель ревила</div>
+              <div class="stat-value">1 ETH</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Холдеров</div>
+              <div class="stat-value" id="heroHolders">—</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Ключей запечатано</div>
+              <div class="stat-value">333</div>
+            </div>
+          </div>
+
+          <p class="lead">
+            333 запечатанных ключа привязаны к живому казначейству, раундам наград и позиционированию в цикле.
+            BullRun Key — не статичная коллекция.
+            Это интерфейс к системе, которая формируется в реальном времени.
+          </p>
+          <p class="small" style="margin-top:14px">
+            Позиционируйся первым. Ревил потом.
+          </p>
+
+          <div class="buttons">
+            <a class="button button-opensea" href="https://opensea.io/collection/bullrunkey" target="_blank">OpenSea →</a>
+            <button id="connectBtn" class="button-secondary">Подключить кошелёк</button>
+            <button id="disconnectWallet" style="display:none;">Отключить</button>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <img src="./key-god.webp" class="hero-key-img" alt="BullRun Key — sealed">
+          <div class="hero-key-sealed-tag">Sealed · Unrevealed</div>
+        </div>
+
+      </div>
+    </section>
+<div class="section-divider"></div>
+
+<section class="reveal-progress-block" id="section-treasury">
+  <div class="rpb-top">
+    <div class="rpb-label">BullRun Treasury</div>
+    <div class="rpb-numbers">
+      <span class="rpb-current" id="rpbCurrent">— ETH</span>
+      <span class="rpb-sep">/</span>
+      <span class="rpb-target">1 ETH</span>
+    </div>
+  </div>
+  <div class="rpb-bar">
+    <div class="rpb-fill" id="rpbFill"></div>
+  </div>
+  <div class="rpb-bottom">
+    <span class="rpb-pct" id="rpbPct">—%</span>
+    <span class="rpb-note">Ревил разблокируется при 1 ETH · Раунд #1 стартует сразу</span>
+    <span class="rpb-remaining" id="rpbRemaining"></span>
+  </div>
+</section>
+
+<section class="reveal-section" id="section-keys">
+  <div class="reveal-header">
+    <h2>Типы ключей</h2>
+    <p class="small">
+      До финального ревила каждый BullRun Key остаётся запечатанным.
+      Внутри может быть Common, Rare, Legendary — или единственный God Key.
+      Никто не знает, какой ключ хранит артефакт.
+    </p>
+  </div>
+
+  <div class="key-grid">
+    <div class="key-tier-card">
+      <div class="key-tier-label">COMMON</div>
+      <div class="key-tier-value">300</div>
+      <div class="key-tier-showcase">
+        <img src="./key-gold.webp" alt="Common Key">
+      </div>
+      <div class="key-tier-text">
+        Накопление · Расширение · Ускорение<br>
+        Мания · Распределение
+      </div>
+    </div>
+
+    <div class="key-tier-card key-tier-rare">
+      <div class="key-tier-label">RARE</div>
+      <div class="key-tier-value">30</div>
+      <div class="key-tier-showcase">
+        <img src="./key-lightning.webp" alt="Rare Key">
+      </div>
+      <div class="key-tier-text">
+        Молния · Солнечный · Космический
+      </div>
+    </div>
+
+    <div class="key-tier-card key-tier-legendary">
+      <div class="key-tier-label">LEGENDARY</div>
+      <div class="key-tier-value">2</div>
+      <div class="key-tier-showcase">
+        <img src="./key-realityrift.webp" alt="Legendary Key">
+      </div>
+      <div class="key-tier-text">
+        Разлом реальности · Чёрная дыра
+      </div>
+    </div>
+
+    <div class="key-tier-card key-tier-god">
+      <div class="key-tier-label">GOD KEY</div>
+      <div class="key-tier-value">1</div>
+      <div class="key-tier-showcase">
+        <img src="./key-god.webp" alt="God Key">
+      </div>
+      <div class="key-tier-text">
+        Артефакт, который разблокирует систему.
+      </div>
+    </div>
+  </div>
+</section>
+    <div class="section-divider"></div>
+
+    <section class="lore-section">
+      <div class="lore-eyebrow">Лор</div>
+      <h2>Дети Булрана</h2>
+
+      <p class="lore-text">
+        Большинство входит на рынок в период буллрана.
+        Они покупают эйфорию, зелёные свечи, хайп.
+      </p>
+
+      <p class="lore-text">
+        Многие приходят на самом верху.<br>
+        Многие исчезают во время медвежьего рынка.
+      </p>
+
+      <div class="lore-quote">
+        <p>Но некоторые остаются.<br>
+        Они изучают игру. Они переживают циклы.<br>
+        Они возвращаются сильнее.</p>
+      </div>
+
+      <p class="lore-text highlight">
+        Те, кто остаётся, становятся Детьми Булрана.
+      </p>
+
+      <p class="lore-text">
+        BullRun Key — символ тех, кто остался.<br>
+        Не каждый переживает медвежий рынок.
+      </p>
+    </section>
+
+<div class="section-divider"></div>
+
+<section class="thesis-section">
+  <div class="thesis-eyebrow">Тезис</div>
+  <h2 class="thesis-title">NFT &gt; Altcoins</h2>
+
+  <p class="thesis-lead">
+    Альткоины — временная спекуляция.
+    NFT могут стать культурой, идентичностью и артефактами цикла.
+  </p>
+
+  <p class="thesis-line">
+    Ты не вспомнишь, какие токены держал.
+  </p>
+
+  <p class="thesis-line highlight">
+    Но ты запомнишь NFT, которые определили твой цикл.
+  </p>
+
+  <div class="thesis-grid">
+    <div class="thesis-cell">
+      <div class="thesis-cell-label">Альткоин</div>
+      <div class="thesis-cell-text">
+        Ротируется и продаётся.<br>
+        Имя забыто к следующему циклу.<br>
+        Не оставляет следа в твоей идентичности.
+      </div>
+    </div>
+
+    <div class="thesis-cell thesis-cell-strong">
+      <div class="thesis-cell-label">BullRun Key</div>
+      <div class="thesis-cell-text">
+        Запечатанный артефакт этого цикла.<br>
+        Привязан к публичному казначейству и логике ревила.<br>
+        Позиция, на которую ты сможешь указать через десять лет.
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<section class="onboarding-section">
+  <div class="onboarding-eyebrow">Как участвовать</div>
+  <h2 class="onboarding-title">Три способа войти</h2>
+  <div class="onboarding-grid">
+
+    <div class="onboarding-step">
+      <div class="onboarding-num">01</div>
+      <div class="onboarding-step-title">Получи ключ</div>
+      <p class="onboarding-step-text">
+        Минт закрыт. Существует 333 ключа — больше не будет создано никогда.
+        Единственный путь — вторичный рынок на OpenSea.
+      </p>
+      <a href="https://opensea.io/collection/bullrunkey" target="_blank" class="onboarding-link">Купить на OpenSea →</a>
+    </div>
+
+    <div class="onboarding-step">
+      <div class="onboarding-num">02</div>
+      <div class="onboarding-step-title">Отправь сигнал</div>
+      <p class="onboarding-step-text">
+        Сигналы двигают казначейство к 1 ETH — триггеру ревила.
+        Каждый сигнал записывается on-chain. Позиционируйся до ревила, не после.
+      </p>
+      <a href="#section-signals" class="onboarding-link">Отправить сигнал →</a>
+    </div>
+
+    <div class="onboarding-step">
+      <div class="onboarding-num">03</div>
+      <div class="onboarding-step-title">Следи за казначейством</div>
+      <p class="onboarding-step-text">
+        Казначейство публично и работает в реальном времени. Каждый депозит виден on-chain.
+        Когда достигнет 1 ETH — произойдёт ревил и начнётся Раунд #1.
+      </p>
+      <a href="#section-treasury" class="onboarding-link">Смотреть казначейство →</a>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<div class="grid">
+  <div class="card">
+    <h2>BullRun Казначейство</h2>
+    <p>
+      On-chain казначейство, финансирующее экосистему BullRun Key.
+      Все депозиты видны on-chain и отслеживаются в реальном времени.
+    </p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Баланс казначейства</div>
+        <div class="stat-value" id="treasuryBalance">0 ETH</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">Цель раунда 1</div>
+        <div class="stat-value" id="treasuryTarget">1 ETH</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">Кошелёк казначейства</div>
+      <div
+  class="stat-value wallet-copy"
+  id="treasuryAddress"
+  title="Click to copy: 0x942587ffad5d0bc3e8ed72817ff27ff358e5486d"
+  onclick="copyTreasuryWallet()"
+>
+  0x9425...486d
+</div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar">
+        <div class="progress-fill" id="treasuryProgressFill" style="width: 0%;"></div>
+      </div>
+     <div class="small" id="treasuryProgressText" style="margin-top:10px">0 / 1 ETH</div>
+
+<div class="system-state" id="systemState">
+  <div class="system-state-label">System State</div>
+  <div class="system-state-value" id="systemStateText">Накапливаем сигналы</div>
+</div>
+
+<p class="reveal-note" id="revealNote">
+  1 ETH is not a goal.<br>
+  It is the first trigger.
+</p>
+      <p class="treasury-lore">
+  Каждый сигнал продвигает цикл вперёд.<br>
+  Первый порог активирует систему.
+</p>
+
+    </div>
+
+    <p class="small treasury-live-note">
+      Живой on-chain баланс, обновляется напрямую из кошелька казначейства.
+      Любой может внести вклад, чтобы ускорить ревил и разблокировать цикл.
+    </p>
+
+  <div class="buttons">
+
+<a
+ class="button-link"
+ href="https://etherscan.io/address/0x942587ffad5d0bc3e8ed72817ff27ff358e5486d"
+ target="_blank"
+>
+View Treasury on Etherscan
+</a>
+
+<button class="button-link" onclick="copyTreasuryWallet()">
+Copy Treasury Address
+</button>
+
+</div>
+  </div>
+
+  <div class="card">
+    <h2>Разблокировка ревила</h2>
+    <p>
+  Ревил не автоматический.<br>
+  Он запускается первым пороговым значением цикла.
+</p>
+      <p> До этого момента каждый ключ остаётся запечатанным.
+    </p>
+
+    <div class="stats" style="margin-top:20px">
+      <div class="stat">
+        <div class="stat-label">Статус</div>
+        <div class="stat-value">Заблокирован</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">Триггер</div>
+        <div class="stat-value">1 ETH</div>
+      </div>
+    </div>
+    <p class="small" style="margin-top:10px">
+333 запечатанных ключа ждут.
+</p>
+
+    <p class="small" style="margin-top:18px">
+  Некоторые ключи управляют циклом.<br>
+  Некоторые ключи могут сломать его.<br><br>
+  Никто не знает, какой есть какой — пока казначейство не разблокирует цикл.
+</p>
+  </div>
+</div>
+    <div class="grid" id="section-signals">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+     <h2 style="margin:0">Сигналы цикла</h2>
+<div class="small" style="opacity:0.6;margin-top:4px">
+  Слой позиционирования
+</div>
+      <div id="donatorLeaderboardCount" class="small" style="opacity:0.7">
+  Live signal positions
+</div>
+      </div>
+
+    <p class="small" style="margin-top:14px">
+      Сигналы от тех, кто занимает позицию в цикле.
+    </p>
+    <div class="signal-note">
+  Это не система донатов.<br>
+  Это позиционирование.<br><br>
+
+  Сигнал ниже 0.005 ETH — это шум.<br>
+  0.01 ETH — здесь позиционируется большинство.
+</div>
+
+    <div class="signal-actions">
+      <button type="button" class="signal-btn" data-signal-amount="0.005">Сигнал 0.005 ETH</button>
+      <button type="button" class="signal-btn signal-btn-primary" data-signal-amount="0.01">Сигнал 0.01 ETH</button>
+      <button type="button" class="signal-btn signal-btn-ghost" data-signal-custom="true">Другая сумма</button>
+    </div>
+    <p class="small signal-actions-note">
+      Никаких токенов. Никаких аирдропов. Только позиционирование.
+    </p>
+
+    <div id="donatorLeaderboardList" style="display:flex;flex-direction:column;gap:14px;margin-top:20px">
+      <div class="small">Loading leaderboard...</div>
+    </div>
+
+    <div id="donatorLeaderboardFooter" class="small" style="margin-top:18px;opacity:0.7">
+      Отслеживаем входящие депозиты казначейства on-chain.
+    </div>
+    </div>
+    <div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h2 style="margin:0">Хранилище казначейства (Заблокировано)</h2>
+    <div class="small" style="opacity:0.7">Заблокированные активы</div>
+  </div>
+
+  <p class="small" style="margin-top:14px">
+  Не все активы видны пока.<br>
+Видимость зависит от состояния цикла.<br>
+Некоторые активы требуют позиционирования для просмотра.
+  </p>
+
+  <div id="treasuryNFTList" style="margin-top:20px;display:flex;flex-direction:column;gap:14px">
+    <div class="small">Loading vault...</div>
+  </div>
+
+  <div class="small" style="margin-top:18px;opacity:0.7">
+This asset will be claimed during a reward round.<br>
+
+Signals and positioning matter.<br><br>
+  </div>
+</div>
+      
+</div>
+<div class="grid" id="section-rewards">
+  <div class="card">
+    <h2>Доступ к наградам</h2>
+    <p>
+  Награды не распределяются.<br>
+  Они разблокируются на основе твоего позиционирования в цикле.
+</p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Статус кошелька</div>
+        <div class="stat-value" id="walletStatus">Не подключён</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">NFT найдено</div>
+        <div class="stat-value" id="nftCount">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Доступные награды</div>
+        <div class="stat-value" id="claimableValue">0 ETH</div>
+      </div>
+    </div>
+
+    <div class="small" style="margin-top: 18px;">Твои NFT</div>
+    <div class="badges" id="tokenBadges"></div>
+
+    <div class="buttons">
+      <button id="claimBtn" disabled>Подключить кошелёк для проверки наград</button>
+    </div>
+
+    <div id="message"></div>
+  </div>
+
+ <div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+    <h2 style="margin:0">Последняя активность</h2>
+    <div id="recentClaimsCount" class="small" style="opacity:0.7">Живая on-chain активность</div>
+  </div>
+
+  <div id="recentClaimsList" style="display:flex;flex-direction:column;gap:14px;margin-top:20px">
+    <div class="small">Loading recent claims...</div>
+  </div>
+
+  <div id="recentClaimsFooter" class="small" style="margin-top:18px;opacity:0.7">
+    Отслеживаем последнюю активность наград.
+  </div>
+</div>
+  </div>
+
+<div class="grid">
+  <div class="card">
+    <h2>Раунд #1 — Предстоящий</h2>
+   <p id="roundIntro">
+  Первый публичный раунд ещё не запущен.<br>
+  Он активируется когда казначейство достигнет 1 ETH.
+</p>
+
+<div class="stats" style="margin-top:20px">
+  <div class="stat">
+    <div class="stat-label">Статус</div>
+    <div class="stat-value" id="nextRoundStatus">Формируется</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-label">Пул наград</div>
+    <div class="stat-value" id="nextRoundTiming">Ожидание</div>
+  </div>
+</div>
+
+<p class="small" id="roundNote" style="margin-top:18px">
+  Раунд #1 намеренно простой: 1 ETH делится поровну между всеми 333 ключами.
+  Последующие раунды становятся более стратегическими — тиры, комбинации, фаза цикла.
+</p>
+  </div>
+
+  <div class="card">
+    <h2>Как работают награды</h2>
+    <p>
+      ETH депонируется в публичный смарт-контракт и распределяется между всеми 333 ключами. Тот, кто держит ключ в момент клейма, получает награду — без снэпшотов, без очередей.
+    </p>
+    <p class="small" style="margin-top:14px;color:#b0b0b0;line-height:1.75">
+      Каждый раунд имеет 365-дневное окно клейма. Раунд #1 намеренно простой: 1 ETH делится поровну. Последующие раунды становятся более стратегическими — вес тира, комбинации ключей, фаза цикла. Правила каждого раунда объявляются до его начала, никогда после.
+    </p>
+    <p class="small" style="margin-top:14px;opacity:0.6">
+      Любые изменения в логике наград делаются в пользу холдеров, никогда против них.
+    </p>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h2>Получить BullRun Key</h2>
+    <p>
+      Минт закрыт. Единственный путь — вторичный рынок.
+    </p>
+    <p class="small">
+      Предложение ограничено 333. Новых ключей не будет никогда.
+    </p>
+    <div class="buttons">
+      <a class="button-link" href="https://opensea.io/collection/bullrunkey" target="_blank">OpenSea →</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Прозрачность</h2>
+    <p>
+      Активность наград сообщества записывается on-chain и может быть независимо верифицирована через смарт-контракт.
+    </p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Всего распределено</div>
+        <div class="stat-value" id="totalDeposited">0 ETH</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Всего заклеймлено</div>
+        <div class="stat-value" id="totalClaimed">0 ETH</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Раундов наград</div>
+        <div class="stat-value" id="totalRounds">0</div>
+      </div>
+    </div>
+
+    <p class="small" style="margin-top: 18px;">
+      Все значения выше читаются напрямую из смарт-контракта наград на Ethereum.
+    </p>
+
+    <div class="buttons">
+      <a
+        class="button"
+        href="https://etherscan.io/address/0xb522609cf7f2e8af1d55af1b685cc9f6a159bc4d"
+        target="_blank"
+      >
+        View Smart Contract
+      </a>
+
+      <a
+        class="button"
+        href="https://opensea.io/collection/bullrunkey"
+        target="_blank"
+      >
+        View Collection
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h2>История наград</h2>
+    <p>
+      Запись раундов наград сообщества, финансируемых через смарт-контракт.
+    </p>
+
+    <div id="rewardHistoryList" class="badges" style="display: block; margin-top: 20px;">
+      <div class="small">Раунды наград ещё не загружены.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Структура цикла</h2>
+    <p>
+      333 ключа. Четыре тира. Каждый представляет силу в крипто-рыночном цикле.
+    </p>
+
+    <div class="cycle-tiers">
+      <div class="cycle-tier">
+        <div class="cycle-tier-header">
+          <span class="cycle-tier-dot dot-common"></span>
+          <span class="cycle-tier-name">Common</span>
+          <span class="cycle-tier-count">300</span>
+        </div>
+        <div class="cycle-tier-types">Накопление · Расширение · Ускорение · Мания · Распределение</div>
+      </div>
+
+      <div class="cycle-tier">
+        <div class="cycle-tier-header">
+          <span class="cycle-tier-dot dot-rare"></span>
+          <span class="cycle-tier-name">Rare</span>
+          <span class="cycle-tier-count">30</span>
+        </div>
+        <div class="cycle-tier-types">Молния · Солнечный · Космический</div>
+      </div>
+
+      <div class="cycle-tier">
+        <div class="cycle-tier-header">
+          <span class="cycle-tier-dot dot-legendary"></span>
+          <span class="cycle-tier-name">Legendary</span>
+          <span class="cycle-tier-count">2</span>
+        </div>
+        <div class="cycle-tier-types">Чёрная дыра · Разлом реальности</div>
+      </div>
+
+      <div class="cycle-tier cycle-tier-god-row">
+        <div class="cycle-tier-header">
+          <span class="cycle-tier-dot dot-god"></span>
+          <span class="cycle-tier-name">God Key</span>
+          <span class="cycle-tier-count">1</span>
+        </div>
+        <div class="cycle-tier-types">Артефакт, который разблокирует систему.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="founder-section">
+  <div class="founder-eyebrow">Создатель</div>
+  <div class="founder-inner">
+    <img src="./founder.jpg" class="founder-photo" alt="Vasilii — BullRun Key founder">
+    <div class="founder-text">
+      <h2 class="founder-title">Строится публично</h2>
+      <p class="founder-bio">
+        BullRun Key строит Василий — участник криптоциклов с 2021 года,
+        который вошёл почти на пике, пережил медвежий рынок и остался в игре.
+        Не команда, не VC-студия. Один человек строит систему, нарратив
+        и сообщество вокруг одной идеи: NFT переживают циклы. Альткоины — нет.
+      </p>
+      <div class="founder-links">
+        <a href="https://x.com/sufidyanov" target="_blank" class="founder-link">X / Twitter</a>
+        <a href="https://t.me/altmarate" target="_blank" class="founder-link">Telegram</a>
+        <a href="https://youtube.com/@sufidyanov" target="_blank" class="founder-link">YouTube</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<div class="card" id="section-faq">
+  <h2>Вопросы и ответы</h2>
+
+  <div style="margin-top:20px">
+
+    <div class="faq-item">
+      <div class="faq-question">Как работают награды?</div>
+      <div class="faq-answer">
+        Создатель периодически пополняет контракт наград. Холдеры BullRun Key могут заклеймить доступные награды в соответствии с активной логикой раунда.
+      </div>
+    </div>
+
+      <div class="faq-item">
+      <div class="faq-question">Кто может клеймить награды?</div>
+      <div class="faq-answer">
+        Награды может клеймить только кошелёк, который в данный момент держит NFT BullRun Key.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">Как часто пополняются раунды наград?</div>
+      <div class="faq-answer">
+        Раунды наград могут пополняться в зависимости от роста казначейства, рыночных условий и активности проекта.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">Сколько времени можно клеймить награды?</div>
+      <div class="faq-answer">
+        Каждый раунд наград имеет окно клейма 365 дней.
+      </div>
+    </div>
+    
+ <div class="faq-item">
+      <div class="faq-question">Что происходит с незаклеймленными наградами?</div>
+      <div class="faq-answer">
+        Незаклеймленные награды остаются доступными 365 дней. После окончания периода клейма незаклеймленный ETH может быть возвращён владельцем проекта и использован для будущей экосистемы или раундов наград.
+      </div>
+    </div>
+
+    
+    <div class="faq-item">
+      <div class="faq-question">Что происходит когда казначейство достигает 1 ETH?</div>
+      <div class="faq-answer">
+        Ровно при 1 ETH разблокируется ревил и начинается публичный Раунд #1: 1 ETH делится поровну между всеми 333 ключами. Это первый публичный раунд наград — предыдущий on-chain раунд был небольшим техническим тестом.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">Где купить BullRun Key?</div>
+      <div class="faq-answer">
+        BullRun Keys доступны на вторичном рынке на OpenSea.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
+  <script src="./app.js"></script>
+
+  <footer style="margin-top:60px;padding:30px 0;border-top:1px solid #222;text-align:center">
+    <div class="small" style="margin-bottom:10px">
+      © BullRun Key
+    </div>
+
+    <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap">
+      <a href="https://t.me/altmarate" target="_blank" class="small">Telegram</a>
+      <a href="https://x.com/sufidyanov" target="_blank" class="small">X / Twitter</a>
+      <a href="https://youtube.com/@sufidyanov" target="_blank" class="small">YouTube</a>
+      <a href="https://opensea.io/collection/bullrunkey" target="_blank" class="small">OpenSea</a>
+      <a href="https://etherscan.io/address/0xb522609cf7f2e8af1d55af1b685cc9f6a159bc4d" target="_blank" class="small">Smart Contract</a>
+    </div>
+    <p style="margin-top:24px;font-size:12px;color:#444;max-width:640px;margin-left:auto;margin-right:auto;line-height:1.6;">
+      BullRun Key NFT — цифровые коллекционные предметы. Не инвестиционные продукты, не ценные бумаги. Награды носят дискреционный характер и не гарантируются.
+    </p>
+  </footer>
+  <script>
+// Sticky nav — show after scrolling past hero
+(function() {
+  const nav = document.getElementById("stickyNav");
+  if (!nav) return;
+  let ticking = false;
+  window.addEventListener("scroll", function() {
+    if (!ticking) {
+      requestAnimationFrame(function() {
+        const heroEl = document.querySelector(".hero");
+        const threshold = heroEl ? heroEl.offsetTop + heroEl.offsetHeight - 60 : 300;
+        if (window.scrollY > threshold) {
+          nav.classList.add("is-visible");
+        } else {
+          nav.classList.remove("is-visible");
+        }
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+})();
+</script>
+
+<script>
+function copyTreasuryWallet() {
+  const wallet = "0x942587ffad5d0bc3e8ed72817ff27ff358e5486d";
+
+  navigator.clipboard.writeText(wallet).then(() => {
+    if (typeof showLiveClaimToast === "function") {
+      showLiveClaimToast("Treasury address copied");
+    }
+  }).catch(() => {
+    console.error("Copy failed");
+  });
+}
+</script>
+</body>
+</html>

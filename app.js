@@ -185,6 +185,25 @@ async function fetchTokenIdsFromAlchemy(ownerAddress) {
   return dedupeTokenIds(tokenIds);
 }
 
+// Определяем язык страницы по имени файла
+const IS_RU = window.location.pathname.endsWith("ru.html") || window.location.pathname.includes("/ru");
+
+const i18n = {
+  socialProof: IS_RU
+    ? (n) => `${n} коллекционеров уже держат кусочек цикла.`
+    : (n) => `${n} collectors already hold a piece of the cycle.`,
+  loading: IS_RU ? "Загрузка..." : "Loading...",
+  loadingLeaderboard: IS_RU ? "Загружаем лидерборд..." : "Loading leaderboard...",
+  loadingClaims: IS_RU ? "Загружаем активность..." : "Loading recent claims...",
+  noRounds: IS_RU ? "Раундов наград пока нет." : "No reward rounds loaded yet.",
+  connectWalletCheck: IS_RU ? "Подключить кошелёк для проверки наград" : "Connect wallet to check rewards",
+  positionStrength: IS_RU ? "Сила позиции" : "Position Strength",
+  deposits: IS_RU ? "депозитов" : "deposits",
+  trackedPositions: IS_RU ? "позиций отслеживается" : "tracked positions",
+  recentEvents: IS_RU ? "последних событий" : "recent events",
+  liveSignalPositions: IS_RU ? "Живые позиции сигналов" : "Live signal positions",
+};
+
 // Загружает holder-счётчик и социальный proof в hero до коннекта кошелька.
 // Без этого #heroSocialProof остаётся пустым абзацем для анонимных посетителей.
 async function loadHeroSocialProof() {
@@ -195,7 +214,7 @@ async function loadHeroSocialProof() {
 
     if (heroHolders) heroHolders.textContent = String(holders);
     if (heroSocialProof) {
-      heroSocialProof.textContent = `${holders} collectors already hold a piece of the cycle.`;
+      heroSocialProof.textContent = i18n.socialProof(holders);
     }
   } catch (err) {
     console.warn("Hero social proof load failed", err);

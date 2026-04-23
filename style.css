@@ -1012,8 +1012,26 @@ a {
   background: rgba(255,255,255,0.05);
 }
 
-.snav-cta {
+.snav-lang {
   margin-left: auto;
+  color: #666;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  padding: 4px 10px;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.snav-lang:hover {
+  color: #ffffff;
+  border-color: #444;
+}
+
+.snav-cta {
+  margin-left: 8px;
   color: #f7931a;
   font-size: 13px;
   font-weight: 600;
