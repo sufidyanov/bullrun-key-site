@@ -1,3 +1,9 @@
 {
-  "cleanUrls": true
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/treasury", "destination": "/#section-treasury", "permanent": false },
+    { "source": "/signals",  "destination": "/#section-signals",  "permanent": false },
+    { "source": "/rewards",  "destination": "/#section-rewards",  "permanent": false },
+    { "source": "/keys",     "destination": "/#section-keys",     "permanent": false }
+  ]
 }
