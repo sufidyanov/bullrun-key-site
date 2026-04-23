@@ -66,8 +66,23 @@ button {
 
 .button-secondary {
   background: transparent;
-  color: white;
+  color: #cccccc;
   border: 1px solid #333;
+  font-weight: 500;
+}
+
+.button-opensea {
+  display: inline-block;
+  background: #f7931a;
+  color: #000000;
+  border: none;
+  padding: 14px 22px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  text-align: center;
 }
 
 .grid{
