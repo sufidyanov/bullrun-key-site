@@ -1028,6 +1028,10 @@ a {
   background: linear-gradient(90deg, transparent 0%, #1e1e1e 20%, #1e1e1e 80%, transparent 100%);
   margin: 56px 0;
 }
+
+@media (max-width: 540px) {
+  .section-divider { margin: 36px 0; }
+}
 /* ── end section dividers ── */
 
 /* ── Vault states ── */
@@ -1072,6 +1076,14 @@ a {
 }
 /* ── end vault states ── */
 
+/* Scroll offset for sticky nav — sections don't hide behind it */
+#section-treasury,
+#section-keys,
+#section-signals,
+#section-rewards,
+#section-faq {
+  scroll-margin-top: 60px;
+}
 /* ── end sticky nav ── */
 
 /* ── Full-width reveal progress block ── */
@@ -1261,6 +1273,8 @@ a {
   .buttons button,
   .buttons .button-link {
     text-align: center;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .lore-quote {
