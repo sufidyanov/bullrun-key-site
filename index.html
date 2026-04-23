@@ -18,6 +18,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BullRun Key — 333 Sealed Keys</title>
   <link rel="icon" type="image/png" href="./logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
@@ -42,74 +45,77 @@
   <div class="container">
 
     <section class="hero">
-      <div class="hero-title">
-        
-  <img src="./logo.png" class="hero-logo" alt="BullRun Key logo">
-  <h1>BullRun Key</h1>
-</div>
+      <div class="hero-layout">
 
-      <div class="subtitle">
-        333 sealed keys. One cycle. A system forming in public.
-      </div>
+        <div class="hero-content">
+          <div class="hero-title">
+            <img src="./logo.png" class="hero-logo" alt="BullRun Key logo">
+            <h1>BullRun Key</h1>
+          </div>
 
-<p id="heroSocialProof" class="hero-note"></p>
+          <div class="subtitle">
+            333 sealed keys. One cycle. A system forming in public.
+          </div>
 
-      <p class="small" style="margin-top:20px">
-        Live state of the system
-      </p>
+          <p id="heroSocialProof" class="hero-note"></p>
 
-      <a
-        href="https://etherscan.io/address/0xb522609cf7f2e8af1d55af1b685cc9f6a159bc4d"
-        target="_blank"
-        class="small"
-        style="display:inline-block;margin-top:10px"
-      >
-        View verified contract on Etherscan →
-      </a>
+          <p class="small" style="margin-top:20px">
+            Live state of the system
+          </p>
 
-      <div class="stats" style="margin-top:30px">
-        <div class="stat">
-          <div class="stat-label">Total Deposited</div>
-          <div class="stat-value" id="heroDeposited">0 ETH</div>
+          <a
+            href="https://etherscan.io/address/0xb522609cf7f2e8af1d55af1b685cc9f6a159bc4d"
+            target="_blank"
+            class="small"
+            style="display:inline-block;margin-top:10px"
+          >
+            View verified contract on Etherscan →
+          </a>
+
+          <div class="stats" style="margin-top:30px">
+            <div class="stat">
+              <div class="stat-label">Total Deposited</div>
+              <div class="stat-value" id="heroDeposited">0 ETH</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Total Claimed</div>
+              <div class="stat-value" id="heroClaimed">0 ETH</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Reward Rounds</div>
+              <div class="stat-value" id="heroRounds">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Holders</div>
+              <div class="stat-value" id="heroHolders">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Total Supply</div>
+              <div class="stat-value">333</div>
+            </div>
+          </div>
+
+          <p class="lead">
+            333 sealed keys tied to a live treasury, reward rounds, and cycle positioning.
+            BullRun Key is not a static collection.
+            It is an interface to a system forming in real time.
+          </p>
+          <p class="small" style="margin-top:14px">
+            Position first. Reveal later.
+          </p>
+
+          <div class="buttons">
+            <button id="connectBtn">Connect Wallet</button>
+            <button id="disconnectWallet" style="display:none;">Disconnect</button>
+            <a class="button-link" href="https://opensea.io/collection/bullrunkey" target="_blank">View on OpenSea</a>
+          </div>
         </div>
 
-        <div class="stat">
-          <div class="stat-label">Total Claimed</div>
-          <div class="stat-value" id="heroClaimed">0 ETH</div>
+        <div class="hero-visual">
+          <img src="./key-god.png" class="hero-key-img" alt="BullRun Key — sealed">
+          <div class="hero-key-sealed-tag">Sealed · Unrevealed</div>
         </div>
 
-        <div class="stat">
-          <div class="stat-label">Reward Rounds</div>
-          <div class="stat-value" id="heroRounds">0</div>
-        </div>
-
-        <div class="stat">
-          <div class="stat-label">Holders</div>
-          <div class="stat-value" id="heroHolders">0</div>
-        </div>
-
-        <div class="stat">
-  <div class="stat-label">TOTAL SUPPLY</div>
-  <div class="stat-value">333</div>
-</div>
-      </div>
-
-      
-
-     <p class="lead">
-  333 sealed keys tied to a live treasury, reward rounds, and cycle positioning.
-  BullRun Key is not a static collection.
-  It is an interface to a system forming in real time.
-</p>
-<p class="small" style="margin-top:14px">
-  Position first. Reveal later.
-</p>
-
-      <div class="buttons">
-
-        <button id="connectBtn">Connect Wallet</button>
-        <button id="disconnectWallet" style="display:none;">Disconnect</button>
-        <a class="button-link" href="https://opensea.io/collection/bullrunkey" target="_blank">View on OpenSea</a>
       </div>
     </section>
 <section class="reveal-section">
@@ -170,39 +176,34 @@
   </div>
 </section>
     <section class="lore-section">
+      <div class="lore-eyebrow">Lore</div>
+      <h2>BullRun Kids</h2>
 
-<h2>BullRun Kids</h2>
+      <p class="lore-text">
+        Most people enter the market during a bull run.
+        They buy the excitement, the green candles, the hype.
+      </p>
 
-<p class="lore-text">
-Most people enter the market during a bull run.
-They buy the excitement, the green candles, the hype.
-</p>
+      <p class="lore-text">
+        Many arrive near the top.<br>
+        Many disappear during the bear market.
+      </p>
 
-<p class="lore-text">
-Many arrive near the top.
-Many disappear during the bear market.
-</p>
+      <div class="lore-quote">
+        <p>But some stay.<br>
+        They study the game. They survive the cycles.<br>
+        They return stronger.</p>
+      </div>
 
-<p class="lore-text">
-But some stay.
-</p>
+      <p class="lore-text highlight">
+        Those who stay become BullRun Kids.
+      </p>
 
-<p class="lore-text">
-They study the game.
-They survive the cycles.
-They return stronger.
-</p>
-
-<p class="lore-text highlight">
-Those who stay become BullRun Kids.
-</p>
-
-<p class="lore-text highlight">
-BullRun Key is the symbol of those who remained.
-Not everyone survives the bear market.
-</p>
-
-</section>
+      <p class="lore-text">
+        BullRun Key is the symbol of those who remained.<br>
+        Not everyone survives the bear market.
+      </p>
+    </section>
 
 <section class="thesis-section">
   <div class="thesis-eyebrow">Thesis</div>
