@@ -256,29 +256,27 @@ a {
   margin-bottom: 16px;
 }
 
-.key-tier-images {
-  display: flex;
-  gap: 8px;
+.key-tier-showcase {
   margin-bottom: 16px;
-  align-items: center;
+  border-radius: 16px;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
 }
 
-.key-tier-images img {
-  width: 72px;
-  height: 72px;
+.key-tier-showcase img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.07);
-  transition: transform 0.2s ease;
+  display: block;
+  transition: transform 0.35s ease;
 }
 
-.key-tier-images img:hover {
-  transform: scale(1.08);
+.key-tier-showcase:hover img {
+  transform: scale(1.04);
 }
 
-.key-tier-images--large img {
-  width: 90px;
-  height: 90px;
+.key-tier-showcase--god {
+  margin-bottom: 16px;
 }
 
 .key-tier-rare {
