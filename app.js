@@ -257,6 +257,16 @@ const roundNoteEl = document.getElementById("roundNote");
     if (rpbCurrent) rpbCurrent.textContent = balanceEth.toLocaleString("en-US", { maximumFractionDigits: 4 }) + " ETH";
     if (rpbFill) rpbFill.style.width = Math.min(progress, 100).toFixed(1) + "%";
     if (rpbPct) rpbPct.textContent = Math.min(progress, 100).toFixed(1) + "%";
+    const rpbRemaining = document.getElementById("rpbRemaining");
+    if (rpbRemaining) {
+      const remaining = Math.max(0, TREASURY_TARGET_ETH - balanceEth);
+      if (remaining > 0.001) {
+        rpbRemaining.textContent = remaining.toLocaleString("en-US", { maximumFractionDigits: 4 }) + " ETH to reveal";
+      } else {
+        rpbRemaining.textContent = "Reveal threshold reached";
+        rpbRemaining.style.color = "#f7931a";
+      }
+    }
 
     if (treasuryAddressEl) {
       treasuryAddressEl.textContent = shortAddress(TREASURY_WALLET);

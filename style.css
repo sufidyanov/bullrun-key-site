@@ -202,7 +202,7 @@ a {
   }
 
   .stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 }
 #liveClaimToast {
@@ -1196,10 +1196,152 @@ a {
   color: #666;
 }
 
+.rpb-remaining {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
 @media (max-width: 540px) {
   .reveal-progress-block { padding: 20px 18px; }
   .rpb-current { font-size: 22px; }
 }
+/* ── Founder section ── */
+.founder-section {
+  margin: 0;
+  padding: 40px 36px;
+  border: 1px solid #1e1e1e;
+  border-radius: 24px;
+  background: #0a0a0a;
+}
+
+.founder-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 14px;
+}
+
+.founder-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  letter-spacing: -0.01em;
+}
+
+.founder-bio {
+  color: #aaa;
+  font-size: 15px;
+  line-height: 1.8;
+  max-width: 640px;
+  margin: 0 0 20px 0;
+}
+
+.founder-links {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.founder-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f7931a;
+  text-decoration: none;
+  opacity: 0.85;
+}
+
+.founder-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+@media (max-width: 540px) {
+  .founder-section { padding: 24px 20px; }
+}
+/* ── end founder section ── */
+
+/* ── Onboarding section ── */
+.onboarding-section {
+  margin: 0 0 0 0;
+}
+
+.onboarding-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.onboarding-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 28px 0;
+  letter-spacing: -0.01em;
+}
+
+.onboarding-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.onboarding-step {
+  padding: 24px;
+  border: 1px solid #1e1e1e;
+  border-radius: 20px;
+  background: #0a0a0a;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.onboarding-num {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #f7931a;
+  opacity: 0.7;
+}
+
+.onboarding-step-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.onboarding-step-text {
+  font-size: 14px;
+  color: #888;
+  line-height: 1.7;
+  margin: 0;
+  flex: 1;
+}
+
+.onboarding-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f7931a;
+  text-decoration: none;
+  margin-top: 4px;
+}
+
+.onboarding-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+  .onboarding-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+/* ── end onboarding section ── */
+
 /* ── end reveal progress block ── */
 
 /* ── Cycle Structure tiers ── */
