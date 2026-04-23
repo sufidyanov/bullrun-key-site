@@ -285,6 +285,7 @@ a {
 
 .key-tier-rare:hover {
   border-color: #1e3a5a;
+  box-shadow: 0 0 30px rgba(60, 120, 220, 0.08);
 }
 
 .key-tier-legendary {
@@ -293,6 +294,16 @@ a {
 
 .key-tier-legendary:hover {
   border-color: #3a1a5a;
+  box-shadow: 0 0 30px rgba(140, 60, 220, 0.08);
+}
+
+.key-tier-god {
+  border-color: #2a2010;
+}
+
+.key-tier-god:hover {
+  border-color: #4a3a18;
+  box-shadow: 0 0 30px rgba(255, 180, 60, 0.1);
 }
 
 .key-tier-text {
