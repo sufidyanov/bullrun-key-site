@@ -49,7 +49,7 @@
       <a href="#section-signals" class="snav-link">Signals</a>
       <a href="#section-rewards" class="snav-link">Rewards</a>
       <a href="#section-faq" class="snav-link">FAQ</a>
-      <a href="./ru.html" class="snav-lang">RU</a>
+      <a href="/ru" class="snav-lang">RU</a>
       <a href="https://opensea.io/collection/bullrunkey" target="_blank" class="snav-cta">OpenSea →</a>
     </div>
   </nav>
@@ -318,8 +318,9 @@
 
 <div class="section-divider"></div>
 
-<div class="grid">
-  <div class="card">
+<div class="card" style="margin-bottom:32px">
+  <div style="display:grid;grid-template-columns:1fr auto;align-items:start;gap:24px;flex-wrap:wrap">
+  <div>
     <h2>BullRun Treasury</h2>
     <p>
       The on-chain treasury funding the BullRun Key ecosystem.
@@ -393,36 +394,6 @@ Copy Treasury Address
 
 </div>
   </div>
-
-  <div class="card">
-    <h2>Reveal Unlock</h2>
-    <p>
-  The reveal is not automatic.<br>
-  It is triggered by the first cycle threshold.
-</p>
-      <p> Until then, every key remains sealed.
-    </p>
-
-    <div class="stats" style="margin-top:20px">
-      <div class="stat">
-        <div class="stat-label">Status</div>
-        <div class="stat-value">Locked</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">Trigger</div>
-        <div class="stat-value">1 ETH</div>
-      </div>
-    </div>
-    <p class="small" style="margin-top:10px">
-333 sealed keys are waiting.
-</p>
-
-    <p class="small" style="margin-top:18px">
-  Some keys control the cycle.<br>
-  Some keys can break it.<br><br>
-  No one knows which is which — until the treasury unlocks the cycle.
-</p>
   </div>
 </div>
     <div class="grid" id="section-signals">
@@ -578,62 +549,12 @@ Signals and positioning matter.<br><br>
   </div>
 </div>
 
-<div class="grid">
-  <div class="card">
-    <h2>Get BullRun Key</h2>
-    <p>
-      Mint is closed. The only way in is the secondary market.
-    </p>
-    <p class="small">
-      Supply is fixed at 333. No new keys will ever be minted.
-    </p>
-    <div class="buttons">
-      <a class="button-link" href="https://opensea.io/collection/bullrunkey" target="_blank">View on OpenSea</a>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>Transparency</h2>
-    <p>
-      Community reward activity is recorded on-chain and can be independently verified through the smart contract.
-    </p>
-
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-label">TOTAL DISTRIBUTED</div>
-        <div class="stat-value" id="totalDeposited">0 ETH</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Total Claimed</div>
-        <div class="stat-value" id="totalClaimed">0 ETH</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Reward Rounds</div>
-        <div class="stat-value" id="totalRounds">0</div>
-      </div>
-    </div>
-
-    <p class="small" style="margin-top: 18px;">
-      All values above are read directly from the rewards smart contract on Ethereum.
-    </p>
-
-    <div class="buttons">
-      <a
-        class="button"
-        href="https://etherscan.io/address/0xb522609cf7f2e8af1d55af1b685cc9f6a159bc4d"
-        target="_blank"
-      >
-        View Smart Contract
-      </a>
-
-      <a
-        class="button"
-        href="https://opensea.io/collection/bullrunkey"
-        target="_blank"
-      >
-        View Collection
-      </a>
-    </div>
+<div class="transparency-strip">
+  <div class="transparency-strip-label">On-chain · Fully verifiable</div>
+  <div class="transparency-strip-links">
+    <a href="https://etherscan.io/address/0xb522609cf7f2e8af1d55af1b685cc9f6a159bc4d" target="_blank" class="transparency-link">Smart Contract ↗</a>
+    <a href="https://opensea.io/collection/bullrunkey" target="_blank" class="transparency-link">OpenSea ↗</a>
+    <a href="https://etherscan.io/address/0x942587ffad5d0bc3e8ed72817ff27ff358e5486d" target="_blank" class="transparency-link">Treasury Wallet ↗</a>
   </div>
 </div>
 

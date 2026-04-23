@@ -1509,3 +1509,56 @@ a {
   }
 }
 /* ── end mobile polish ── */
+
+/* ── Transparency strip ── */
+.transparency-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 18px 24px;
+  border: 1px solid #1c1c1c;
+  border-radius: 14px;
+  background: #0a0a0a;
+  margin-bottom: 48px;
+}
+
+.transparency-strip-label {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #555;
+}
+
+.transparency-strip-links {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.transparency-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  text-decoration: none;
+  transition: color 0.15s ease;
+  white-space: nowrap;
+}
+
+.transparency-link:hover {
+  color: #f7931a;
+}
+
+@media (max-width: 540px) {
+  .transparency-strip {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 18px;
+  }
+  .transparency-strip-links {
+    gap: 16px;
+  }
+}
+/* ── end transparency strip ── */
