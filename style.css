@@ -951,6 +951,66 @@ a {
   font-size: 13px;
 }
 
+/* ── Cycle Structure tiers ── */
+.cycle-tiers {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 20px;
+}
+
+.cycle-tier {
+  padding: 14px 0;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.cycle-tier:last-child {
+  border-bottom: none;
+}
+
+.cycle-tier-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.cycle-tier-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot-common   { background: #c8a456; }
+.dot-rare     { background: #4a9eff; }
+.dot-legendary{ background: #a855f7; }
+.dot-god      { background: #f7931a; box-shadow: 0 0 8px rgba(247,147,26,0.5); }
+
+.cycle-tier-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e0e0e0;
+  flex: 1;
+}
+
+.cycle-tier-count {
+  font-size: 13px;
+  color: #6a6a6a;
+  font-variant-numeric: tabular-nums;
+}
+
+.cycle-tier-types {
+  font-size: 13px;
+  color: #7a7a7a;
+  padding-left: 18px;
+  line-height: 1.5;
+}
+
+.cycle-tier-god-row .cycle-tier-name { color: #f7931a; }
+.cycle-tier-god-row .cycle-tier-types { color: #9a9a9a; }
+/* ── end Cycle Structure ── */
+
 /* ── Mobile polish ── */
 @media (max-width: 540px) {
   .container {

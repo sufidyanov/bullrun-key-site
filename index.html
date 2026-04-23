@@ -74,23 +74,19 @@
 
           <div class="stats" style="margin-top:30px">
             <div class="stat">
-              <div class="stat-label">Total Deposited</div>
-              <div class="stat-value" id="heroDeposited">0 ETH</div>
+              <div class="stat-label">Treasury</div>
+              <div class="stat-value" id="heroTreasury">— ETH</div>
             </div>
             <div class="stat">
-              <div class="stat-label">Total Claimed</div>
-              <div class="stat-value" id="heroClaimed">0 ETH</div>
-            </div>
-            <div class="stat">
-              <div class="stat-label">Reward Rounds</div>
-              <div class="stat-value" id="heroRounds">0</div>
+              <div class="stat-label">Reveal Target</div>
+              <div class="stat-value">1 ETH</div>
             </div>
             <div class="stat">
               <div class="stat-label">Holders</div>
-              <div class="stat-value" id="heroHolders">0</div>
+              <div class="stat-value" id="heroHolders">—</div>
             </div>
             <div class="stat">
-              <div class="stat-label">Total Supply</div>
+              <div class="stat-label">Keys Sealed</div>
               <div class="stat-value">333</div>
             </div>
           </div>
@@ -492,16 +488,12 @@ Signals and positioning matter.<br><br>
   <div class="card">
     <h2>How Rewards Work</h2>
     <p>
-      Rewards are funded into a public smart contract, then claimed by whoever holds the key at the moment of claim.
+      ETH is deposited into a public smart contract and distributed across all 333 keys. Whoever holds the key at the moment of claiming receives the reward — no snapshot, no waiting list.
     </p>
-    <ul>
-      <li>distributed in ETH, on-chain</li>
-      <li>claim window: 365 days per round</li>
-      <li>Round #1: equal split across 333 keys</li>
-      <li>later rounds: may depend on tier, combinations, or cycle phase</li>
-      <li>rules of each round are announced before the round, never after</li>
-    </ul>
-    <p class="small" style="margin-top:14px;opacity:0.75">
+    <p class="small" style="margin-top:14px;color:#b0b0b0;line-height:1.75">
+      Each round has a 365-day claim window. Round #1 is simple by design: 1 ETH split equally. Later rounds become more strategic — tier weight, key combinations, cycle phase may all factor in. The rules of each round are announced before it starts, never after.
+    </p>
+    <p class="small" style="margin-top:14px;opacity:0.6">
       Any change to reward logic is made in favor of holders, never against them.
     </p>
   </div>
@@ -581,28 +573,45 @@ Signals and positioning matter.<br><br>
   <div class="card">
     <h2>Cycle Structure</h2>
     <p>
-      BullRun Keys represent the phases and forces of the crypto market cycle.
+      333 keys. Four tiers. Each representing a force in the crypto market cycle.
     </p>
 
-    <div class="small cycle-structure-list" style="margin-top:16px;">
-      <strong>Common — 300</strong><br>
-      Accumulation Key — 60<br>
-      Expansion Key — 60<br>
-      Acceleration Key — 60<br>
-      Mania Key — 60<br>
-      Distribution Key — 60<br><br>
+    <div class="cycle-tiers">
+      <div class="cycle-tier">
+        <div class="cycle-tier-header">
+          <span class="cycle-tier-dot dot-common"></span>
+          <span class="cycle-tier-name">Common</span>
+          <span class="cycle-tier-count">300</span>
+        </div>
+        <div class="cycle-tier-types">Accumulation · Expansion · Acceleration · Mania · Distribution</div>
+      </div>
 
-      <strong>Rare — 30</strong><br>
-      Lightning Key — 10<br>
-      Solar Key — 10<br>
-      Cosmic Key — 10<br><br>
+      <div class="cycle-tier">
+        <div class="cycle-tier-header">
+          <span class="cycle-tier-dot dot-rare"></span>
+          <span class="cycle-tier-name">Rare</span>
+          <span class="cycle-tier-count">30</span>
+        </div>
+        <div class="cycle-tier-types">Lightning · Solar · Cosmic</div>
+      </div>
 
-      <strong>Legendary — 2</strong><br>
-      Black Hole Key — 1<br>
-      Reality Rift Key — 1<br><br>
+      <div class="cycle-tier">
+        <div class="cycle-tier-header">
+          <span class="cycle-tier-dot dot-legendary"></span>
+          <span class="cycle-tier-name">Legendary</span>
+          <span class="cycle-tier-count">2</span>
+        </div>
+        <div class="cycle-tier-types">Black Hole · Reality Rift</div>
+      </div>
 
-      <strong>God — 1</strong><br>
-      God Key — 1
+      <div class="cycle-tier cycle-tier-god-row">
+        <div class="cycle-tier-header">
+          <span class="cycle-tier-dot dot-god"></span>
+          <span class="cycle-tier-name">God Key</span>
+          <span class="cycle-tier-count">1</span>
+        </div>
+        <div class="cycle-tier-types">The artifact that unlocks the system.</div>
+      </div>
     </div>
   </div>
 </div>
@@ -665,12 +674,6 @@ Signals and positioning matter.<br><br>
   </div>
 </div>
 
-<div class="card footer">
-  <h2>Disclaimer</h2>
-  <p>
-    BullRun Key NFTs are digital collectibles representing membership within the BullRun Kids community. They are not intended to be investment products, securities, or financial instruments. Rewards, perks, and ecosystem features are discretionary, may vary over time, and are not guaranteed. Holding a BullRun Key should not be understood as an expectation of profit or financial return.
-  </p>
-</div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
@@ -688,6 +691,9 @@ Signals and positioning matter.<br><br>
       <a href="https://opensea.io/collection/bullrunkey" target="_blank" class="small">OpenSea</a>
       <a href="https://etherscan.io/address/0xb522609cf7f2e8af1d55af1b685cc9f6a159bc4d" target="_blank" class="small">Smart Contract</a>
     </div>
+    <p style="margin-top:24px;font-size:12px;color:#444;max-width:640px;margin-left:auto;margin-right:auto;line-height:1.6;">
+      BullRun Key NFTs are digital collectibles. Not investment products, not securities. Rewards are discretionary and not guaranteed.
+    </p>
   </footer>
   <script>
 function copyTreasuryWallet() {

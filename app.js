@@ -245,6 +245,11 @@ const roundNoteEl = document.getElementById("roundNote");
       treasuryBalanceEl.textContent =
         balanceEth.toLocaleString("en-US", { maximumFractionDigits: 4 }) + " ETH";
     }
+    const heroTreasuryEl = document.getElementById("heroTreasury");
+    if (heroTreasuryEl) {
+      heroTreasuryEl.textContent =
+        balanceEth.toLocaleString("en-US", { maximumFractionDigits: 4 }) + " ETH";
+    }
 
     if (treasuryAddressEl) {
       treasuryAddressEl.textContent = shortAddress(TREASURY_WALLET);
@@ -426,6 +431,8 @@ if (roundNoteEl) {
     console.error("Treasury load failed", err);
     const treasuryBalanceEl = document.getElementById("treasuryBalance");
     if (treasuryBalanceEl) treasuryBalanceEl.textContent = "Unavailable";
+    const heroTreasuryEl2 = document.getElementById("heroTreasury");
+    if (heroTreasuryEl2) heroTreasuryEl2.textContent = "—";
   }
 }
 
