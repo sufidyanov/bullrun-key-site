@@ -250,6 +250,13 @@ const roundNoteEl = document.getElementById("roundNote");
       heroTreasuryEl.textContent =
         balanceEth.toLocaleString("en-US", { maximumFractionDigits: 4 }) + " ETH";
     }
+    // Full-width progress block
+    const rpbCurrent = document.getElementById("rpbCurrent");
+    const rpbFill = document.getElementById("rpbFill");
+    const rpbPct = document.getElementById("rpbPct");
+    if (rpbCurrent) rpbCurrent.textContent = balanceEth.toLocaleString("en-US", { maximumFractionDigits: 4 }) + " ETH";
+    if (rpbFill) rpbFill.style.width = Math.min(progress, 100).toFixed(1) + "%";
+    if (rpbPct) rpbPct.textContent = Math.min(progress, 100).toFixed(1) + "%";
 
     if (treasuryAddressEl) {
       treasuryAddressEl.textContent = shortAddress(TREASURY_WALLET);
@@ -822,7 +829,12 @@ async function loadTreasuryNFTs() {
   const container = document.getElementById("treasuryNFTList");
   if (!container) return;
 
-  container.innerHTML = '<div class="small">Loading vault...</div>';
+  container.innerHTML = `
+    <div class="vault-skeleton">
+      <div class="vault-skel-item"></div>
+      <div class="vault-skel-item"></div>
+    </div>
+  `;
 
   try {
     const url =
@@ -883,9 +895,12 @@ async function loadTreasuryNFTs() {
 
     if (!normalized.length) {
   container.innerHTML = `
-    <div class="small">
-      No featured vault assets are visible right now.<br>
-      New treasury rewards will appear here.
+    <div class="vault-locked-state">
+      <div class="vault-locked-icon">⬡</div>
+      <div class="vault-locked-text">
+        Vault contents are not visible yet.<br>
+        Reveal unlocks at 1 ETH.
+      </div>
     </div>
   `;
   return;

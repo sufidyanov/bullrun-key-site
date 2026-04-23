@@ -42,6 +42,17 @@
     <span id="liveClaimToastText"></span>
   </div>
 
+  <nav class="sticky-nav" id="stickyNav">
+    <div class="sticky-nav-inner">
+      <a href="#section-treasury" class="snav-link">Treasury</a>
+      <a href="#section-keys" class="snav-link">Key Types</a>
+      <a href="#section-signals" class="snav-link">Signals</a>
+      <a href="#section-rewards" class="snav-link">Rewards</a>
+      <a href="#section-faq" class="snav-link">FAQ</a>
+      <a href="https://opensea.io/collection/bullrunkey" target="_blank" class="snav-cta">OpenSea →</a>
+    </div>
+  </nav>
+
   <div class="container">
 
     <section class="hero">
@@ -101,9 +112,9 @@
           </p>
 
           <div class="buttons">
+            <a class="button-link" href="https://opensea.io/collection/bullrunkey" target="_blank">View on OpenSea</a>
             <button id="connectBtn">Connect Wallet</button>
             <button id="disconnectWallet" style="display:none;">Disconnect</button>
-            <a class="button-link" href="https://opensea.io/collection/bullrunkey" target="_blank">View on OpenSea</a>
           </div>
         </div>
 
@@ -114,7 +125,27 @@
 
       </div>
     </section>
-<section class="reveal-section">
+<div class="section-divider"></div>
+
+<section class="reveal-progress-block" id="section-treasury">
+  <div class="rpb-top">
+    <div class="rpb-label">BullRun Treasury</div>
+    <div class="rpb-numbers">
+      <span class="rpb-current" id="rpbCurrent">— ETH</span>
+      <span class="rpb-sep">/</span>
+      <span class="rpb-target">1 ETH</span>
+    </div>
+  </div>
+  <div class="rpb-bar">
+    <div class="rpb-fill" id="rpbFill"></div>
+  </div>
+  <div class="rpb-bottom">
+    <span class="rpb-pct" id="rpbPct">—%</span>
+    <span class="rpb-note">Reveal unlocks at 1 ETH · Round #1 starts immediately</span>
+  </div>
+</section>
+
+<section class="reveal-section" id="section-keys">
   <div class="reveal-header">
     <h2>Key Types</h2>
     <p class="small">
@@ -171,6 +202,8 @@
     </div>
   </div>
 </section>
+    <div class="section-divider"></div>
+
     <section class="lore-section">
       <div class="lore-eyebrow">Lore</div>
       <h2>BullRun Kids</h2>
@@ -200,6 +233,8 @@
         Not everyone survives the bear market.
       </p>
     </section>
+
+<div class="section-divider"></div>
 
 <section class="thesis-section">
   <div class="thesis-eyebrow">Thesis</div>
@@ -238,6 +273,8 @@
     </div>
   </div>
 </section>
+
+<div class="section-divider"></div>
 
 <div class="grid">
   <div class="card">
@@ -346,7 +383,7 @@ Copy Treasury Address
 </p>
   </div>
 </div>
-    <div class="grid">
+    <div class="grid" id="section-signals">
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
      <h2 style="margin:0">Cycle Signals</h2>
@@ -410,7 +447,7 @@ Signals and positioning matter.<br><br>
 </div>
       
 </div>
-<div class="grid">
+<div class="grid" id="section-rewards">
   <div class="card">
     <h2>Access Rewards</h2>
     <p>
@@ -616,7 +653,7 @@ Signals and positioning matter.<br><br>
   </div>
 </div>
 
-<div class="card">
+<div class="card" id="section-faq">
   <h2>FAQ</h2>
 
   <div style="margin-top:20px">
@@ -696,6 +733,30 @@ Signals and positioning matter.<br><br>
     </p>
   </footer>
   <script>
+// Sticky nav — show after scrolling past hero
+(function() {
+  const nav = document.getElementById("stickyNav");
+  if (!nav) return;
+  let ticking = false;
+  window.addEventListener("scroll", function() {
+    if (!ticking) {
+      requestAnimationFrame(function() {
+        const heroEl = document.querySelector(".hero");
+        const threshold = heroEl ? heroEl.offsetTop + heroEl.offsetHeight - 60 : 300;
+        if (window.scrollY > threshold) {
+          nav.classList.add("is-visible");
+        } else {
+          nav.classList.remove("is-visible");
+        }
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+})();
+</script>
+
+<script>
 function copyTreasuryWallet() {
   const wallet = "0x942587ffad5d0bc3e8ed72817ff27ff358e5486d";
 

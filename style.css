@@ -951,6 +951,230 @@ a {
   font-size: 13px;
 }
 
+/* ── Sticky nav ── */
+.sticky-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(11, 11, 11, 0.92);
+  border-bottom: 1px solid #1e1e1e;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transform: translateY(-100%);
+  transition: transform 0.25s ease;
+  pointer-events: none;
+}
+
+.sticky-nav.is-visible {
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+.sticky-nav-inner {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 20px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.snav-link {
+  color: #888;
+  font-size: 13px;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: color 0.15s ease, background 0.15s ease;
+  white-space: nowrap;
+}
+
+.snav-link:hover {
+  color: #ffffff;
+  background: rgba(255,255,255,0.05);
+}
+
+.snav-cta {
+  margin-left: auto;
+  color: #f7931a;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 6px 14px;
+  border: 1px solid rgba(247,147,26,0.3);
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.snav-cta:hover {
+  background: rgba(247,147,26,0.08);
+  border-color: rgba(247,147,26,0.6);
+  color: #f7931a;
+}
+
+@media (max-width: 540px) {
+  .snav-link { display: none; }
+  .snav-link:nth-child(1),
+  .snav-link:nth-child(3) { display: block; }
+  .snav-cta { margin-left: auto; }
+}
+/* ── Section dividers ── */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, #1e1e1e 20%, #1e1e1e 80%, transparent 100%);
+  margin: 56px 0;
+}
+/* ── end section dividers ── */
+
+/* ── Vault states ── */
+.vault-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.vault-skel-item {
+  height: 56px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #141414 25%, #1c1c1c 50%, #141414 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.vault-locked-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 0;
+  gap: 12px;
+}
+
+.vault-locked-icon {
+  font-size: 28px;
+  opacity: 0.2;
+}
+
+.vault-locked-text {
+  font-size: 13px;
+  color: #666;
+  text-align: center;
+  line-height: 1.7;
+}
+/* ── end vault states ── */
+
+/* ── end sticky nav ── */
+
+/* ── Full-width reveal progress block ── */
+.reveal-progress-block {
+  margin: 0 0 48px 0;
+  padding: 28px 32px;
+  border: 1px solid #222;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #0d0d0d 0%, #0a0a0a 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.reveal-progress-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(247,147,26,0.3) 0%, rgba(247,147,26,0.06) 60%, transparent 100%);
+}
+
+.rpb-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rpb-label {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #666;
+}
+
+.rpb-numbers {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.rpb-current {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.rpb-sep {
+  color: #444;
+  font-size: 18px;
+}
+
+.rpb-target {
+  font-size: 18px;
+  color: #555;
+  font-weight: 600;
+}
+
+.rpb-bar {
+  width: 100%;
+  height: 6px;
+  background: #1a1a1a;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.rpb-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #f7931a, #ffb347);
+  border-radius: 999px;
+  transition: width 0.8s ease;
+  box-shadow: 0 0 16px rgba(247,147,26,0.4);
+}
+
+.rpb-bottom {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.rpb-pct {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f7931a;
+}
+
+.rpb-note {
+  font-size: 13px;
+  color: #666;
+}
+
+@media (max-width: 540px) {
+  .reveal-progress-block { padding: 20px 18px; }
+  .rpb-current { font-size: 22px; }
+}
+/* ── end reveal progress block ── */
+
 /* ── Cycle Structure tiers ── */
 .cycle-tiers {
   display: flex;
