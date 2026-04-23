@@ -256,6 +256,47 @@ a {
   margin-bottom: 16px;
 }
 
+.key-tier-images {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.key-tier-images img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.07);
+  transition: transform 0.2s ease;
+}
+
+.key-tier-images img:hover {
+  transform: scale(1.08);
+}
+
+.key-tier-images--large img {
+  width: 90px;
+  height: 90px;
+}
+
+.key-tier-rare {
+  border-color: #1a2a3a;
+}
+
+.key-tier-rare:hover {
+  border-color: #1e3a5a;
+}
+
+.key-tier-legendary {
+  border-color: #2a1a3a;
+}
+
+.key-tier-legendary:hover {
+  border-color: #3a1a5a;
+}
+
 .key-tier-text {
   color: #c9c9c9;
   line-height: 1.7;
