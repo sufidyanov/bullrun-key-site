@@ -1,3 +1,11 @@
+// Twinkling starfield overlay
+(function() {
+  const sf = document.createElement("div");
+  sf.className = "starfield-twinkle";
+  sf.setAttribute("aria-hidden", "true");
+  document.body.insertBefore(sf, document.body.firstChild);
+})();
+
 // BullRun Key — site config
 //
 // Все внешние ключи (Alchemy, Etherscan) живут внутри Cloudflare Worker,
