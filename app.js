@@ -905,13 +905,17 @@ async function loadTreasuryNFTs() {
       nft?.media?.[0]?.gateway ||
       nft?.raw?.metadata?.image ||
       "";
-    const image = rawImage.startsWith("ipfs://")
+    const resolvedImage = rawImage.startsWith("ipfs://")
       ? rawImage.replace("ipfs://", "https://ipfs.io/ipfs/")
       : rawImage;
 
     const contractAddress = nft?.contract?.address || "";
     const tokenId = nft?.tokenId || "";
     const collection = nft?.contract?.name || "Unknown Collection";
+
+    // fallback для BullRun Key пока метаданные запечатаны
+    const isBullRunKey = contractAddress.toLowerCase() === "0x367ac60fb4b2bb8851a46ab7a7fd13654ef70419";
+    const image = resolvedImage || (isBullRunKey ? "/key.png" : "");
 
     return {
       name,
