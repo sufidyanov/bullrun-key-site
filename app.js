@@ -963,7 +963,7 @@ async function loadTreasuryNFTs() {
           src="${nft.image}"
           alt="${nft.name}"
           style="width:56px;height:56px;border-radius:12px;object-fit:cover;border:1px solid rgba(255,255,255,0.08);background:#111;box-shadow:0 0 20px rgba(255,200,80,0.15)"
-          onerror="this.style.display='none'"
+          onerror="this.src='/key.png'"
         />
         <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
