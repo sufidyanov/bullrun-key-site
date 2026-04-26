@@ -1194,10 +1194,69 @@ item.style.border = "1px solid rgba(255, 170, 0, 0.18)";
     }
   }
 }
+function isMobile() {
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+function showMobileWalletOptions() {
+  const url = encodeURIComponent("https://bullrunkey.xyz");
+  const wallets = [
+    { name: "MetaMask",      link: `https://metamask.app.link/dapp/bullrunkey.xyz` },
+    { name: "Trust Wallet",  link: `https://link.trustwallet.com/open_url?coin_id=60&url=https://bullrunkey.xyz` },
+    { name: "Coinbase Wallet", link: `https://go.cb-wallet.com/dapp?url=https://bullrunkey.xyz` },
+    { name: "Rabby",         link: `https://rabby.io/` },
+  ];
+
+  const existing = document.getElementById("mobileWalletModal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "mobileWalletModal";
+  modal.style.cssText = `
+    position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;
+    display:flex;align-items:flex-end;justify-content:center;
+  `;
+  modal.innerHTML = `
+    <div style="
+      background:#111;border:1px solid rgba(255,255,255,0.1);
+      border-radius:20px 20px 0 0;padding:28px 24px 36px;
+      width:100%;max-width:480px;
+    ">
+      <div style="font-size:16px;font-weight:700;margin-bottom:6px">Open in wallet browser</div>
+      <div style="font-size:13px;opacity:0.5;margin-bottom:20px">
+        Mobile browsers don't support wallet connections directly.<br>
+        Open the site from your wallet app.
+      </div>
+      ${wallets.map(w => `
+        <a href="${w.link}" target="_blank" rel="noopener noreferrer" style="
+          display:flex;align-items:center;justify-content:space-between;
+          padding:14px 16px;margin-bottom:8px;
+          background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);
+          border-radius:12px;text-decoration:none;color:inherit;font-weight:600;font-size:15px;
+        ">
+          ${w.name}
+          <span style="opacity:0.4;font-size:18px">→</span>
+        </a>
+      `).join("")}
+      <button onclick="document.getElementById('mobileWalletModal').remove()" style="
+        width:100%;margin-top:12px;padding:12px;
+        background:transparent;border:1px solid rgba(255,255,255,0.1);
+        border-radius:12px;color:rgba(255,255,255,0.5);font-size:14px;cursor:pointer;
+      ">Cancel</button>
+    </div>
+  `;
+  modal.addEventListener("click", e => { if (e.target === modal) modal.remove(); });
+  document.body.appendChild(modal);
+}
+
 async function connectWallet() {
   try {
     if (!window.ethereum) {
-      setMessage("No wallet detected. Install MetaMask or Rabby to connect.");
+      if (isMobile()) {
+        showMobileWalletOptions();
+      } else {
+        setMessage("No wallet detected. Install MetaMask or Rabby to connect.");
+      }
       return;
     }
 
