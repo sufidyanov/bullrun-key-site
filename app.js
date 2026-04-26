@@ -18,7 +18,7 @@ const OPENSEA_URL = "https://opensea.io/collection/bullrunkey";
 const TREASURY_VAULT_CONTRACTS = [
   "0x367ac60FB4B2bb8851a46ab7A7FD13654eF70419".toLowerCase(), // BullRun Key
   "0xbe9371326f91345777b04394448c23e2bfeaa826".toLowerCase(), // Gemesis (OpenSea, ERC721SeaDrop)
-  "0x524cab2ec69b81be31b7c057ae1e1d6a813a3c52".toLowerCase()  // Lil Pudgys
+  "0x524cAB2ec69124574082676e6F654a18df49A048".toLowerCase()  // Lil Pudgys
 ];
 
 // Общий read-only провайдер для публичных запросов до коннекта кошелька.
