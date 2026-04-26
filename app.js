@@ -898,13 +898,16 @@ async function loadTreasuryNFTs() {
       nft?.title ||
       `${nft?.contract?.name || "Unknown Collection"} #${nft?.tokenId || "?"}`;
 
-    const image =
+    const rawImage =
       nft?.image?.cachedUrl ||
       nft?.image?.pngUrl ||
       nft?.image?.thumbnailUrl ||
       nft?.media?.[0]?.gateway ||
       nft?.raw?.metadata?.image ||
       "";
+    const image = rawImage.startsWith("ipfs://")
+      ? rawImage.replace("ipfs://", "https://ipfs.io/ipfs/")
+      : rawImage;
 
     const contractAddress = nft?.contract?.address || "";
     const tokenId = nft?.tokenId || "";
