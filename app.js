@@ -654,6 +654,48 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
     }
 
     // -------------------------
+    // 3) REWARD CLAIMS (internal txs from reward contract)
+    // -------------------------
+    try {
+      const claimUrl =
+        `${PROXY_BASE}/etherscan?chainid=1&module=account&action=txlistinternal` +
+        `&address=${REWARD_CONTRACT}` +
+        `&page=1&offset=20&sort=desc`;
+
+      const claimResponse = await fetch(claimUrl);
+
+      if (claimResponse.ok) {
+        const claimData = await claimResponse.json();
+
+        if (claimData && Array.isArray(claimData.result)) {
+          const claimTxs = claimData.result.filter((tx) => {
+            return (
+              tx.from &&
+              tx.from.toLowerCase() === REWARD_CONTRACT.toLowerCase() &&
+              tx.value &&
+              BigInt(tx.value) > 0n &&
+              tx.isError === "0"
+            );
+          });
+
+          for (const tx of claimTxs.slice(0, 5)) {
+            const timestampMs = Number(tx.timeStamp) * 1000;
+            activityItems.push({
+              type: "claim",
+              wallet: tx.to,
+              short: shortAddress(tx.to),
+              amount: Number(ethers.formatEther(tx.value)),
+              label: "Reward Claim",
+              timestampMs
+            });
+          }
+        }
+      }
+    } catch (claimErr) {
+      console.warn("Failed to load claim activity", claimErr);
+    }
+
+    // -------------------------
     // 4) AUTOMATIC SYSTEM EVENTS
     // -------------------------
     try {
