@@ -83,6 +83,15 @@ function formatEth(value) {
 function shortAddress(address) {
   return address.slice(0, 6) + "..." + address.slice(-4);
 }
+
+function sanitizeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
 async function getEnsName(address) {
   try {
     const normalized = address.toLowerCase();
@@ -960,14 +969,14 @@ async function loadTreasuryNFTs() {
 
       item.innerHTML = `
         <img
-          src="${nft.image}"
-          alt="${nft.name}"
+          src="${sanitizeHtml(nft.image)}"
+          alt="${sanitizeHtml(nft.name)}"
           style="width:56px;height:56px;border-radius:12px;object-fit:cover;border:1px solid rgba(255,255,255,0.08);background:#111;box-shadow:0 0 20px rgba(255,200,80,0.15)"
           onerror="this.src='/key.png'"
         />
         <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <div style="font-weight:700;line-height:1.2">${nft.name}</div>
+            <div style="font-weight:700;line-height:1.2">${sanitizeHtml(nft.name)}</div>
             <span style="font-size:12px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,0.08);opacity:0.8">
               Vault Asset
             </span>
