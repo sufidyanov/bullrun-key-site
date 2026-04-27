@@ -466,28 +466,20 @@ Copy Treasury Address
     </div>
     </div>
     <div class="card">
-  <div style="display:flex;justify-content:space-between;align-items:center">
-    <h2 style="margin:0">Хранилище казначейства (Заблокировано)</h2>
-    <div class="small" style="opacity:0.7">Заблокированные активы</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+    <h2 style="margin:0">Последняя активность</h2>
+    <div id="recentClaimsCount" class="small" style="opacity:0.7">Живая on-chain активность</div>
   </div>
 
-  <p class="small" style="margin-top:14px">
-  Не все активы видны пока.<br>
-Видимость зависит от состояния цикла.<br>
-Некоторые активы требуют позиционирования для просмотра.
-  </p>
-
-  <div id="treasuryNFTList" style="margin-top:20px;display:flex;flex-direction:column;gap:14px">
-    <div class="small">Loading vault...</div>
+  <div id="recentClaimsList" style="display:flex;flex-direction:column;gap:14px;margin-top:20px">
+    <div class="small">Loading recent claims...</div>
   </div>
 
-  <div class="small" style="margin-top:18px;opacity:0.7">
-This asset will be claimed during a reward round.<br>
-
-Signals and positioning matter.<br><br>
+  <div id="recentClaimsFooter" class="small" style="margin-top:18px;opacity:0.7">
+    Отслеживаем последнюю активность наград.
   </div>
 </div>
-      
+
 </div>
 <div class="grid" id="section-rewards">
   <div class="card">
@@ -522,18 +514,26 @@ Signals and positioning matter.<br><br>
     <div id="message"></div>
   </div>
 
- <div class="card">
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-    <h2 style="margin:0">Последняя активность</h2>
-    <div id="recentClaimsCount" class="small" style="opacity:0.7">Живая on-chain активность</div>
+  <div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h2 style="margin:0">Хранилище казначейства (Заблокировано)</h2>
+    <div class="small" style="opacity:0.7">Заблокированные активы</div>
   </div>
 
-  <div id="recentClaimsList" style="display:flex;flex-direction:column;gap:14px;margin-top:20px">
-    <div class="small">Loading recent claims...</div>
+  <p class="small" style="margin-top:14px">
+  Не все активы видны пока.<br>
+Видимость зависит от состояния цикла.<br>
+Некоторые активы требуют позиционирования для просмотра.
+  </p>
+
+  <div id="treasuryNFTList" style="margin-top:20px;display:flex;flex-direction:column;gap:14px">
+    <div class="small">Loading vault...</div>
   </div>
 
-  <div id="recentClaimsFooter" class="small" style="margin-top:18px;opacity:0.7">
-    Отслеживаем последнюю активность наград.
+  <div class="small" style="margin-top:18px;opacity:0.7">
+This asset will be claimed during a reward round.<br>
+
+Signals and positioning matter.<br><br>
   </div>
 </div>
   </div>
