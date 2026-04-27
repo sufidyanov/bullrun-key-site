@@ -1061,6 +1061,37 @@ a {
   font-size: 13px;
 }
 
+.signal-custom-row {
+  margin-top: 12px;
+}
+
+.signal-custom-inner {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.signal-custom-input {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(247,147,26,0.3);
+  border-radius: 8px;
+  color: #f1f1f1;
+  font-size: 15px;
+  padding: 10px 14px;
+  width: 130px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.signal-custom-input:focus {
+  border-color: rgba(247,147,26,0.7);
+}
+
+.signal-custom-input::placeholder {
+  color: rgba(255,255,255,0.3);
+}
+
 /* ── Sticky nav ── */
 .sticky-nav {
   position: fixed;

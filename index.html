@@ -424,6 +424,14 @@ Copy Treasury Address
       <button type="button" class="signal-btn signal-btn-primary" data-signal-amount="0.01">Signal 0.01 ETH</button>
       <button type="button" class="signal-btn signal-btn-ghost" data-signal-custom="true">Custom</button>
     </div>
+    <div id="signal-custom-row" class="signal-custom-row" style="display:none">
+      <div class="signal-custom-inner">
+        <input id="signal-custom-value" type="number" step="0.001" min="0.001" placeholder="0.01" class="signal-custom-input" />
+        <button type="button" id="signal-custom-confirm" class="signal-btn signal-btn-primary">Send</button>
+        <button type="button" id="signal-custom-cancel" class="signal-btn signal-btn-ghost">Cancel</button>
+      </div>
+      <p class="small" style="margin-top:6px;opacity:0.5">Min 0.005 ETH. Anchor: 0.01 ETH.</p>
+    </div>
     <p class="small signal-actions-note">
       No tokens minted. No airdrop promised. Just positioning.
     </p>

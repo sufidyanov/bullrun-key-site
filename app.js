@@ -1582,16 +1582,40 @@ function wireSignalButtons() {
   });
 
   const customBtn = document.querySelector("[data-signal-custom]");
-  if (customBtn) {
+  const customRow = document.getElementById("signal-custom-row");
+  const customInput = document.getElementById("signal-custom-value");
+  const customConfirm = document.getElementById("signal-custom-confirm");
+  const customCancel = document.getElementById("signal-custom-cancel");
+
+  function hideCustomRow() {
+    if (customRow) customRow.style.display = "none";
+    if (customInput) customInput.value = "";
+  }
+
+  if (customBtn && customRow) {
     customBtn.addEventListener("click", () => {
-      const raw = prompt(
-        `Custom signal amount, ETH.\n` +
-        `Minimum meaningful: ${SIGNAL_MIN_ETH}. Psychological anchor: ${SIGNAL_ANCHOR_ETH}.`,
-        String(SIGNAL_ANCHOR_ETH)
-      );
-      if (raw === null) return;
-      const amount = Number(String(raw).replace(",", "."));
+      customRow.style.display = "block";
+      if (customInput) customInput.focus();
+    });
+  }
+
+  if (customConfirm) {
+    customConfirm.addEventListener("click", () => {
+      const raw = customInput ? customInput.value.replace(",", ".") : "";
+      const amount = Number(raw);
+      hideCustomRow();
       sendSignal(amount);
+    });
+  }
+
+  if (customCancel) {
+    customCancel.addEventListener("click", hideCustomRow);
+  }
+
+  if (customInput) {
+    customInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") customConfirm && customConfirm.click();
+      if (e.key === "Escape") hideCustomRow();
     });
   }
 }
