@@ -767,7 +767,7 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
     // 5) SORT + LIMIT
     // -------------------------
     activityItems.sort((a, b) => b.timestampMs - a.timestampMs);
-    const recentItems = activityItems.slice(0, 20);
+    const recentItems = activityItems.slice(0, 14);
 
     if (!recentItems.length) {
       if (countLabel) countLabel.textContent = "No recent activity";
