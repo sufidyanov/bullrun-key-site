@@ -604,7 +604,7 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
 
           recentSignals = incomingSignals;
 
-          for (const tx of incomingSignals.slice(0, 5)) {
+          for (const tx of incomingSignals.slice(0, 10)) {
             const timestampMs = Number(tx.timeStamp) * 1000;
             activityItems.push({
               type: "signal",
@@ -643,7 +643,7 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
             );
           });
 
-          for (const tx of secondaryTransfers.slice(0, 5)) {
+          for (const tx of secondaryTransfers.slice(0, 10)) {
             const timestampMs = Number(tx.timeStamp) * 1000;
             activityItems.push({
               type: "transfer",
@@ -686,7 +686,7 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
             );
           });
 
-          for (const tx of claimTxs.slice(0, 5)) {
+          for (const tx of claimTxs.slice(0, 10)) {
             const timestampMs = Number(tx.timeStamp) * 1000;
             activityItems.push({
               type: "claim",
@@ -767,7 +767,7 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
     // 5) SORT + LIMIT
     // -------------------------
     activityItems.sort((a, b) => b.timestampMs - a.timestampMs);
-    const recentItems = activityItems.slice(0, 7);
+    const recentItems = activityItems.slice(0, 20);
 
     if (!recentItems.length) {
       if (countLabel) countLabel.textContent = "No recent activity";
