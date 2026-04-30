@@ -1005,7 +1005,19 @@ async function loadTreasuryNFTs() {
 
     container.innerHTML = "";
 
-    normalized.slice(0, 4).forEach((nft) => {
+    // Группируем одинаковые коллекции в одну строку
+    const groupMap = new Map();
+    normalized.forEach((nft) => {
+      const key = nft.contractAddress.toLowerCase() || nft.collection;
+      if (!groupMap.has(key)) {
+        groupMap.set(key, { ...nft, count: 1 });
+      } else {
+        groupMap.get(key).count += 1;
+      }
+    });
+    const grouped = Array.from(groupMap.values());
+
+    grouped.forEach((nft) => {
       const item = document.createElement("div");
       item.style.display = "flex";
       item.style.alignItems = "center";
@@ -1013,28 +1025,34 @@ async function loadTreasuryNFTs() {
       item.style.padding = "10px 0";
       item.style.borderBottom = "1px solid rgba(255,255,255,0.06)";
 
-      const openSeaUrl = nft.contractAddress && nft.tokenId
-        ? `https://opensea.io/assets/ethereum/${nft.contractAddress}/${BigInt(nft.tokenId).toString()}`
+      const openSeaCollectionUrl = nft.contractAddress
+        ? `https://opensea.io/assets/ethereum/${nft.contractAddress}`
         : "#";
+
+      const displayName = nft.count > 1 ? nft.collection : nft.name;
+      const countBadge = nft.count > 1
+        ? `<span style="font-size:12px;padding:2px 8px;border-radius:999px;background:rgba(255,200,80,0.15);color:rgba(255,200,80,0.9);font-weight:600;border:1px solid rgba(255,200,80,0.25)">${nft.count}x</span>`
+        : "";
 
       item.innerHTML = `
         <img
           src="${sanitizeHtml(nft.image)}"
-          alt="${sanitizeHtml(nft.name)}"
+          alt="${sanitizeHtml(displayName)}"
           style="width:56px;height:56px;border-radius:12px;object-fit:cover;border:1px solid rgba(255,255,255,0.08);background:#111;box-shadow:0 0 20px rgba(255,200,80,0.15)"
           onerror="this.src='/key.png'"
         />
         <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <div style="font-weight:700;line-height:1.2">${sanitizeHtml(nft.name)}</div>
+            <div style="font-weight:700;line-height:1.2">${sanitizeHtml(displayName)}</div>
+            ${countBadge}
             <span style="font-size:12px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,0.08);opacity:0.8">
               Vault Asset
             </span>
           </div>
           <div class="small" style="opacity:0.7">Locked in the treasury</div>
           ${
-            openSeaUrl !== "#"
-              ? `<a href="${openSeaUrl}" target="_blank" rel="noopener noreferrer" class="small" style="opacity:0.75">View asset</a>`
+            openSeaCollectionUrl !== "#"
+              ? `<a href="${openSeaCollectionUrl}" target="_blank" rel="noopener noreferrer" class="small" style="opacity:0.75">View asset</a>`
               : ""
           }
         </div>
