@@ -731,7 +731,11 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
           for (const tx of deposits.slice(0, 5)) {
             const contractKey = tx.contractAddress.toLowerCase();
             const friendlyName = VAULT_NAMES[contractKey] || tx.tokenName || tx.contractAddress;
-            const tokenId = tx.tokenID ? ` #${BigInt(tx.tokenID).toString()}` : "";
+            let rawId = tx.tokenID ? BigInt(tx.tokenID) : null;
+            // Art Blocks: tokenId = projectId * 1000000 + tokenNumber
+            const isArtBlocks = contractKey === "0x000000dc68934ed27fd11e32491cdf6717acaf21";
+            if (isArtBlocks && rawId !== null && rawId >= 1000000n) rawId = rawId % 1000000n;
+            const tokenId = rawId !== null ? ` #${rawId.toString()}` : "";
             activityItems.push({
               type: "vault",
               label: `${friendlyName}${tokenId}`,
