@@ -706,7 +706,41 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
     }
 
     // -------------------------
-    // 4) AUTOMATIC SYSTEM EVENTS
+    // 4) VAULT NFT DEPOSITS (NFT transfers TO treasury wallet)
+    // -------------------------
+    try {
+      const vaultUrl =
+        `${PROXY_BASE}/etherscan?chainid=1&module=account&action=tokennfttx` +
+        `&address=${TREASURY_WALLET}&page=1&offset=50&sort=desc`;
+
+      const vaultResponse = await fetch(vaultUrl);
+      if (vaultResponse.ok) {
+        const vaultData = await vaultResponse.json();
+        if (vaultData && Array.isArray(vaultData.result)) {
+          const deposits = vaultData.result.filter((tx) =>
+            tx.to.toLowerCase() === TREASURY_WALLET.toLowerCase() &&
+            tx.from !== "0x0000000000000000000000000000000000000000" &&
+            TREASURY_VAULT_CONTRACTS.includes(tx.contractAddress.toLowerCase())
+          );
+          for (const tx of deposits.slice(0, 5)) {
+            const tokenName = tx.tokenName || tx.contractAddress;
+            const tokenId = tx.tokenID ? `#${BigInt(tx.tokenID).toString()}` : "";
+            activityItems.push({
+              type: "vault",
+              label: `${tokenName} ${tokenId}`.trim(),
+              from: tx.from,
+              fromShort: shortAddress(tx.from),
+              timestampMs: Number(tx.timeStamp) * 1000
+            });
+          }
+        }
+      }
+    } catch (vaultErr) {
+      console.warn("Failed to load vault deposit activity", vaultErr);
+    }
+
+    // -------------------------
+    // 5) AUTOMATIC SYSTEM EVENTS
     // -------------------------
     try {
       const treasuryBalanceWei = await provider.getBalance(TREASURY_WALLET);
@@ -827,6 +861,14 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
           <a href="https://etherscan.io/address/${itemData.from}" target="_blank" rel="noopener noreferrer">${itemData.fromShort}</a>
           <span class="recent-claim-meta">transferred to</span>
           <a href="https://etherscan.io/address/${itemData.to}" target="_blank" rel="noopener noreferrer">${itemData.toShort}</a>
+          ${activityTime ? `<span class="recent-claim-meta">• ${activityTime}</span>` : ""}
+        `;
+      } else if (itemData.type === "vault") {
+        item.innerHTML = `
+          <span class="recent-claim-meta" style="opacity:0.8">Vault Asset</span>
+          <span class="recent-claim-meta">•</span>
+          <span style="font-weight:600">${itemData.label}</span>
+          <span class="recent-claim-meta">added to treasury</span>
           ${activityTime ? `<span class="recent-claim-meta">• ${activityTime}</span>` : ""}
         `;
       } else {
