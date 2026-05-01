@@ -23,10 +23,12 @@ const OPENSEA_URL = "https://opensea.io/collection/bullrunkey";
 //   - BullRun Key (основная)
 //   - Gemesis (OpenSea commemorative, лежит в treasury как артефакт эпохи)
 //   - Lil Pudgys (vault asset, locked)
+//   - Gift of Time by Manuel Larino (Art Blocks, цикловой артефакт)
 const TREASURY_VAULT_CONTRACTS = [
   "0x367ac60FB4B2bb8851a46ab7A7FD13654eF70419".toLowerCase(), // BullRun Key
   "0xbe9371326f91345777b04394448c23e2bfeaa826".toLowerCase(), // Gemesis (OpenSea, ERC721SeaDrop)
-  "0x524cAB2ec69124574082676e6F654a18df49A048".toLowerCase()  // Lil Pudgys
+  "0x524cAB2ec69124574082676e6F654a18df49A048".toLowerCase(), // Lil Pudgys
+  "0x000000dc68934ed27fd11e32491cdf6717acaf21".toLowerCase()  // Gift of Time by Manuel Larino (Art Blocks)
 ];
 
 // Общий read-only провайдер для публичных запросов до коннекта кошелька.
