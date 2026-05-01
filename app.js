@@ -879,7 +879,7 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
           <span class="recent-claim-meta" style="opacity:0.8">Vault Asset</span>
           <span class="recent-claim-meta">•</span>
           <span style="font-weight:600">${itemData.label}</span>
-          <span class="recent-claim-meta">added to treasury</span>
+          <span class="recent-claim-meta">NFT added to treasury</span>
           ${activityTime ? `<span class="recent-claim-meta">• ${activityTime}</span>` : ""}
         `;
       } else {
