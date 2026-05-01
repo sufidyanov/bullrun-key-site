@@ -708,6 +708,12 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
     // -------------------------
     // 4) VAULT NFT DEPOSITS (NFT transfers TO treasury wallet)
     // -------------------------
+    const VAULT_NAMES = {
+      "0x367ac60fb4b2bb8851a46ab7a7fd13654ef70419": "BullRun Key",
+      "0xbe9371326f91345777b04394448c23e2bfeaa826": "Gemesis",
+      "0x524cab2ec69124574082676e6f654a18df49a048": "Lil Pudgy",
+      "0x000000dc68934ed27fd11e32491cdf6717acaf21": "Gift of Time"
+    };
     try {
       const vaultUrl =
         `${PROXY_BASE}/etherscan?chainid=1&module=account&action=tokennfttx` +
@@ -723,11 +729,12 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
             TREASURY_VAULT_CONTRACTS.includes(tx.contractAddress.toLowerCase())
           );
           for (const tx of deposits.slice(0, 5)) {
-            const tokenName = tx.tokenName || tx.contractAddress;
-            const tokenId = tx.tokenID ? `#${BigInt(tx.tokenID).toString()}` : "";
+            const contractKey = tx.contractAddress.toLowerCase();
+            const friendlyName = VAULT_NAMES[contractKey] || tx.tokenName || tx.contractAddress;
+            const tokenId = tx.tokenID ? ` #${BigInt(tx.tokenID).toString()}` : "";
             activityItems.push({
               type: "vault",
-              label: `${tokenName} ${tokenId}`.trim(),
+              label: `${friendlyName}${tokenId}`,
               from: tx.from,
               fromShort: shortAddress(tx.from),
               timestampMs: Number(tx.timeStamp) * 1000
