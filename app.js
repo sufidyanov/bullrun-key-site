@@ -1070,7 +1070,7 @@ async function loadTreasuryNFTs() {
         groupMap.get(key).count += 1;
       }
     });
-    const grouped = Array.from(groupMap.values());
+    const grouped = Array.from(groupMap.values()).sort(() => Math.random() - 0.5);
 
     grouped.forEach((nft) => {
       const item = document.createElement("div");
