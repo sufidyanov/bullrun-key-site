@@ -551,28 +551,53 @@ Signals and positioning matter.<br><br>
 
 <div class="grid" style="align-items:stretch">
   <div class="card" style="height:auto">
-    <h2>Раунд #1 — Активен</h2>
-   <p id="roundIntro">
-  Раунд #1 активен.<br>
-  1 ETH распределён поровну между всеми 333 ключами.
-</p>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <h2 style="margin:0">Раунд #1 — Активен</h2>
+      <div id="nextRoundStatus" style="font-size:12px;font-weight:600;letter-spacing:0.08em;padding:4px 10px;border-radius:20px;background:rgba(255,165,50,0.12);color:rgba(255,165,50,0.9);border:1px solid rgba(255,165,50,0.2)">Активен</div>
+    </div>
 
-<div class="stats" style="margin-top:20px">
-  <div class="stat">
-    <div class="stat-label">Статус</div>
-    <div class="stat-value" id="nextRoundStatus">Активен</div>
-  </div>
+    <p id="roundIntro" style="margin-top:14px">
+      Раунд #1 активен.<br>
+      1 ETH распределён поровну между всеми 333 ключами.
+    </p>
 
-  <div class="stat">
-    <div class="stat-label">Пул наград</div>
-    <div class="stat-value" id="nextRoundTiming">1 ETH</div>
-  </div>
-</div>
+    <!-- Live claim progress bar -->
+    <div style="margin-top:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div class="small" style="opacity:0.6">Уже заклеймлено</div>
+        <div class="small" style="opacity:0.9;font-weight:600" id="round1ProgressPct">—</div>
+      </div>
+      <div style="height:6px;background:rgba(255,255,255,0.07);border-radius:4px;overflow:hidden">
+        <div id="round1ProgressFill" style="height:100%;width:0%;background:linear-gradient(90deg,rgba(255,165,50,0.7),rgba(255,200,80,0.9));border-radius:4px;transition:width 0.8s ease"></div>
+      </div>
+    </div>
 
-<p class="small" id="roundNote" style="margin-top:18px">
-  Раунд #1 намеренно простой: 1 ETH делится поровну между всеми 333 ключами.
-  Каждый ключ может заклеймить свою долю один раз. Последующие раунды становятся более стратегическими — тиры, комбинации, фаза цикла.
-</p>
+    <!-- Live stats grid -->
+    <div class="stats" style="margin-top:20px">
+      <div class="stat">
+        <div class="stat-label">Пул наград</div>
+        <div class="stat-value" id="nextRoundTiming">1 ETH</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">ETH заклеймлено</div>
+        <div class="stat-value" id="round1Claimed">-</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Ключей заклеймлено</div>
+        <div class="stat-value" id="round1Keys">-</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Ещё доступно</div>
+        <div class="stat-value" id="round1Remaining">-</div>
+      </div>
+    </div>
+
+    <!-- FOMO nudge — shown dynamically by app.js when >50% claimed -->
+    <div id="round1FomoNote" style="display:none;margin-top:14px;padding:10px 14px;background:rgba(255,165,50,0.08);border:1px solid rgba(255,165,50,0.2);border-radius:8px;font-size:13px;color:rgba(255,165,50,0.9)"></div>
+
+    <p class="small" id="roundNote" style="margin-top:18px;opacity:0.7;line-height:1.7">
+      Каждый ключ может заклеймить свою долю один раз. Последующие раунды становятся более стратегическими - тиры, комбинации, фаза цикла.
+    </p>
   </div>
 
   <div class="card" style="border:1px solid rgba(255,255,255,0.06);position:relative;overflow:hidden;height:auto">

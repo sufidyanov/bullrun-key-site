@@ -563,6 +563,98 @@ async function loadRewardHistory(rewardContract, totalRoundsValue) {
     }
   }
 }
+
+// ── Live Round #1 Claim Progress ──────────────────────────────────────────────
+// Reads roundInfo() from the reward contract (no wallet needed — uses READ_PROVIDER).
+// Finds the main public round (index >= 1, amountDeposited >= 0.5 ETH).
+// Updates live FOMO elements: progress bar fill, claimed ETH, keys claimed, remaining.
+async function loadRound1ClaimProgress(contract, roundsCount) {
+  try {
+    const count = Number(roundsCount);
+    if (!count || count < 2) return; // need at least index 1
+
+    // Find the main public round — index 1+ with >= 0.5 ETH deposited
+    let mainRound = null;
+    let mainRoundIdx = -1;
+    for (let i = 1; i < count; i++) {
+      try {
+        const r = await contract.roundInfo(i);
+        const deposited = Number(ethers.formatEther(r.amountDeposited));
+        if (deposited >= 0.5) {
+          mainRound = r;
+          mainRoundIdx = i;
+          break;
+        }
+      } catch (_) {}
+    }
+    if (!mainRound) return;
+
+    const deposited = Number(ethers.formatEther(mainRound.amountDeposited));
+    const claimed   = Number(ethers.formatEther(mainRound.claimedAmount));
+    const remaining = Number(ethers.formatEther(mainRound.remainingAmount));
+    const rewardPerToken = deposited / 333;
+    const keysClaimed = rewardPerToken > 0 ? Math.round(claimed / rewardPerToken) : 0;
+    const keysRemaining = 333 - keysClaimed;
+    const pct = deposited > 0 ? Math.min(100, (claimed / deposited) * 100) : 0;
+
+    const IS_RU = window.IS_RU || false;
+
+    // Progress bar
+    const fill = document.getElementById("round1ProgressFill");
+    const pctLabel = document.getElementById("round1ProgressPct");
+    if (fill) fill.style.width = pct.toFixed(1) + "%";
+    if (pctLabel) pctLabel.textContent = pct.toFixed(1) + "%";
+
+    // Stats
+    const elClaimed  = document.getElementById("round1Claimed");
+    const elKeys     = document.getElementById("round1Keys");
+    const elRemain   = document.getElementById("round1Remaining");
+
+    if (elClaimed)  elClaimed.textContent  = claimed.toFixed(4) + " ETH";
+    if (elKeys)     elKeys.textContent     = `${keysClaimed} / 333`;
+    if (elRemain)   elRemain.textContent   = `${keysRemaining} ${IS_RU ? "ключей" : "keys left"}`;
+
+    // FOMO urgency nudge when >50% claimed
+    const fomoNote = document.getElementById("round1FomoNote");
+    if (fomoNote) {
+      if (pct > 80) {
+        fomoNote.textContent = IS_RU
+          ? `Более ${pct.toFixed(0)}% наград уже склеймлено. Окно закрывается.`
+          : `Over ${pct.toFixed(0)}% claimed. The window is closing.`;
+        fomoNote.style.display = "block";
+      } else if (pct > 50) {
+        fomoNote.textContent = IS_RU
+          ? `Больше половины наград уже забрали.`
+          : `More than half the rewards have been claimed.`;
+        fomoNote.style.display = "block";
+      } else {
+        fomoNote.style.display = "none";
+      }
+    }
+  } catch (e) {
+    // silently ignore — live data unavailable
+  }
+}
+
+// Standalone polling — no wallet required, updates FOMO stats every 30s
+let _round1PollInterval = null;
+async function startRound1Polling() {
+  if (_round1PollInterval) return; // already polling
+  try {
+    const contract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, READ_PROVIDER);
+    const rounds = await contract.totalRounds();
+    const count = Number(rounds);
+    if (count < 2) return; // Round #1 not yet funded — skip polling
+    await loadRound1ClaimProgress(contract, count);
+    _round1PollInterval = setInterval(async () => {
+      try {
+        const r = await contract.totalRounds();
+        await loadRound1ClaimProgress(contract, r);
+      } catch (_) {}
+    }, 30000);
+  } catch (_) {}
+}
+
 function timeAgo(timestampMs) {
   const seconds = Math.floor((Date.now() - timestampMs) / 1000);
 
@@ -1481,6 +1573,7 @@ if (heroSocialProof) {
 }
 
     await loadRewardHistory(rewardContract, rounds);
+    await loadRound1ClaimProgress(rewardContract, rounds);
 
     setMessage("Scanning your BullRun Keys...");
     setWalletStatus("Scanning NFTs");
@@ -1732,6 +1825,10 @@ if (disconnectBtn) disconnectBtn.addEventListener("click", disconnectWallet);
   ]);
 
   wireSignalButtons();
+
+  // Start Round #1 live claim progress polling (no wallet needed).
+  // Quietly skips if Round #1 hasn't been funded yet.
+  startRound1Polling();
 
 // Лёгкий poll каждые 3 минуты — только treasury и leaderboard (Etherscan, дёшево).
 // loadRecentClaims и loadTreasuryNFTs убраны из цикла: они дорогие (eth_getLogs + NFT API).
