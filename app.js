@@ -609,10 +609,12 @@ async function loadRound1ClaimProgress(contract, roundsCount) {
     const elClaimed  = document.getElementById("round1Claimed");
     const elKeys     = document.getElementById("round1Keys");
     const elRemain   = document.getElementById("round1Remaining");
+    const elHeroKeys = document.getElementById("heroKeysClaimed");
 
     if (elClaimed)  elClaimed.textContent  = claimed.toFixed(4) + " ETH";
     if (elKeys)     elKeys.textContent     = `${keysClaimed} / 333`;
     if (elRemain)   elRemain.textContent   = `${keysRemaining} ${IS_RU ? "ключей" : "keys left"}`;
+    if (elHeroKeys) elHeroKeys.textContent = `${keysClaimed} / 333`;
 
     // FOMO urgency nudge when >50% claimed
     const fomoNote = document.getElementById("round1FomoNote");
