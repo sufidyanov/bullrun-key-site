@@ -177,21 +177,29 @@ function dedupeTokenIds(tokenIds) {
 }
 
 async function fetchTokenIdsFromAlchemy(ownerAddress) {
-  const url =
-    `${PROXY_BASE}/nft/getNFTsForOwner` +
-    `?owner=${encodeURIComponent(ownerAddress)}` +
-    `&contractAddresses[]=${NFT_CONTRACT}` +
-    `&withMetadata=false`;
+  const allNfts = [];
+  let pageKey = null;
 
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error("Alchemy request failed.");
-  }
+  // Loop through all pages — Alchemy returns up to 100 per page
+  do {
+    const url =
+      `${PROXY_BASE}/nft/getNFTsForOwner` +
+      `?owner=${encodeURIComponent(ownerAddress)}` +
+      `&contractAddresses[]=${NFT_CONTRACT}` +
+      `&withMetadata=false` +
+      `&pageSize=100` +
+      (pageKey ? `&pageKey=${encodeURIComponent(pageKey)}` : "");
 
-  const data = await response.json();
-  const nfts = Array.isArray(data.ownedNfts) ? data.ownedNfts : [];
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Alchemy request failed.");
 
-  const tokenIds = nfts
+    const data = await response.json();
+    const nfts = Array.isArray(data.ownedNfts) ? data.ownedNfts : [];
+    allNfts.push(...nfts);
+    pageKey = data.pageKey || null;
+  } while (pageKey);
+
+  const tokenIds = allNfts
     .map((nft) => {
       const raw = nft.tokenId || nft.id?.tokenId || nft.token_id;
       if (!raw) return null;
