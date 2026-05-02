@@ -335,7 +335,23 @@ if (systemStateEl) {
   systemStateEl.classList.remove("is-hot", "is-triggered");
 }
 
-if (balanceEth >= 1) {
+if (window.POST_REVEAL) {
+  // Post-reveal state — treasury now accumulates for Round #2
+  if (systemStateTextEl) systemStateTextEl.textContent = IS_RU ? "Раунд #1 активен" : "Round #1 Active";
+  if (systemStateEl) systemStateEl.classList.add("is-triggered");
+  if (revealNoteEl) revealNoteEl.innerHTML = IS_RU
+    ? `Раунд #1 активен.<br>Подключи кошелёк и заклеймируй награду.`
+    : `Round #1 is live.<br>Connect your wallet and claim your reward.`;
+  if (nextRoundStatusEl) { nextRoundStatusEl.classList.add("is-ready"); nextRoundStatusEl.textContent = IS_RU ? "Активен" : "Active"; }
+  if (nextRoundTimingEl) nextRoundTimingEl.textContent = "1 ETH";
+  if (roundIntroEl) roundIntroEl.innerHTML = IS_RU
+    ? `Раунд #1 активен.<br>1 ETH распределён поровну между всеми 333 ключами.`
+    : `Round #1 is live.<br>1 ETH distributed equally across all 333 keys.`;
+  if (roundNoteEl) roundNoteEl.textContent = IS_RU
+    ? "Каждый ключ может заклеймить свою долю один раз. Подключи кошелёк в секции Rewards."
+    : "Each key can claim its share once. Connect your wallet in the Rewards section.";
+  if (rpbRemaining) rpbRemaining.textContent = "";
+} else if (balanceEth >= 1) {
   if (systemStateTextEl) {
     systemStateTextEl.textContent = "Trigger reached";
   }
