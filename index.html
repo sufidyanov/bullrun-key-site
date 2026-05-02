@@ -827,15 +827,15 @@ Signals and positioning matter.
 </script>
 
 <script>
-async function lookupKey(tokenId) {
+async function lookupKey(tokenId, targetId) {
   const input = document.getElementById("keyLookupInput");
-  const result = document.getElementById("keyLookupResult");
+  const result = document.getElementById(targetId || "keyLookupResult");
   const id = tokenId || (input && input.value);
   if (!id || id < 1 || id > 333) {
-    result.innerHTML = '<p class="small" style="color:#ff8a8a">Enter a valid token ID (1–333)</p>';
+    if (result) result.innerHTML = '<p class="small" style="color:#ff8a8a">Enter a valid token ID (1–333)</p>';
     return;
   }
-  result.innerHTML = '<p class="small" style="opacity:0.5">Loading key data...</p>';
+  if (result) result.innerHTML = '<p class="small" style="opacity:0.5">Loading key data...</p>';
   try {
     const PROXY_BASE = "https://bullrun-key-proxy.bullrunkey.workers.dev";
     const NFT_CONTRACT = "0x367ac60FB4B2bb8851a46ab7A7FD13654eF70419";
@@ -909,32 +909,81 @@ async function connectWalletForKey() {
 
     const PROXY_BASE = "https://bullrun-key-proxy.bullrunkey.workers.dev";
     const NFT_CONTRACT = "0x367ac60FB4B2bb8851a46ab7A7FD13654eF70419";
-    const url = `${PROXY_BASE}/nft/getNFTsForOwner?owner=${address}&contractAddresses[]=${NFT_CONTRACT}&withMetadata=true`;
-    const res = await fetch(url);
-    const data = await res.json();
-    const nfts = data?.ownedNfts || [];
 
-    if (!nfts.length) {
+    // Paginate through all results
+    let allNfts = [];
+    let pageKey = null;
+    do {
+      const url = `${PROXY_BASE}/nft/getNFTsForOwner?owner=${address}&contractAddresses[]=${NFT_CONTRACT}&withMetadata=false&pageSize=100` + (pageKey ? `&pageKey=${encodeURIComponent(pageKey)}` : "");
+      const res = await fetch(url);
+      const data = await res.json();
+      allNfts = allNfts.concat(data?.ownedNfts || []);
+      pageKey = data?.pageKey || null;
+    } while (pageKey);
+
+    // Extract and sort token IDs
+    const tokenIds = allNfts
+      .map(nft => {
+        const raw = nft.tokenId || nft.id?.tokenId;
+        if (!raw) return null;
+        const num = typeof raw === "string" && raw.startsWith("0x") ? parseInt(raw, 16) : Number(raw);
+        return Number.isInteger(num) && num >= 1 && num <= 333 ? num : null;
+      })
+      .filter(Boolean)
+      .sort((a, b) => a - b);
+
+    if (!tokenIds.length) {
       result.innerHTML = '<p class="small" style="opacity:0.6">No BullRun Keys found in this wallet.</p>';
       return;
     }
 
-    result.innerHTML = `<p class="small" style="opacity:0.5;margin-bottom:16px">Found ${nfts.length} key${nfts.length > 1 ? "s" : ""} in your wallet</p>`;
+    // Build chip row + key display area
+    result.innerHTML = `
+      <div style="margin-bottom:18px">
+        <div class="small" style="opacity:0.5;margin-bottom:10px">${tokenIds.length} key${tokenIds.length > 1 ? "s" : ""} in this wallet — select to inspect:</div>
+        <div id="myKeyChips" style="display:flex;flex-wrap:wrap;gap:8px">
+          ${tokenIds.map(id => `
+            <button onclick="selectMyKey(${id})" id="myKeyChip_${id}" style="
+              padding:6px 14px;border-radius:20px;border:1px solid #333;
+              background:#1a1a1a;color:#ccc;font-size:13px;font-weight:600;
+              cursor:pointer;transition:all 0.2s;font-family:inherit;
+            ">#${id}</button>
+          `).join("")}
+        </div>
+      </div>
+      <div id="myKeyDetail"></div>
+    `;
 
-    for (const nft of nfts) {
-      const tokenId = nft.tokenId || nft.id?.tokenId;
-      if (tokenId) {
-        const div = document.createElement("div");
-        div.style.marginBottom = "24px";
-        result.appendChild(div);
-        const tempResult = { innerHTML: "" };
-        await lookupKey(parseInt(tokenId));
-        break; // lookupKey uses the shared result div, show first key then stop
-      }
-    }
+    // Auto-load first key
+    selectMyKey(tokenIds[0]);
+
   } catch(e) {
     result.innerHTML = '<p class="small" style="color:#ff8a8a">Wallet connection failed.</p>';
   }
+}
+
+async function selectMyKey(tokenId) {
+  // Highlight selected chip
+  document.querySelectorAll("[id^='myKeyChip_']").forEach(btn => {
+    btn.style.background = "#1a1a1a";
+    btn.style.color = "#ccc";
+    btn.style.borderColor = "#333";
+  });
+  const active = document.getElementById("myKeyChip_" + tokenId);
+  if (active) {
+    active.style.background = "rgba(245,166,35,0.15)";
+    active.style.color = "#f5a623";
+    active.style.borderColor = "rgba(245,166,35,0.4)";
+  }
+
+  // Set input and load key into the detail div
+  const input = document.getElementById("keyLookupInput");
+  if (input) input.value = tokenId;
+
+  const detail = document.getElementById("myKeyDetail");
+  if (detail) detail.innerHTML = '<p class="small" style="opacity:0.5">Loading...</p>';
+
+  await lookupKey(tokenId, "myKeyDetail");
 }
 
 function copyTreasuryWallet() {
