@@ -917,7 +917,7 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
 
     const list = document.getElementById("recentClaimsList");
     if (list) {
-      list.innerHTML = `<div class="small" style="color:#ff8a8a">Failed to load recent activity</div>`;
+      list.innerHTML = `<div class="small" style="opacity:0.5">Live data temporarily unavailable. On-chain records remain public.</div>`;
     }
   }
 }
@@ -1145,11 +1145,7 @@ box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
 }
   } catch (err) {
     console.error("Treasury vault load failed", err);
-    container.innerHTML = `
-      <div class="small" style="color:#ff8a8a">
-        Failed to load treasury vault
-      </div>
-    `;
+    container.innerHTML = `<div class="small" style="opacity:0.5">Live data temporarily unavailable. On-chain records remain public.</div>`;
   }
 }
 async function loadDonatorLeaderboard() {
@@ -1318,7 +1314,7 @@ item.style.border = "1px solid rgba(255, 170, 0, 0.18)";
     const footer = document.getElementById("donatorLeaderboardFooter");
 
     if (list) {
-      list.innerHTML = '<div class="small" style="color:#ff8a8a">Failed to load leaderboard</div>';
+      list.innerHTML = '<div class="small" style="opacity:0.5">Live data temporarily unavailable. On-chain records remain public.</div>';
     }
 
     if (footer) {
