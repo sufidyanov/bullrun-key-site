@@ -199,7 +199,7 @@ async function fetchTokenIdsFromAlchemy(ownerAddress) {
     pageKey = data.pageKey || null;
   } while (pageKey);
 
-  console.log("[BRK] Alchemy raw NFTs:", allNfts.length, allNfts.map(n => n.tokenId || n.id?.tokenId));
+  console.log("[BRK] Alchemy raw NFTs:", allNfts.length, allNfts.map(n => ({ tokenId: n.tokenId, id: n.id?.tokenId, token_id: n.token_id })));
 
   const tokenIds = allNfts
     .map((nft) => {
@@ -213,6 +213,7 @@ async function fetchTokenIdsFromAlchemy(ownerAddress) {
     })
     .filter((id) => Number.isInteger(id) && id >= 1 && id <= 333);
 
+  console.log("[BRK] Parsed tokenIds:", tokenIds);
   return dedupeTokenIds(tokenIds);
 }
 
