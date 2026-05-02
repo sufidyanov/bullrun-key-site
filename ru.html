@@ -816,7 +816,7 @@ async function lookupKey(tokenId) {
   try {
     const PROXY_BASE = "https://bullrun-key-proxy.bullrunkey.workers.dev";
     const NFT_CONTRACT = "0x367ac60FB4B2bb8851a46ab7A7FD13654eF70419";
-    const url = `${PROXY_BASE}/nft/getNFTMetadata?contractAddress=${NFT_CONTRACT}&tokenId=${id}&refreshCache=false`;
+    const url = `${PROXY_BASE}/nft/getNFTMetadata?contractAddress=${NFT_CONTRACT}&tokenId=${id}&refreshCache=true`;
     const res = await fetch(url);
     const data = await res.json();
 
