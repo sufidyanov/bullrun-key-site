@@ -351,6 +351,7 @@ if (window.POST_REVEAL) {
     ? "Каждый ключ может заклеймить свою долю один раз. Подключи кошелёк в секции Rewards."
     : "Each key can claim its share once. Connect your wallet in the Rewards section.";
   if (rpbRemaining) rpbRemaining.textContent = "";
+  if (rpbFill) rpbFill.style.width = "0%";
 } else if (balanceEth >= 1) {
   if (systemStateTextEl) {
     systemStateTextEl.textContent = "Trigger reached";
