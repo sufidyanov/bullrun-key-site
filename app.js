@@ -199,6 +199,8 @@ async function fetchTokenIdsFromAlchemy(ownerAddress) {
     pageKey = data.pageKey || null;
   } while (pageKey);
 
+  console.log("[BRK] Alchemy raw NFTs:", allNfts.length, allNfts.map(n => n.tokenId || n.id?.tokenId));
+
   const tokenIds = allNfts
     .map((nft) => {
       const raw = nft.tokenId || nft.id?.tokenId || nft.token_id;
