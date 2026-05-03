@@ -739,22 +739,28 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
             );
           });
 
-          // recentSignals — только реальные сигналы (без роялти и founder),
+          // recentSignals — только реальные сигналы >= SIGNAL_MIN_ETH (без роялти и founder),
           // используется для кластерного события "positioning activity increasing".
-          recentSignals = incomingSignals.filter(tx =>
-            !ROYALTY_SOURCES.has(tx.from.toLowerCase()) &&
-            !EXCLUDED_WALLETS.includes(tx.from.toLowerCase())
-          );
+          recentSignals = incomingSignals.filter(tx => {
+            const amt = Number(ethers.formatEther(tx.value));
+            return (
+              amt >= SIGNAL_MIN_ETH &&
+              !ROYALTY_SOURCES.has(tx.from.toLowerCase()) &&
+              !EXCLUDED_WALLETS.includes(tx.from.toLowerCase())
+            );
+          });
 
           for (const tx of incomingSignals.slice(0, 10)) {
             const timestampMs = Number(tx.timeStamp) * 1000;
             const fromLower = tx.from.toLowerCase();
+            const amount = Number(ethers.formatEther(tx.value));
+
+            // Сигналы ниже минимума — пропускаем (пыль, ошибочные переводы)
+            const isSignal = !ROYALTY_SOURCES.has(fromLower) && !FOUNDER_WALLETS[fromLower];
+            if (isSignal && amount < SIGNAL_MIN_ETH) continue;
 
             let label, verb;
-            if (ROYALTY_SOURCES.has(fromLower)) {
-              label = "OS Royalty";
-              verb = "received";
-            } else if (FOUNDER_WALLETS[fromLower]) {
+            if (FOUNDER_WALLETS[fromLower]) {
               label = FOUNDER_WALLETS[fromLower];
               verb = "topped up";
             } else {
@@ -766,7 +772,7 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
               type: "signal",
               wallet: tx.from,
               short: shortAddress(tx.from),
-              amount: Number(ethers.formatEther(tx.value)),
+              amount,
               label,
               verb,
               timestampMs
@@ -805,20 +811,43 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
             );
           });
 
-          for (const tx of incomingInternal.slice(0, 8)) {
+          // Группируем роялти: несколько мелких за короткий период → одна запись
+          let royaltyBatch = { count: 0, total: 0, latestTs: 0 };
+          for (const tx of incomingInternal.slice(0, 20)) {
             const timestampMs = Number(tx.timeStamp) * 1000;
             const amount = Number(ethers.formatEther(tx.value));
             // >= 0.05 ETH — продажа NFT из трежери (выручка через Seaport/relay)
             // < 0.05 ETH  — роялти с вторичной продажи ключа
             const isVaultSale = amount >= 0.05;
+            if (isVaultSale) {
+              activityItems.push({
+                type: "signal",
+                wallet: tx.from,
+                short: shortAddress(tx.from),
+                amount,
+                label: "Vault Sale",
+                verb: "sold for",
+                timestampMs
+              });
+            } else {
+              royaltyBatch.count++;
+              royaltyBatch.total += amount;
+              if (timestampMs > royaltyBatch.latestTs) royaltyBatch.latestTs = timestampMs;
+            }
+          }
+          // Добавляем сгруппированную запись роялти
+          if (royaltyBatch.count > 0) {
+            const label = royaltyBatch.count === 1
+              ? "OS Royalty"
+              : `OS Royalty (${royaltyBatch.count}x)`;
             activityItems.push({
               type: "signal",
-              wallet: tx.from,
-              short: shortAddress(tx.from),
-              amount,
-              label: isVaultSale ? "Vault Sale" : "OS Royalty",
-              verb: isVaultSale ? "sold for" : "received",
-              timestampMs
+              wallet: TREASURY_WALLET,
+              short: "OpenSea",
+              amount: royaltyBatch.total,
+              label,
+              verb: "received",
+              timestampMs: royaltyBatch.latestTs
             });
           }
         }
