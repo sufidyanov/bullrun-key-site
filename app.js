@@ -1152,20 +1152,27 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
         const amountStr = itemData.amount < 0.0001
           ? itemData.amount.toFixed(6)
           : itemData.amount.toFixed(4);
+        const isRoyalty = itemData.label.startsWith("OS Royalty") || itemData.label === "Vault Sale";
+        const walletPart = isRoyalty
+          ? `<span style="font-weight:600;opacity:0.9">${sanitizeHtml(itemData.short)}</span>`
+          : `<a href="https://etherscan.io/address/${itemData.wallet}" target="_blank" rel="noopener noreferrer">${itemData.short}</a>`;
         item.innerHTML = `
-          <span class="recent-claim-meta" style="opacity:0.8">${itemData.label}</span>
+          <span class="recent-claim-meta" style="opacity:0.6;font-size:0.78rem;letter-spacing:0.04em;text-transform:uppercase">${sanitizeHtml(itemData.label)}</span>
           <span class="recent-claim-meta">•</span>
-          <a href="https://etherscan.io/address/${itemData.wallet}" target="_blank" rel="noopener noreferrer">${itemData.short}</a>
+          ${walletPart}
           <span class="recent-claim-meta">${verb}</span>
           <strong>${amountStr} ETH</strong>
           ${activityTime ? `<span class="recent-claim-meta">• ${activityTime}</span>` : ""}
         `;
       } else if (itemData.type === "transfer") {
+        const keyTag = `<span style="background:rgba(255,165,50,0.12);border:1px solid rgba(255,165,50,0.3);border-radius:4px;padding:1px 7px;font-size:0.78rem;font-weight:600;color:rgba(255,165,50,0.9)">${sanitizeHtml(itemData.label)}</span>`;
         item.innerHTML = `
-          <span class="recent-claim-meta" style="opacity:0.8">${itemData.label}</span>
+          <span class="recent-claim-meta" style="opacity:0.6;font-size:0.78rem;letter-spacing:0.04em;text-transform:uppercase">NFT Transfer</span>
+          <span class="recent-claim-meta">•</span>
+          ${keyTag}
           <span class="recent-claim-meta">•</span>
           <a href="https://etherscan.io/address/${itemData.from}" target="_blank" rel="noopener noreferrer">${itemData.fromShort}</a>
-          <span class="recent-claim-meta">transferred to</span>
+          <span class="recent-claim-meta">to</span>
           <a href="https://etherscan.io/address/${itemData.to}" target="_blank" rel="noopener noreferrer">${itemData.toShort}</a>
           ${activityTime ? `<span class="recent-claim-meta">• ${activityTime}</span>` : ""}
         `;
@@ -1192,11 +1199,12 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
       if (index === 0) {
         setTimeout(() => {
           if (itemData.type === "claim") {
-            showLiveClaimToast(`${itemData.label} • ${itemData.short} extracted ${itemData.amount.toFixed(6)} ETH`);
+            const kl = itemData.keyLabel ? `${itemData.keyLabel} • ` : "";
+            showLiveClaimToast(`Reward Claim • ${kl}${itemData.short} claimed ${itemData.amount.toFixed(6)} ETH`);
           } else if (itemData.type === "signal") {
             showLiveClaimToast(`Signal detected: ${itemData.amount.toFixed(4)} ETH`);
           } else if (itemData.type === "transfer") {
-            showLiveClaimToast(`${itemData.label} transferred`);
+            showLiveClaimToast(`NFT Transfer • ${itemData.label}`);
           } else if (itemData.type === "system") {
             showLiveClaimToast(`System: ${itemData.text}`);
           }
