@@ -1550,7 +1550,9 @@ async function loadAllData() {
 
     const provider = new ethers.BrowserProvider(window.ethereum);
     await loadRecentClaims(provider);
-    const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, provider);
+    // Read-only calls use READ_PROVIDER (our proxy) — not the user's wallet RPC,
+    // which can be unreliable or misconfigured. BrowserProvider is only used for signing.
+    const rewardContract = new ethers.Contract(REWARD_CONTRACT, rewardAbi, READ_PROVIDER);
 
     const [deposited, claimed, rounds, holders] = await Promise.all([
       rewardContract.totalDeposited(),
@@ -1639,8 +1641,8 @@ if (heroSocialProof) {
     setMessage("Wallet connected successfully.", "success");
   } catch (err) {
     setWalletStatus("Error");
-    setClaimButtonState(false, "No BullRun Keys");
-    setMessage(err.message || "Failed to load data.", "error");
+    setClaimButtonState(false, "Try again");
+    setMessage((err.shortMessage || err.message || "Failed to load data.") + " — try refreshing the page.", "error");
   }
 }
 
