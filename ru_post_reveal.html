@@ -904,13 +904,24 @@ async function connectWalletForKey() {
   const result = document.getElementById("keyLookupResult");
   try {
     if (!window.ethereum) {
-      result.innerHTML = '<p class="small" style="color:#ff8a8a">Кошелёк не найден. Установи MetaMask.</p>';
+      result.innerHTML = '<p class="small" style="color:#ff8a8a">Кошелёк не найден. Установи Rabby или MetaMask.</p>';
       return;
     }
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    await provider.send("eth_requestAccounts", []);
-    const signer = await provider.getSigner();
-    const address = await signer.getAddress();
+    let accounts;
+    try {
+      accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    } catch(reqErr) {
+      const msg = reqErr.code === 4001
+        ? "Запрос отклонён. Подтверди подключение в кошельке."
+        : "Ошибка кошелька. Если установлено несколько расширений — отключи всё кроме Rabby.";
+      result.innerHTML = `<p class="small" style="color:#ff8a8a">${msg}</p>`;
+      return;
+    }
+    const address = accounts && accounts[0];
+    if (!address) {
+      result.innerHTML = '<p class="small" style="color:#ff8a8a">Адрес не получен. Попробуй переподключить кошелёк.</p>';
+      return;
+    }
 
     result.innerHTML = '<p class="small" style="opacity:0.5">Ищу твои ключи...</p>';
 
@@ -963,7 +974,10 @@ async function connectWalletForKey() {
     selectMyKey(tokenIds[0]);
 
   } catch(e) {
-    result.innerHTML = '<p class="small" style="color:#ff8a8a">Ошибка подключения кошелька.</p>';
+    const hint = e && e.message && e.message.includes("network")
+      ? "Ошибка сети. Проверь соединение и обнови страницу."
+      : "Что-то пошло не так. Если стоит несколько кошельков — отключи все кроме Rabby.";
+    result.innerHTML = `<p class="small" style="color:#ff8a8a">${hint}</p>`;
   }
 }
 

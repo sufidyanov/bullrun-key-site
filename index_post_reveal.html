@@ -897,13 +897,26 @@ async function connectWalletForKey() {
   const result = document.getElementById("keyLookupResult");
   try {
     if (!window.ethereum) {
-      result.innerHTML = '<p class="small" style="color:#ff8a8a">No wallet detected. Install MetaMask.</p>';
+      result.innerHTML = '<p class="small" style="color:#ff8a8a">No wallet detected. Install Rabby or MetaMask.</p>';
       return;
     }
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    await provider.send("eth_requestAccounts", []);
-    const signer = await provider.getSigner();
-    const address = await signer.getAddress();
+    // Используем window.ethereum.request напрямую — совместимо с Rabby, MetaMask, Coinbase и т.д.
+    // ethers.BrowserProvider().send() ломается при конфликте нескольких кошельков (SES lockdown)
+    let accounts;
+    try {
+      accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    } catch(reqErr) {
+      const msg = reqErr.code === 4001
+        ? "Connection rejected. Please approve the request in your wallet."
+        : "Wallet request failed. If you have multiple extensions installed, try disabling all wallets except Rabby.";
+      result.innerHTML = `<p class="small" style="color:#ff8a8a">${msg}</p>`;
+      return;
+    }
+    const address = accounts && accounts[0];
+    if (!address) {
+      result.innerHTML = '<p class="small" style="color:#ff8a8a">No account returned. Try reconnecting your wallet.</p>';
+      return;
+    }
 
     result.innerHTML = '<p class="small" style="opacity:0.5">Looking up your keys...</p>';
 
@@ -958,7 +971,10 @@ async function connectWalletForKey() {
     selectMyKey(tokenIds[0]);
 
   } catch(e) {
-    result.innerHTML = '<p class="small" style="color:#ff8a8a">Wallet connection failed.</p>';
+    const hint = e && e.message && e.message.includes("network")
+      ? "Network error. Check your connection and try again."
+      : "Something went wrong. If you have multiple wallet extensions, try disabling all except Rabby.";
+    result.innerHTML = `<p class="small" style="color:#ff8a8a">${hint}</p>`;
   }
 }
 
