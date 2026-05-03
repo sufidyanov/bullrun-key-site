@@ -46,6 +46,21 @@ const EXCLUDED_WALLETS = [
   "0x88eEb79b0cCE7000142BBB474562663B4aB623db".toLowerCase()
 ];
 
+// Известные контракты маркетплейсов, с которых приходят роялти (Seaport).
+// Исключаются из лидерборда, но показываются в ленте активности с отдельным лейблом.
+const ROYALTY_SOURCES = new Set([
+  "0x00000000000000adc04c56bf30ac9d3c0aaf14dc", // Seaport 1.5
+  "0x0000000000000068f116a894984e2db1123eb395", // Seaport 1.6
+  "0x00000000006c3852cbef3e08e8df289169ede581", // Seaport 1.1
+  "0x00000000000001ad428e4906ae43d8f9852d0dd6", // Seaport 1.4
+]);
+
+// Founder / system кошельки — показываются в ленте с отдельным лейблом,
+// но не участвуют в лидерборде (исключены через EXCLUDED_WALLETS).
+const FOUNDER_WALLETS = {
+  "0x88eeb79b0cce7000142bbb474562663b4ab623db": "Founder top-up"
+};
+
 // Единый фильтр входящих сигналов на treasury. Используется везде,
 // где читаются txlist: leaderboard, recent deposits, toast на новый сигнал.
 // Требования: успешная tx, value > 0, адресат = treasury, отправитель не из EXCLUDED_WALLETS.
@@ -62,6 +77,7 @@ function filterIncomingTreasurySignals(txs) {
     }
     if (tx.isError !== "0") return false;
     if (EXCLUDED_WALLETS.includes(tx.from.toLowerCase())) return false;
+    if (ROYALTY_SOURCES.has(tx.from.toLowerCase())) return false;
     return true;
   });
 }
@@ -723,16 +739,36 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
             );
           });
 
-          recentSignals = incomingSignals;
+          // recentSignals — только реальные сигналы (без роялти и founder),
+          // используется для кластерного события "positioning activity increasing".
+          recentSignals = incomingSignals.filter(tx =>
+            !ROYALTY_SOURCES.has(tx.from.toLowerCase()) &&
+            !EXCLUDED_WALLETS.includes(tx.from.toLowerCase())
+          );
 
           for (const tx of incomingSignals.slice(0, 10)) {
             const timestampMs = Number(tx.timeStamp) * 1000;
+            const fromLower = tx.from.toLowerCase();
+
+            let label, verb;
+            if (ROYALTY_SOURCES.has(fromLower)) {
+              label = "OS Royalty";
+              verb = "received";
+            } else if (FOUNDER_WALLETS[fromLower]) {
+              label = FOUNDER_WALLETS[fromLower];
+              verb = "topped up";
+            } else {
+              label = "Treasury Signal";
+              verb = "positioned";
+            }
+
             activityItems.push({
               type: "signal",
               wallet: tx.from,
               short: shortAddress(tx.from),
               amount: Number(ethers.formatEther(tx.value)),
-              label: "Treasury Signal",
+              label,
+              verb,
               timestampMs
             });
           }
@@ -975,13 +1011,16 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
           ${activityTime ? `<span class="recent-claim-meta">• ${activityTime}</span>` : ""}
         `;
       } else if (itemData.type === "signal") {
-    
+        const verb = itemData.verb || "positioned";
+        const amountStr = itemData.amount < 0.0001
+          ? itemData.amount.toFixed(6)
+          : itemData.amount.toFixed(4);
         item.innerHTML = `
           <span class="recent-claim-meta" style="opacity:0.8">${itemData.label}</span>
           <span class="recent-claim-meta">•</span>
           <a href="https://etherscan.io/address/${itemData.wallet}" target="_blank" rel="noopener noreferrer">${itemData.short}</a>
-          <span class="recent-claim-meta">positioned</span>
-          <strong>${itemData.amount.toFixed(4)} ETH</strong>
+          <span class="recent-claim-meta">${verb}</span>
+          <strong>${amountStr} ETH</strong>
           ${activityTime ? `<span class="recent-claim-meta">• ${activityTime}</span>` : ""}
         `;
       } else if (itemData.type === "transfer") {
