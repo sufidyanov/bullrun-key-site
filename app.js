@@ -807,13 +807,17 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
 
           for (const tx of incomingInternal.slice(0, 8)) {
             const timestampMs = Number(tx.timeStamp) * 1000;
+            const amount = Number(ethers.formatEther(tx.value));
+            // >= 0.05 ETH — продажа NFT из трежери (выручка через Seaport/relay)
+            // < 0.05 ETH  — роялти с вторичной продажи ключа
+            const isVaultSale = amount >= 0.05;
             activityItems.push({
               type: "signal",
               wallet: tx.from,
               short: shortAddress(tx.from),
-              amount: Number(ethers.formatEther(tx.value)),
-              label: "OS Royalty",
-              verb: "received",
+              amount,
+              label: isVaultSale ? "Vault Sale" : "OS Royalty",
+              verb: isVaultSale ? "sold for" : "received",
               timestampMs
             });
           }
