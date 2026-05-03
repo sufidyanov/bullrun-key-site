@@ -900,37 +900,45 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
     // 3) REWARD CLAIMS (internal txs from reward contract)
     // -------------------------
     try {
-      // Декодирует tokenIds из input data вызова claim(uint256[] tokenIds)
+      // Селектор claim(uint256[]) — 4 байта keccak256
+      const CLAIM_SELECTOR = ethers.id("claim(uint256[])").slice(0, 10); // "0x" + 8 hex
+
+      // Декодирует tokenIds из ABI-encoded input: 0x<selector><offset><length><id0><id1>...
       function decodeClaimTokenIds(input) {
-        if (!input || input.length < 10 + 128) return [];
+        if (!input || !input.startsWith(CLAIM_SELECTOR)) return [];
         try {
           const data = input.slice(10); // убираем 0x + 4-byte selector
+          // data: [offset 32b][length 32b][id0 32b][id1 32b]...
           const length = parseInt(data.slice(64, 128), 16);
-          if (!length || length > 100) return [];
+          if (!length || length > 50) return [];
           const ids = [];
           for (let i = 0; i < length; i++) {
-            const chunk = data.slice(128 + i * 64, 128 + i * 64 + 64);
+            const start = 128 + i * 64;
+            const chunk = data.slice(start, start + 64);
             if (chunk.length < 64) break;
-            ids.push(parseInt(chunk, 16));
+            const id = parseInt(chunk, 16);
+            if (id > 0 && id <= 333) ids.push(id);
           }
           return ids;
         } catch (_) { return []; }
       }
 
-      // Шаг 1: txlist на reward контракт → получаем input data с tokenIds
+      // Шаг 1: txlist на reward контракт → input data с tokenIds по хешу
       const hashToTokenIds = new Map();
       try {
         const txListUrl =
           `${PROXY_BASE}/etherscan?chainid=1&module=account&action=txlist` +
-          `&address=${REWARD_CONTRACT}&page=1&offset=20&sort=desc`;
+          `&address=${REWARD_CONTRACT}&page=1&offset=50&sort=desc`;
         const txListResp = await fetch(txListUrl);
         if (txListResp.ok) {
           const txListData = await txListResp.json();
           if (txListData && Array.isArray(txListData.result)) {
             for (const tx of txListData.result) {
-              if (!tx.input || tx.isError !== "0") continue;
+              if (tx.isError !== "0" || !tx.input) continue;
               const ids = decodeClaimTokenIds(tx.input);
-              if (ids.length > 0) hashToTokenIds.set(tx.hash.toLowerCase(), ids);
+              if (ids.length > 0) {
+                hashToTokenIds.set(tx.hash.toLowerCase(), ids);
+              }
             }
           }
         }
@@ -948,20 +956,19 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
         const claimData = await claimResponse.json();
 
         if (claimData && Array.isArray(claimData.result)) {
-          const claimTxs = claimData.result.filter((tx) => {
-            return (
-              tx.from &&
-              tx.from.toLowerCase() === REWARD_CONTRACT.toLowerCase() &&
-              tx.value &&
-              BigInt(tx.value) > 0n &&
-              tx.isError === "0"
-            );
-          });
+          const claimTxs = claimData.result.filter((tx) =>
+            tx.from &&
+            tx.from.toLowerCase() === REWARD_CONTRACT.toLowerCase() &&
+            tx.value &&
+            BigInt(tx.value) > 0n &&
+            tx.isError === "0"
+          );
 
           for (const tx of claimTxs.slice(0, 10)) {
             const timestampMs = Number(tx.timeStamp) * 1000;
-            const tokenIds = hashToTokenIds.get(tx.hash.toLowerCase()) || [];
-            // "Key #30" или "Key #30, #45, #91" (максимум 3 показываем)
+            const tokenIds = hashToTokenIds.get((tx.hash || "").toLowerCase()) || [];
+
+            // "Key #30" / "Keys #30, #45, #91 +2"
             let keyLabel = "";
             if (tokenIds.length === 1) {
               keyLabel = `Key #${tokenIds[0]}`;
@@ -970,12 +977,12 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
               const extra = tokenIds.length > 3 ? ` +${tokenIds.length - 3}` : "";
               keyLabel = `Keys ${shown}${extra}`;
             }
+
             activityItems.push({
               type: "claim",
               wallet: tx.to,
               short: shortAddress(tx.to),
               amount: Number(ethers.formatEther(tx.value)),
-              label: "Reward Claim",
               keyLabel,
               timestampMs
             });
@@ -1128,13 +1135,15 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
       item.style.borderBottom = "1px solid rgba(255,255,255,0.06)";
 
       if (itemData.type === "claim") {
-        const keyPart = itemData.keyLabel
-          ? `<span class="recent-claim-meta" style="opacity:0.8">${sanitizeHtml(itemData.keyLabel)}</span><span class="recent-claim-meta">•</span>`
+        const keyTag = itemData.keyLabel
+          ? `<span style="background:rgba(255,165,50,0.12);border:1px solid rgba(255,165,50,0.3);border-radius:4px;padding:1px 7px;font-size:0.78rem;font-weight:600;color:rgba(255,165,50,0.9)">${sanitizeHtml(itemData.keyLabel)}</span>`
           : "";
         item.innerHTML = `
-          ${keyPart}
+          <span class="recent-claim-meta" style="opacity:0.6;font-size:0.78rem;letter-spacing:0.04em;text-transform:uppercase">Reward Claim</span>
+          ${keyTag ? `<span class="recent-claim-meta">•</span>${keyTag}` : ""}
+          <span class="recent-claim-meta">•</span>
           <a href="https://etherscan.io/address/${itemData.wallet}" target="_blank" rel="noopener noreferrer">${itemData.short}</a>
-          <span class="recent-claim-meta">extracted</span>
+          <span class="recent-claim-meta">claimed</span>
           <strong>${itemData.amount.toFixed(6)} ETH</strong>
           ${activityTime ? `<span class="recent-claim-meta">• ${activityTime}</span>` : ""}
         `;
