@@ -779,6 +779,51 @@ async function loadRecentClaims(provider = READ_PROVIDER) {
     }
 
     // -------------------------
+    // 1b) INTERNAL TRANSACTIONS — роялти через relay/multicall контракты
+    // Роялти с OpenSea идут как internal txs (transferAndMulticall Relay и т.п.),
+    // они не видны в txlist, только в txlistinternal.
+    // -------------------------
+    try {
+      const internalUrl =
+        `${PROXY_BASE}/etherscan?chainid=1&module=account&action=txlistinternal` +
+        `&address=${TREASURY_WALLET}` +
+        `&startblock=0&endblock=99999999&page=1&offset=20&sort=desc`;
+
+      const internalResponse = await fetch(internalUrl);
+
+      if (internalResponse.ok) {
+        const internalData = await internalResponse.json();
+
+        if (internalData && Array.isArray(internalData.result)) {
+          const incomingInternal = internalData.result.filter((tx) => {
+            return (
+              tx.to &&
+              tx.to.toLowerCase() === TREASURY_WALLET.toLowerCase() &&
+              tx.value &&
+              BigInt(tx.value) > 0n &&
+              tx.isError === "0"
+            );
+          });
+
+          for (const tx of incomingInternal.slice(0, 8)) {
+            const timestampMs = Number(tx.timeStamp) * 1000;
+            activityItems.push({
+              type: "signal",
+              wallet: tx.from,
+              short: shortAddress(tx.from),
+              amount: Number(ethers.formatEther(tx.value)),
+              label: "OS Royalty",
+              verb: "received",
+              timestampMs
+            });
+          }
+        }
+      }
+    } catch (internalErr) {
+      console.warn("Failed to load internal treasury txs", internalErr);
+    }
+
+    // -------------------------
     // 2) NFT TRANSFERS (Etherscan tokentx — дёшево, без eth_getLogs)
     // -------------------------
     try {
