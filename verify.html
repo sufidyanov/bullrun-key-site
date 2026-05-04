@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verify - BullRun Key</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0a0a;
+      color: #e0e0e0;
+      font-family: 'Courier New', monospace;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      max-width: 480px;
+      width: 100%;
+      border: 1px solid #222;
+      padding: 40px 32px;
+      background: #0f0f0f;
+    }
+
+    .logo {
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: #555;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: 18px;
+      font-weight: 400;
+      color: #e0e0e0;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+
+    .step {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .step-num {
+      color: #c8a96e;
+      min-width: 16px;
+    }
+
+    .step-done {
+      color: #4caf50;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      margin: 32px 0;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px 24px;
+      background: transparent;
+      border: 1px solid #c8a96e;
+      color: #c8a96e;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: #c8a96e;
+      color: #0a0a0a;
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      border-color: #333;
+      color: #555;
+      margin-top: 12px;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: #1a1a1a;
+      color: #888;
+    }
+
+    .status {
+      font-size: 12px;
+      padding: 12px 16px;
+      margin-top: 16px;
+      border-left: 2px solid #333;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .status.error {
+      border-color: #c0392b;
+      color: #e74c3c;
+    }
+
+    .status.success {
+      border-color: #4caf50;
+      color: #4caf50;
+    }
+
+    .status.info {
+      border-color: #c8a96e;
+      color: #c8a96e;
+    }
+
+    .wallet-addr {
+      font-size: 11px;
+      color: #555;
+      margin-top: 8px;
+      word-break: break-all;
+    }
+
+    .hidden { display: none; }
+
+    footer {
+      margin-top: 40px;
+      font-size: 10px;
+      color: #333;
+      letter-spacing: 1px;
+    }
+
+    footer a {
+      color: #444;
+      text-decoration: none;
+    }
+
+    footer a:hover { color: #666; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">BullRun Key</div>
+
+  <h1>Holder Verification</h1>
+  <p class="subtitle">Connect your wallet to prove ownership and get access to the holders group.</p>
+
+  <!-- Steps -->
+  <div id="steps">
+    <div class="step" id="step1">
+      <span class="step-num">01</span>
+      <span>Connect wallet</span>
+    </div>
+    <div class="step" id="step2">
+      <span class="step-num">02</span>
+      <span>Sign verification message</span>
+    </div>
+    <div class="step" id="step3">
+      <span class="step-num">03</span>
+      <span>Receive Telegram invite</span>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Actions -->
+  <div id="action-connect">
+    <button class="btn" id="btn-connect" onclick="connectWallet()">
+      Connect Wallet
+    </button>
+    <div class="status info" id="status-expired" style="display:none">
+      This link has expired. Go back to Telegram and run /verify again.
+    </div>
+  </div>
+
+  <div id="action-sign" class="hidden">
+    <div class="wallet-addr" id="wallet-display"></div>
+    <div class="status" style="margin-top:16px; border-color:#2a2a2a; color:#555; font-size:11px; line-height:1.7">
+      You will be asked to sign a text message.<br>
+      <strong style="color:#666">No transaction. No gas. No funds will move.</strong><br>
+      Signing only proves you own this wallet.
+    </div>
+    <button class="btn" id="btn-sign" onclick="signAndVerify()" style="margin-top: 16px">
+      Sign & Verify
+    </button>
+    <button class="btn btn-secondary" onclick="disconnectWallet()">
+      Change Wallet
+    </button>
+  </div>
+
+  <div id="action-done" class="hidden">
+    <div class="status success" id="status-success"></div>
+    <p style="font-size:12px; color:#555; margin-top:20px; line-height:1.6">
+      Check your Telegram - the invite link has been sent to you by the bot.
+    </p>
+  </div>
+
+  <div id="status-msg" class="status hidden"></div>
+
+  <footer>
+    <a href="/">bullrunkey.xyz</a>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
+<script>
+  // Config
+  const BOT_URL = 'https://your-app.up.railway.app'; // replace after Railway deploy
+
+  // Parse URL params
+  const params = new URLSearchParams(window.location.search);
+  const NONCE = params.get('nonce');
+  const UID   = params.get('uid');
+
+  let connectedAddress = null;
+
+  // Validate params on load
+  if (!NONCE || !UID) {
+    showStatus('Invalid link. Go back to Telegram and run /verify.', 'error');
+    document.getElementById('btn-connect').disabled = true;
+  }
+
+  function showStatus(msg, type = '') {
+    const el = document.getElementById('status-msg');
+    el.textContent = msg;
+    el.className = `status ${type}`;
+    el.classList.remove('hidden');
+  }
+
+  function hideStatus() {
+    document.getElementById('status-msg').classList.add('hidden');
+  }
+
+  function markStepDone(n) {
+    const el = document.getElementById(`step${n}`);
+    if (el) {
+      el.querySelector('.step-num').textContent = '✓';
+      el.querySelector('.step-num').className = 'step-num step-done';
+    }
+  }
+
+  async function connectWallet() {
+    if (!window.ethereum) {
+      showStatus('No wallet detected. Install MetaMask or Rabby.', 'error');
+      return;
+    }
+
+    const btn = document.getElementById('btn-connect');
+    btn.disabled = true;
+    btn.textContent = 'Connecting...';
+
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      connectedAddress = accounts[0].toLowerCase();
+
+      document.getElementById('wallet-display').textContent = connectedAddress;
+      document.getElementById('action-connect').classList.add('hidden');
+      document.getElementById('action-sign').classList.remove('hidden');
+      markStepDone(1);
+      hideStatus();
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = 'Connect Wallet';
+      if (e.code === 4001) {
+        showStatus('Connection rejected.', 'error');
+      } else {
+        showStatus('Could not connect wallet: ' + e.message, 'error');
+      }
+    }
+  }
+
+  function disconnectWallet() {
+    connectedAddress = null;
+    document.getElementById('action-sign').classList.add('hidden');
+    document.getElementById('action-connect').classList.remove('hidden');
+    const btn = document.getElementById('btn-connect');
+    btn.disabled = false;
+    btn.textContent = 'Connect Wallet';
+    hideStatus();
+  }
+
+  async function signAndVerify() {
+    if (!connectedAddress) return;
+
+    const btn = document.getElementById('btn-sign');
+    btn.disabled = true;
+    btn.textContent = 'Sign in wallet...';
+    hideStatus();
+
+    try {
+      // Sign the message - must match exactly what server expects
+      const message = `BullRun Key verification\n\nNonce: ${NONCE}`;
+
+      const signature = await window.ethereum.request({
+        method: 'personal_sign',
+        params: [message, connectedAddress],
+      });
+
+      markStepDone(2);
+      btn.textContent = 'Verifying...';
+
+      // POST to bot server
+      const res = await fetch(`${BOT_URL}/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nonce: NONCE, address: connectedAddress, signature }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showStatus(data.error || 'Verification failed.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Sign & Verify';
+        return;
+      }
+
+      // Success
+      markStepDone(3);
+      document.getElementById('action-sign').classList.add('hidden');
+      document.getElementById('action-done').classList.remove('hidden');
+      document.getElementById('status-success').textContent =
+        `Verified. Keys: ${data.keyLabel || data.keyCount}`;
+
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = 'Sign & Verify';
+      if (e.code === 4001) {
+        showStatus('Signature rejected.', 'error');
+      } else {
+        showStatus('Error: ' + e.message, 'error');
+      }
+    }
+  }
+</script>
+
+</body>
+</html>
