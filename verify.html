@@ -181,6 +181,11 @@
 
   <hr class="divider" />
 
+  <!-- Mobile hint -->
+  <div id="mobile-hint" style="display:none; font-size:11px; color:#666; border-left:2px solid #333; padding:10px 14px; margin-bottom:20px; line-height:1.7">
+    On mobile: open this link inside <strong style="color:#888">MetaMask</strong> or <strong style="color:#888">Rabby</strong> browser tab - not Safari or Chrome.
+  </div>
+
   <!-- Actions -->
   <div id="action-connect">
     <button class="btn" id="btn-connect" onclick="connectWallet()">
@@ -225,6 +230,13 @@
   // Config
   const BOT_URL = 'https://bullrunkey-bot-production.up.railway.app';
 
+  // Show mobile hint if no injected wallet detected
+  if (window.innerWidth < 768 || /iPhone|Android/i.test(navigator.userAgent)) {
+    if (!window.ethereum) {
+      document.getElementById('mobile-hint').style.display = 'block';
+    }
+  }
+
   // Parse URL params
   const params = new URLSearchParams(window.location.search);
   const NONCE = params.get('nonce');
@@ -259,7 +271,7 @@
 
   async function connectWallet() {
     if (!window.ethereum) {
-      showStatus('No wallet detected. Install MetaMask or Rabby.', 'error');
+      showStatus('No wallet detected. On mobile: open this link inside MetaMask or Rabby browser app.', 'error');
       return;
     }
 
